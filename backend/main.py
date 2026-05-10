@@ -31,11 +31,10 @@ def health():
 
 @app.post("/save")
 async def save(req: SaveRequest):
-    """Receive shared text + URL, extract places via Gemini, save to DB."""
-    places = await extract_places(req.text)
+    content = req.text or req.url or ""
+    places = await extract_places(content)
     if not places:
-        raise HTTPException(status_code=422, detail="No travel locations found in the shared content.")
-
+        raise HTTPException(status_code=422, detail="No travel locations found.")
     saved = await save_places(
         places=places,
         trip_id=req.trip_id,
