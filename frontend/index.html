@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TravelInDex — Your Travel Saves</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --cream: #f5f0e8;
+      --sand: #e8e0d0;
+      --warm-white: #faf8f4;
+      --ink: #1a1714;
+      --ink-soft: #3d3730;
+      --ink-muted: #8a7e72;
+      --ink-faint: #c4b8aa;
+      --accent: #c0531a;
+      --accent-light: #e8734a;
+      --accent-pale: #f5e6dd;
+      --green: #2d6a4f;
+      --green-pale: #d8ede5;
+      --blue: #1d4e7a;
+      --blue-pale: #d6e8f5;
+      --purple: #5c3d7a;
+      --purple-pale: #ede0f5;
+      --gold: #b8860b;
+      --gold-pale: #f5efd6;
+      --border: rgba(26,23,20,0.1);
+      --shadow-sm: 0 1px 4px rgba(26,23,20,0.06);
+      --shadow-md: 0 4px 20px rgba(26,23,20,0.08);
+      --shadow-lg: 0 12px 40px rgba(26,23,20,0.12);
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      min-height: 100vh;
+      font-size: 15px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NOISE TEXTURE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.6;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--warm-white);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: baseline;
+      gap: 2px;
+      text-decoration: none;
+    }
+
+    .logo-text {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.3px;
+    }
+
+    .logo-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      margin-left: 1px;
+      margin-bottom: 3px;
+      flex-shrink: 0;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-shortcut {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--ink);
+      color: var(--cream);
+      border: none;
+      border-radius: 100px;
+      padding: 8px 18px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+      letter-spacing: 0.1px;
+    }
+
+    .btn-shortcut:hover {
+      background: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    .btn-shortcut svg { flex-shrink: 0; }
+
+    /* ── HERO BANNER ── */
+    .hero {
+      background: linear-gradient(135deg, var(--ink) 0%, #2d2620 100%);
+      color: var(--cream);
+      position: relative;
+      overflow: hidden;
+      padding: 72px 24px 64px;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 80% at 80% 50%, rgba(192,83,26,0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-map-dots {
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(245,240,232,0.12) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(245,240,232,0.1);
+      border: 1px solid rgba(245,240,232,0.2);
+      border-radius: 100px;
+      padding: 4px 14px;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--cream);
+      margin-bottom: 20px;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.1s forwards;
+    }
+
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(36px, 6vw, 56px);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -1px;
+      margin-bottom: 16px;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.2s forwards;
+    }
+
+    .hero-title em {
+      font-style: italic;
+      color: var(--accent-light);
+    }
+
+    .hero-sub {
+      font-size: 16px;
+      font-weight: 300;
+      color: rgba(245,240,232,0.7);
+      max-width: 420px;
+      line-height: 1.7;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.3s forwards;
+    }
+
+    /* ── MAIN LAYOUT ── */
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── DEVICE ID BAR ── */
+    .device-bar {
+      background: var(--warm-white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin-bottom: 32px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      box-shadow: var(--shadow-sm);
+      opacity: 0;
+      animation: fadeUp 0.5s ease 0.4s forwards;
+    }
+
+    .device-bar label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink-muted);
+      white-space: nowrap;
+    }
+
+    .device-input-wrap {
+      flex: 1;
+      display: flex;
+      gap: 10px;
+      min-width: 220px;
+    }
+
+    .device-input {
+      flex: 1;
+      border: 1px solid var(--sand);
+      border-radius: var(--radius-sm);
+      padding: 9px 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      background: var(--cream);
+      color: var(--ink);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .device-input:focus { border-color: var(--accent); }
+    .device-input::placeholder { color: var(--ink-faint); }
+
+    .btn-load {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 9px 18px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      white-space: nowrap;
+    }
+
+    .btn-load:hover { background: var(--accent-light); transform: translateY(-1px); }
+
+    .device-hint {
+      font-size: 12px;
+      color: var(--ink-faint);
+      width: 100%;
+      margin-top: -8px;
+    }
+
+    /* ── SECTION HEADER ── */
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      font-weight: 600;
+      letter-spacing: -0.4px;
+    }
+
+    .section-count {
+      font-size: 13px;
+      color: var(--ink-muted);
+      font-weight: 400;
+    }
+
+    /* ── TRIP TABS ── */
+    .trip-tabs-wrap {
+      margin-bottom: 28px;
+      opacity: 0;
+      animation: fadeUp 0.5s ease 0.5s forwards;
+    }
+
+    .trip-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .trip-tab {
+      background: var(--warm-white);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 8px 18px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--ink-soft);
+      white-space: nowrap;
+    }
+
+    .trip-tab:hover { border-color: var(--accent); color: var(--accent); }
+
+    .trip-tab.active {
+      background: var(--ink);
+      border-color: var(--ink);
+      color: var(--cream);
+    }
+
+    /* ── FILTER BAR ── */
+    .filter-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.5s ease 0.55s forwards;
+    }
+
+    .filter-chip {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--warm-white);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--ink-soft);
+      user-select: none;
+    }
+
+    .filter-chip:hover { border-color: var(--ink-soft); }
+    .filter-chip.active { background: var(--accent-pale); border-color: var(--accent); color: var(--accent); }
+    .filter-chip .chip-icon { font-size: 13px; }
+
+    /* ── PLACES GRID ── */
+    .places-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+      opacity: 0;
+      animation: fadeUp 0.5s ease 0.6s forwards;
+    }
+
+    /* ── PLACE CARD ── */
+    .place-card {
+      background: var(--warm-white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+      cursor: default;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .place-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .place-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+      border-color: transparent;
+    }
+
+    .place-card:hover::before { opacity: 1; }
+
+    /* Type-specific accent bars */
+    .place-card[data-type="restaurant"]::before { background: linear-gradient(90deg, #c0531a, #e8734a); }
+    .place-card[data-type="cafe"]::before { background: linear-gradient(90deg, #b8860b, #d4a017); }
+    .place-card[data-type="attraction"]::before { background: linear-gradient(90deg, #1d4e7a, #3a7ec4); }
+    .place-card[data-type="hotel"]::before { background: linear-gradient(90deg, #2d6a4f, #4aaa82); }
+    .place-card[data-type="hidden"]::before { background: linear-gradient(90deg, #5c3d7a, #9b6cc4); }
+
+    .place-card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .place-type-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: capitalize;
+      letter-spacing: 0.2px;
+      flex-shrink: 0;
+    }
+
+    .badge-restaurant { background: var(--accent-pale); color: var(--accent); }
+    .badge-cafe { background: var(--gold-pale); color: var(--gold); }
+    .badge-attraction { background: var(--blue-pale); color: var(--blue); }
+    .badge-hotel { background: var(--green-pale); color: var(--green); }
+    .badge-hidden { background: var(--purple-pale); color: var(--purple); }
+    .badge-default { background: var(--sand); color: var(--ink-muted); }
+
+    .place-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 17px;
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--ink);
+      letter-spacing: -0.2px;
+      flex: 1;
+    }
+
+    .place-location {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--ink-muted);
+      font-size: 13px;
+      margin-bottom: 14px;
+    }
+
+    .place-location svg { flex-shrink: 0; opacity: 0.6; }
+
+    .place-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      gap: 8px;
+    }
+
+    .place-date {
+      font-size: 11px;
+      color: var(--ink-faint);
+    }
+
+    .place-source-btn {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: var(--ink-muted);
+      text-decoration: none;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 100px;
+      background: var(--sand);
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .place-source-btn:hover { background: var(--ink); color: var(--cream); }
+
+    /* ── EMPTY STATE ── */
+    .empty-state {
+      text-align: center;
+      padding: 80px 24px;
+      opacity: 0;
+      animation: fadeUp 0.5s ease 0.6s forwards;
+    }
+
+    .empty-icon {
+      font-size: 56px;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .empty-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--ink);
+    }
+
+    .empty-body {
+      font-size: 14px;
+      color: var(--ink-muted);
+      max-width: 340px;
+      margin: 0 auto 24px;
+      line-height: 1.7;
+    }
+
+    /* ── HOW IT WORKS ── */
+    .how-section {
+      background: var(--warm-white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      margin-bottom: 40px;
+      box-shadow: var(--shadow-sm);
+      opacity: 0;
+      animation: fadeUp 0.5s ease 0.45s forwards;
+    }
+
+    .how-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 24px;
+      letter-spacing: -0.2px;
+    }
+
+    .how-steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0;
+      position: relative;
+    }
+
+    .how-steps::before {
+      content: '';
+      position: absolute;
+      top: 22px;
+      left: 22px;
+      right: 22px;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border), var(--accent-light), var(--border));
+      z-index: 0;
+    }
+
+    .how-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 0 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .how-step-num {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--cream);
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      margin-bottom: 14px;
+      flex-shrink: 0;
+    }
+
+    .how-step-num.accent {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .how-step-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    .how-step-sub {
+      font-size: 12px;
+      color: var(--ink-muted);
+      line-height: 1.5;
+    }
+
+    /* ── SHORTCUT CTA ── */
+    .shortcut-cta {
+      background: linear-gradient(135deg, var(--ink) 0%, #2d2620 100%);
+      border-radius: var(--radius);
+      padding: 36px 32px;
+      color: var(--cream);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      animation: fadeUp 0.5s ease 0.48s forwards;
+    }
+
+    .shortcut-cta::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 50% 100% at 100% 50%, rgba(192,83,26,0.25) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .shortcut-cta-text { position: relative; z-index: 1; }
+
+    .shortcut-cta-eyebrow {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-light);
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .shortcut-cta-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.3px;
+    }
+
+    .shortcut-cta-body {
+      font-size: 14px;
+      color: rgba(245,240,232,0.65);
+      max-width: 380px;
+      line-height: 1.6;
+    }
+
+    .btn-download {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 100px;
+      padding: 14px 24px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+      white-space: nowrap;
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 4px 20px rgba(192,83,26,0.4);
+    }
+
+    .btn-download:hover {
+      background: var(--accent-light);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(192,83,26,0.5);
+    }
+
+    .btn-download-icon {
+      width: 32px;
+      height: 32px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    /* ── LOADING SPINNER ── */
+    .spinner-wrap {
+      text-align: center;
+      padding: 60px 24px;
+    }
+
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 2px solid var(--sand);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    .spinner-label {
+      font-size: 13px;
+      color: var(--ink-muted);
+    }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--ink);
+      color: var(--cream);
+      padding: 12px 20px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 500;
+      z-index: 1000;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      white-space: nowrap;
+    }
+
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 24px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--ink-faint);
+    }
+
+    footer strong { color: var(--ink-soft); font-weight: 500; }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      .hero { padding: 48px 20px 40px; }
+      .how-steps::before { display: none; }
+      .how-steps { gap: 20px; }
+      .how-step { flex-direction: row; text-align: left; align-items: flex-start; padding: 0; gap: 14px; }
+      .how-step-num { margin-bottom: 0; flex-shrink: 0; }
+      .header-inner { padding: 0 16px; }
+      main { padding: 24px 16px 60px; }
+      .shortcut-cta { padding: 24px 20px; }
+      .how-section { padding: 24px 20px; }
+      .device-bar { padding: 14px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-inner">
+      <a href="#" class="logo">
+        <span class="logo-text">TravelInDex</span>
+        <span class="logo-dot"></span>
+      </a>
+      <div class="header-actions">
+        <a href="https://www.icloud.com/shortcuts/XXXX" target="_blank" class="btn-shortcut">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/>
+          </svg>
+          Get Shortcut
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-map-dots"></div>
+    <div class="hero-inner">
+      <div class="hero-eyebrow">✈️ &nbsp;Your travel saves, organised</div>
+      <h1 class="hero-title">Every <em>place</em> you've<br>been inspired by.</h1>
+      <p class="hero-sub">Saved instantly from Instagram, TikTok, and YouTube — browsed beautifully here.</p>
+    </div>
+  </section>
+
+  <main>
+
+    <!-- HOW IT WORKS -->
+    <div class="how-section">
+      <div class="how-title">How TravelInDex works</div>
+      <div class="how-steps">
+        <div class="how-step">
+          <div class="how-step-num">📱</div>
+          <div>
+            <div class="how-step-label">See a great spot</div>
+            <div class="how-step-sub">On Instagram, TikTok, YouTube or anywhere</div>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="how-step-num">↗️</div>
+          <div>
+            <div class="how-step-label">Tap Share</div>
+            <div class="how-step-sub">Select the TravelInDex shortcut from the share sheet</div>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="how-step-num accent">✓</div>
+          <div>
+            <div class="how-step-label">Pick your trip</div>
+            <div class="how-step-sub">Choose a trip board — it's saved automatically</div>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="how-step-num">🗺️</div>
+          <div>
+            <div class="how-step-label">Browse here</div>
+            <div class="how-step-sub">All your saved places appear in this web app</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SHORTCUT CTA -->
+    <div class="shortcut-cta">
+      <div class="shortcut-cta-text">
+        <div class="shortcut-cta-eyebrow">Step 1 — Get started</div>
+        <div class="shortcut-cta-title">Install the iOS Shortcut 📲</div>
+        <div class="shortcut-cta-body">One tap to add. Then just use Share → TravelInDex whenever you see a place you want to save. No app needed during saving.</div>
+      </div>
+      <a href="https://www.icloud.com/shortcuts/XXXX" target="_blank" class="btn-download">
+        <div class="btn-download-icon">⬇️</div>
+        Add to Shortcuts
+      </a>
+    </div>
+
+    <!-- DEVICE ID BAR -->
+    <div class="device-bar">
+      <label>Your Device ID</label>
+      <div class="device-input-wrap">
+        <input
+          type="text"
+          class="device-input"
+          id="deviceIdInput"
+          placeholder="Enter the Device ID from your Shortcut…"
+        />
+        <button class="btn-load" id="loadBtn" onclick="loadTrips()">Load My Saves</button>
+      </div>
+      <div class="device-hint">💡 Your Device ID is shown the first time you run the Shortcut — copy it here to browse your places.</div>
+    </div>
+
+    <!-- TRIPS + PLACES -->
+    <div id="tripsSection" style="display:none;">
+      <div class="section-header" style="margin-bottom:16px;">
+        <div class="section-title">Trip Boards</div>
+        <span class="section-count" id="tripCount"></span>
+      </div>
+      <div class="trip-tabs-wrap">
+        <div class="trip-tabs" id="tripTabs"></div>
+      </div>
+
+      <div class="filter-bar" id="filterBar">
+        <div class="filter-chip active" data-type="all" onclick="toggleFilter(this)">
+          <span class="chip-icon">🌏</span> All
+        </div>
+        <div class="filter-chip" data-type="restaurant" onclick="toggleFilter(this)">
+          <span class="chip-icon">🍽️</span> Restaurants
+        </div>
+        <div class="filter-chip" data-type="cafe" onclick="toggleFilter(this)">
+          <span class="chip-icon">☕</span> Cafés
+        </div>
+        <div class="filter-chip" data-type="attraction" onclick="toggleFilter(this)">
+          <span class="chip-icon">🏛️</span> Attractions
+        </div>
+        <div class="filter-chip" data-type="hotel" onclick="toggleFilter(this)">
+          <span class="chip-icon">🏨</span> Hotels
+        </div>
+      </div>
+
+      <div class="section-header">
+        <div class="section-title" id="placesTitle">All Places</div>
+        <span class="section-count" id="placesCount"></span>
+      </div>
+      <div class="places-grid" id="placesGrid"></div>
+    </div>
+
+    <!-- LOADING -->
+    <div class="spinner-wrap" id="loadingState" style="display:none;">
+      <div class="spinner"></div>
+      <div class="spinner-label">Loading your places…</div>
+    </div>
+
+    <!-- EMPTY / WELCOME -->
+    <div class="empty-state" id="emptyState">
+      <span class="empty-icon">🗺️</span>
+      <div class="empty-title">Your travel index starts here</div>
+      <div class="empty-body">Install the iOS Shortcut above, then enter your Device ID to browse all the places you've saved.</div>
+    </div>
+
+  </main>
+
+  <footer>
+    <strong>TravelInDex</strong> — frictionless travel inspiration saving. Built with ♥ for wanderers.
+  </footer>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ─── CONFIG ───────────────────────────────────────────────────────────────
+    const API_BASE = 'https://your-render-backend.onrender.com'; // ← replace with your Render URL
+
+    // ─── STATE ────────────────────────────────────────────────────────────────
+    let allPlaces = [];
+    let currentTrip = null;
+    let currentFilter = 'all';
+    let trips = [];
+
+    // ─── DOM HELPERS ──────────────────────────────────────────────────────────
+    const $ = id => document.getElementById(id);
+
+    function show(id) { $(id).style.display = ''; }
+    function hide(id) { $(id).style.display = 'none'; }
+
+    function showToast(msg) {
+      const t = $('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2800);
+    }
+
+    // ─── TYPE HELPERS ─────────────────────────────────────────────────────────
+    const typeEmoji = { restaurant: '🍽️', cafe: '☕', attraction: '🏛️', hotel: '🏨', hidden: '🔮' };
+    const typeBadge = { restaurant: 'badge-restaurant', cafe: 'badge-cafe', attraction: 'badge-attraction', hotel: 'badge-hotel', hidden: 'badge-hidden' };
+
+    function formatDate(ts) {
+      try {
+        return new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      } catch { return ''; }
+    }
+
+    // ─── LOAD TRIPS ───────────────────────────────────────────────────────────
+    async function loadTrips() {
+      const deviceId = $('deviceIdInput').value.trim();
+      if (!deviceId) { showToast('Please enter your Device ID first'); return; }
+
+      localStorage.setItem('travelindex_device', deviceId);
+
+      hide('emptyState');
+      hide('tripsSection');
+      show('loadingState');
+
+      try {
+        const res = await fetch(`${API_BASE}/trips/${encodeURIComponent(deviceId)}`);
+        if (!res.ok) throw new Error('Failed');
+        trips = await res.json(); // string array
+
+        if (!trips.length) {
+          hide('loadingState');
+          show('emptyState');
+          $('emptyState').querySelector('.empty-title').textContent = 'No trips yet';
+          $('emptyState').querySelector('.empty-body').textContent = 'Use the iOS Shortcut to save your first place — it\'ll appear here instantly.';
+          return;
+        }
+
+        renderTripTabs(trips);
+        $('tripCount').textContent = `${trips.length} trip${trips.length !== 1 ? 's' : ''}`;
+        currentTrip = trips[0];
+        await loadPlaces(deviceId, currentTrip);
+      } catch (err) {
+        hide('loadingState');
+        show('emptyState');
+        $('emptyState').querySelector('.empty-title').textContent = 'Couldn\'t load saves';
+        $('emptyState').querySelector('.empty-body').textContent = 'Check your Device ID and try again. If the problem continues, make sure the backend is running.';
+        showToast('❌ Load failed — check Device ID');
+      }
+    }
+
+    // ─── RENDER TRIP TABS ─────────────────────────────────────────────────────
+    function renderTripTabs(tripList) {
+      const container = $('tripTabs');
+      container.innerHTML = '';
+      tripList.forEach((trip, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'trip-tab' + (i === 0 ? ' active' : '');
+        btn.textContent = trip;
+        btn.onclick = async () => {
+          document.querySelectorAll('.trip-tab').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentTrip = trip;
+          currentFilter = 'all';
+          document.querySelectorAll('.filter-chip').forEach(c => {
+            c.classList.toggle('active', c.dataset.type === 'all');
+          });
+          const deviceId = $('deviceIdInput').value.trim();
+          await loadPlaces(deviceId, trip);
+        };
+        container.appendChild(btn);
+      });
+    }
+
+    // ─── LOAD PLACES FOR TRIP ─────────────────────────────────────────────────
+    async function loadPlaces(deviceId, tripId) {
+      hide('tripsSection');
+      show('loadingState');
+
+      try {
+        const res = await fetch(`${API_BASE}/trip/${encodeURIComponent(tripId)}?device_id=${encodeURIComponent(deviceId)}`);
+        if (!res.ok) throw new Error('Failed');
+        allPlaces = await res.json();
+
+        hide('loadingState');
+        show('tripsSection');
+        renderPlaces();
+      } catch {
+        hide('loadingState');
+        showToast('❌ Couldn\'t load places for this trip');
+      }
+    }
+
+    // ─── RENDER PLACES ────────────────────────────────────────────────────────
+    function renderPlaces() {
+      const grid = $('placesGrid');
+      const filtered = currentFilter === 'all'
+        ? allPlaces
+        : allPlaces.filter(p => (p.type || '').toLowerCase() === currentFilter);
+
+      $('placesTitle').textContent = currentTrip || 'All Places';
+      $('placesCount').textContent = `${filtered.length} place${filtered.length !== 1 ? 's' : ''}`;
+
+      if (!filtered.length) {
+        grid.innerHTML = `
+          <div style="grid-column:1/-1;text-align:center;padding:40px 0;color:var(--ink-muted);font-size:14px;">
+            No ${currentFilter !== 'all' ? currentFilter + 's' : 'places'} saved in this trip yet.
+          </div>`;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(place => {
+        const type = (place.type || 'place').toLowerCase();
+        const emoji = typeEmoji[type] || '📍';
+        const badge = typeBadge[type] || 'badge-default';
+        const loc = [place.city, place.country].filter(Boolean).join(', ') || 'Location unknown';
+        const dateStr = formatDate(place.created_at);
+
+        return `
+          <div class="place-card" data-type="${type}" style="animation: fadeUp 0.4s ease both;" >
+            <div class="place-card-top">
+              <div class="place-name">${escHtml(place.name || 'Unnamed place')}</div>
+              <span class="place-type-badge ${badge}">${emoji} ${type}</span>
+            </div>
+            <div class="place-location">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/>
+                <circle cx="12" cy="9" r="2.5"/>
+              </svg>
+              ${escHtml(loc)}
+            </div>
+            <div class="place-card-footer">
+              <span class="place-date">${dateStr}</span>
+              ${place.source_url ? `<a class="place-source-btn" href="${escHtml(place.source_url)}" target="_blank" rel="noopener">
+                View source ↗
+              </a>` : ''}
+            </div>
+          </div>`;
+      }).join('');
+
+      // Stagger animations
+      grid.querySelectorAll('.place-card').forEach((el, i) => {
+        el.style.animationDelay = `${i * 0.04}s`;
+      });
+    }
+
+    // ─── FILTER ───────────────────────────────────────────────────────────────
+    function toggleFilter(chip) {
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      currentFilter = chip.dataset.type;
+      renderPlaces();
+    }
+
+    // ─── UTILS ────────────────────────────────────────────────────────────────
+    function escHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // ─── INIT ─────────────────────────────────────────────────────────────────
+    window.addEventListener('DOMContentLoaded', () => {
+      const saved = localStorage.getItem('travelindex_device');
+      if (saved) {
+        $('deviceIdInput').value = saved;
+        loadTrips();
+      }
+
+      $('deviceIdInput').addEventListener('keydown', e => {
+        if (e.key === 'Enter') loadTrips();
+      });
+    });
+  </script>
+</body>
+</html>

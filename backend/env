@@ -1,0 +1,5 @@
+# Copy this to .env and fill in your values
+
+GEMINI_API_KEY=AIzaSyBY3Wwp6V1fPbs2M4UaFI-Paj6RDo6qYDk
+SUPABASE_URL=https://supabase.com/dashboard/project/xjsicwgadxjopnqutaph/sql/d1e96d3a-baa8-4c42-864f-f35c67f56e05
+SUPABASE_SERVICE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhqc2ljd2dhZHhqb3BucXV0YXBoIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3ODMzNDMwNiwiZXhwIjoyMDkzOTEwMzA2fQ.p6XBfxmFN6NJIk7RMJCXdYbmRH_Yt8VxAbPbZr3ToVo
