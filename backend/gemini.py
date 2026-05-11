@@ -32,7 +32,11 @@ Rules:
 - Do not infer unnamed locations
 - Ignore vague references
 - summary max 20 words
-- Return ONLY valid JSON
+- Return ONLY raw JSON.
+
+Do NOT use markdown.
+Do NOT wrap in ```json
+Do NOT explain anything.
 - If no places found, return []
 
 Format:
@@ -216,8 +220,10 @@ async def extract_places(text: str) -> List[Dict]:
             }
         ],
         "generationConfig": {
-            "temperature": 0.2,
-            "maxOutputTokens": 1024,
+            "temperature": 0,
+            "maxOutputTokens": 2048,
+            "responseMimeType": "application/json",
+        },
         },
     }
 
@@ -254,7 +260,44 @@ async def extract_places(text: str) -> List[Dict]:
         raw = raw.strip()
 
     try:
+    
+        # Remove markdown code blocks
+        if raw.startswith("```"):
+    
+            raw = raw.split("```")[1]
+    
+            if raw.startswith("json"):
+                raw = raw[4:]
+    
+            raw = raw.strip()
+    
+        # Try direct parse
         places = json.loads(raw)
+    
+    except json.JSONDecodeError:
+    
+        print("Initial JSON parse failed.")
+    
+        # Attempt recovery
+        try:
+    
+            # Find first complete JSON array
+            start = raw.find("[")
+            end = raw.rfind("]")
+    
+            if start != -1 and end != -1:
+                recovered = raw[start:end + 1]
+    
+                places = json.loads(recovered)
+    
+            else:
+                return []
+    
+        except Exception as e:
+    
+            print(f"Recovery parse failed: {e}")
+    
+            return []
 
         if not isinstance(places, list):
             return []
