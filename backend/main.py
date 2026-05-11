@@ -4,8 +4,9 @@ from pydantic import BaseModel
 from typing import Optional
 import uvicorn
 import logging
+import json
 
-from db import save_places, get_places_by_trip, get_trips_by_device
+from db import save_places, get_places_by_trip, get_trips_by_device, create_trip
 from gemini import extract_places
 
 logging.basicConfig(level=logging.INFO)
@@ -28,48 +29,59 @@ class SaveRequest(BaseModel):
     device_id: str
 
 
+class CreateTripRequest(BaseModel):
+    trip_id: str
+    device_id: str
+
+
 @app.get("/health")
 def health():
     return {"status": "ok", "service": "TravelInDex"}
 
 
-@app.post("/save/debug")
-async def save_debug(request: Request):
-    body = await request.body()
-    logger.info(f"RAW BODY: {body.decode()}")
-    return {"raw": body.decode()}
+@app.post("/trips/create")
+async def create_trip_endpoint(req: CreateTripRequest):
+    """Create a new empty trip board."""
+    await create_trip(trip_id=req.trip_id, device_id=req.device_id)
+    return {"created": True, "trip_id": req.trip_id}
 
 
 @app.post("/save")
 async def save(request: Request):
+    """Receive shared text + URL, extract places via Gemini, save to DB."""
     body = await request.body()
-    logger.info(f"RAW BODY RECEIVED: {body.decode()}")
-    
-    import json
+    logger.info(f"RAW BODY: {body.decode()}")
+
     try:
         data = json.loads(body)
     except Exception as e:
-        logger.error(f"JSON parse error: {e}")
         raise HTTPException(status_code=422, detail=f"Invalid JSON: {e}")
-
-    logger.info(f"PARSED DATA: {data}")
 
     trip_id = data.get("trip_id", "")
     device_id = data.get("device_id", "")
-    text = data.get("text", "") or data.get("url", "") or ""
+    text = data.get("text", "") or ""
+    url = data.get("url", "") or ""
 
     if not trip_id or not device_id:
-        raise HTTPException(status_code=422, detail=f"Missing trip_id or device_id. Got: {data}")
+        raise HTTPException(status_code=422, detail="Missing trip_id or device_id")
 
-    places = await extract_places(text)
+    content = text or url or ""
+    places = await extract_places(content)
+
     if not places:
-        places = [{"name": "Saved from Instagram", "city": "", "country": "", "type": "attraction"}]
+        places = [{
+            "name": "Saved from Instagram",
+            "city": "", "country": "",
+            "type": "attraction",
+            "summary": "No location details could be extracted.",
+            "maps_url": "",
+        }]
 
     saved = await save_places(
         places=places,
         trip_id=trip_id,
         device_id=device_id,
-        source_url=data.get("url", ""),
+        source_url=url,
     )
     return {"saved": len(saved), "places": saved}
 
