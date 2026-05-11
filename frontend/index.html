@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -214,7 +215,6 @@
     .trip-tab.active { background: var(--ink); border-color: var(--ink); color: var(--cream); }
     .trip-tab.active:hover { background: var(--ink-soft); }
 
-    /* trip tab action buttons — shown on hover */
     .trip-tab-actions {
       display: none;
       align-items: center;
@@ -234,7 +234,6 @@
     .trip-tab-btn:hover { opacity: 1; background: rgba(0,0,0,0.08); }
     .trip-tab.active .trip-tab-btn:hover { background: rgba(255,255,255,0.15); }
 
-    /* inline rename input inside tab */
     .trip-tab-rename {
       background: var(--warm-white); border: 1.5px solid var(--accent);
       border-radius: 100px; padding: 6px 14px;
@@ -288,7 +287,6 @@
     .place-card[data-type="hotel"]::before { background: linear-gradient(90deg, #2d6a4f, #4aaa82); }
     .place-card[data-type="hidden"]::before { background: linear-gradient(90deg, #5c3d7a, #9b6cc4); }
 
-    /* Updated card header with map next to category */
     .place-card-header {
       display: flex;
       gap: 12px;
@@ -327,7 +325,6 @@
     .badge-hidden { background: var(--purple-pale); color: var(--purple); }
     .badge-default { background: var(--sand); color: var(--ink-muted); }
 
-    /* Map button/link in card header */
     .place-map-btn {
       flex-shrink: 0;
       display: flex;
@@ -350,7 +347,6 @@
       transform: scale(1.05);
     }
 
-    /* card action buttons (delete + move) */
     .card-actions {
       position: absolute; top: 12px; right: 12px;
       display: flex; gap: 4px;
@@ -368,37 +364,23 @@
     .card-action-btn.delete:hover { background: var(--red-pale); border-color: rgba(185,28,28,0.3); }
     .card-action-btn.move:hover { background: var(--blue-pale); border-color: rgba(29,78,122,0.3); }
 
-    .place-summary {
-      font-size: 13px;
-      color: var(--ink-soft);
-      line-height: 1.5;
-      margin-bottom: 12px;
-      font-style: italic;
-    }
+    /* ── SAVE ENTRIES (first + duplicates unified) ── */
 
-    /* Duplicates container */
-    .place-duplicates {
+    /* Each "save" is one entry: a summary line + a footer row */
+    .save-entry {
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      padding-top: 12px;
-      border-top: 1px solid var(--border);
+      gap: 6px;
     }
 
-    .duplicate-entry {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .duplicate-caption {
+    .save-summary {
       font-size: 13px;
       color: var(--ink-soft);
       line-height: 1.5;
       font-style: italic;
     }
 
-    .duplicate-footer {
+    .save-footer {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -406,18 +388,11 @@
       flex-wrap: wrap;
     }
 
-    .duplicate-date {
+    .save-date {
       font-size: 11px;
       color: var(--ink-faint);
     }
 
-    .place-card-footer {
-      display: flex; align-items: center; justify-content: space-between;
-      padding-top: 12px; border-top: 1px solid var(--border); gap: 8px;
-      flex-wrap: wrap;
-      margin-top: auto;
-    }
-    .place-date { font-size: 11px; color: var(--ink-faint); }
     .place-source-btn {
       display: flex; align-items: center; gap: 4px;
       font-size: 11px; color: var(--ink-muted); text-decoration: none; font-weight: 500;
@@ -429,35 +404,20 @@
     }
     .place-source-btn:hover { background: var(--ink); color: var(--cream); }
 
-    /* ── MODAL ── */
-    .modal-backdrop {
-      position: fixed; inset: 0; background: rgba(26,23,20,0.5);
-      z-index: 500; display: flex; align-items: center; justify-content: center;
-      padding: 20px; opacity: 0; animation: fadeIn 0.2s ease forwards;
+    /* Divider between multiple save entries */
+    .save-entry + .save-entry {
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+      margin-top: 4px;
     }
-    .modal {
-      background: var(--warm-white); border-radius: var(--radius);
-      padding: 28px; max-width: 420px; width: 100%;
-      box-shadow: var(--shadow-lg);
-      transform: translateY(20px); animation: modalUp 0.25s ease forwards;
-    }
-    .modal-title {
-      font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 600;
-      margin-bottom: 16px; letter-spacing: -0.2px;
-    }
-    .modal-body { font-size: 14px; color: var(--ink-muted); margin-bottom: 20px; line-height: 1.6; }
-    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
 
-    /* move trip select */
-    .move-select {
-      width: 100%; border: 1px solid var(--sand); border-radius: var(--radius-sm);
-      padding: 10px 14px; font-family: 'DM Sans', sans-serif; font-size: 14px;
-      background: var(--cream); color: var(--ink); outline: none;
-      margin-bottom: 16px; cursor: pointer;
-      transition: border-color 0.2s;
-      min-height: 44px;
+    /* Wrapper for all save entries inside the card */
+    .place-saves {
+      display: flex;
+      flex-direction: column;
+      margin-top: auto;
+      padding-top: 4px;
     }
-    .move-select:focus { border-color: var(--accent); }
 
     /* ── EMPTY / LOADING ── */
     .empty-state {
@@ -561,58 +521,17 @@
       .device-input-wrap { flex-direction: column; }
       .device-input { width: 100%; min-width: unset; }
       .btn-load { width: 100%; }
-      .card-actions { opacity: 1; } /* always show on mobile */
+      .card-actions { opacity: 1; }
       
-      /* Mobile card improvements */
-      .place-card {
-        padding: 16px;
-      }
-      
-      .place-card-header {
-        flex-direction: column;
-        gap: 8px;
-      }
-
-      .place-map-btn {
-        width: 40px;
-        height: 40px;
-        font-size: 18px;
-      }
-
-      .card-action-btn {
-        width: 40px;
-        height: 40px;
-      }
-
-      .place-card-footer {
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      .place-source-btn {
-        width: 100%;
-        justify-content: center;
-        flex: 1;
-      }
-
-      .trip-tab {
-        font-size: 12px;
-        padding: 6px 14px;
-        min-height: 40px;
-      }
-
-      .filter-chip {
-        min-height: 40px;
-        font-size: 11px;
-      }
-
-      .places-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .device-hint {
-        font-size: 11px;
-      }
+      .place-card { padding: 16px; }
+      .place-card-header { flex-direction: column; gap: 8px; }
+      .place-map-btn { width: 40px; height: 40px; font-size: 18px; }
+      .card-action-btn { width: 40px; height: 40px; }
+      .place-source-btn { width: 100%; justify-content: center; flex: 1; }
+      .trip-tab { font-size: 12px; padding: 6px 14px; min-height: 40px; }
+      .filter-chip { min-height: 40px; font-size: 11px; }
+      .places-grid { grid-template-columns: 1fr; }
+      .device-hint { font-size: 11px; }
     }
 
     @media (max-width: 400px) {
@@ -623,6 +542,7 @@
       .place-map-btn { width: 36px; height: 36px; font-size: 16px; }
     }
   </style>
+
 </head>
 <body>
 
@@ -654,93 +574,95 @@
 
   <main>
 
-    <div class="how-section">
-      <div class="how-title">How TravelInDex works</div>
-      <div class="how-steps">
-        <div class="how-step">
-          <div class="how-step-num">📱</div>
-          <div><div class="how-step-label">See a great spot</div><div class="how-step-sub">On Instagram, TikTok, YouTube or anywhere</div></div>
-        </div>
-        <div class="how-step">
-          <div class="how-step-num">↗️</div>
-          <div><div class="how-step-label">Tap Share</div><div class="how-step-sub">Select the TravelInDex shortcut from the share sheet</div></div>
-        </div>
-        <div class="how-step">
-          <div class="how-step-num accent">✓</div>
-          <div><div class="how-step-label">Pick your trip</div><div class="how-step-sub">Choose a trip board — it's saved automatically</div></div>
-        </div>
-        <div class="how-step">
-          <div class="how-step-num">🗺️</div>
-          <div><div class="how-step-label">Browse here</div><div class="how-step-sub">All your saved places appear in this web app</div></div>
-        </div>
-      </div>
+```
+<div class="how-section">
+  <div class="how-title">How TravelInDex works</div>
+  <div class="how-steps">
+    <div class="how-step">
+      <div class="how-step-num">📱</div>
+      <div><div class="how-step-label">See a great spot</div><div class="how-step-sub">On Instagram, TikTok, YouTube or anywhere</div></div>
     </div>
-
-    <div class="shortcut-cta">
-      <div class="shortcut-cta-text">
-        <div class="shortcut-cta-eyebrow">Step 1 — Get started</div>
-        <div class="shortcut-cta-title">Install the iOS Shortcut 📲</div>
-        <div class="shortcut-cta-body">One tap to add. Then just use Share → TravelInDex whenever you see a place you want to save. No app needed during saving.</div>
-      </div>
-      <a href="https://www.icloud.com/shortcuts/0e3188c3e3194947b86c8c923891767f" target="_blank" class="btn-download">
-        <div class="btn-download-icon">⬇️</div>
-        Add to Shortcuts
-      </a>
+    <div class="how-step">
+      <div class="how-step-num">↗️</div>
+      <div><div class="how-step-label">Tap Share</div><div class="how-step-sub">Select the TravelInDex shortcut from the share sheet</div></div>
     </div>
-
-    <div class="device-bar">
-      <label>Your Device ID</label>
-      <div class="device-input-wrap">
-        <input type="text" class="device-input" id="deviceIdInput" placeholder="Enter the Device ID from your Shortcut…" />
-        <button class="btn-load" onclick="loadTrips()">Load My Saves</button>
-      </div>
-      <div class="device-hint">💡 Your Device ID is shown the first time you run the Shortcut — copy it here to browse your places.</div>
+    <div class="how-step">
+      <div class="how-step-num accent">✓</div>
+      <div><div class="how-step-label">Pick your trip</div><div class="how-step-sub">Choose a trip board — it's saved automatically</div></div>
     </div>
-
-    <div id="tripsSection" style="display:none;">
-      <div class="section-header" style="margin-bottom:16px;">
-        <div class="section-title">Trip Boards</div>
-        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-          <span class="section-count" id="tripCount"></span>
-          <button class="btn-load" style="padding:7px 14px;font-size:12px;min-height:40px;" onclick="showCreateTrip()">+ New Trip</button>
-        </div>
-      </div>
-
-      <div id="createTripBar" style="display:none;background:var(--warm-white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:16px;gap:10px;align-items:center;flex-wrap:wrap;">
-        <input type="text" id="newTripInput" class="device-input" placeholder="Trip name e.g. Japan 2026" style="flex:1;min-width:180px;" />
-        <button class="btn-load" onclick="doCreateTrip()">Create</button>
-        <button onclick="hideCreateTrip()" style="background:none;border:none;color:var(--ink-muted);cursor:pointer;font-size:13px;min-height:44px;">Cancel</button>
-      </div>
-
-      <div class="trip-tabs-wrap">
-        <div class="trip-tabs" id="tripTabs"></div>
-      </div>
-
-      <div class="filter-bar" id="filterBar">
-        <div class="filter-chip active" data-type="all" onclick="toggleFilter(this)"><span class="chip-icon">🌏</span> All</div>
-        <div class="filter-chip" data-type="restaurant" onclick="toggleFilter(this)"><span class="chip-icon">🍽️</span> Restaurants</div>
-        <div class="filter-chip" data-type="cafe" onclick="toggleFilter(this)"><span class="chip-icon">☕</span> Cafés</div>
-        <div class="filter-chip" data-type="attraction" onclick="toggleFilter(this)"><span class="chip-icon">🏛️</span> Attractions</div>
-        <div class="filter-chip" data-type="hotel" onclick="toggleFilter(this)"><span class="chip-icon">🏨</span> Hotels</div>
-      </div>
-
-      <div class="section-header">
-        <div class="section-title" id="placesTitle">All Places</div>
-        <span class="section-count" id="placesCount"></span>
-      </div>
-      <div class="places-grid" id="placesGrid"></div>
+    <div class="how-step">
+      <div class="how-step-num">🗺️</div>
+      <div><div class="how-step-label">Browse here</div><div class="how-step-sub">All your saved places appear in this web app</div></div>
     </div>
+  </div>
+</div>
 
-    <div class="spinner-wrap" id="loadingState" style="display:none;">
-      <div class="spinner"></div>
-      <div class="spinner-label">Loading your places…</div>
-    </div>
+<div class="shortcut-cta">
+  <div class="shortcut-cta-text">
+    <div class="shortcut-cta-eyebrow">Step 1 — Get started</div>
+    <div class="shortcut-cta-title">Install the iOS Shortcut 📲</div>
+    <div class="shortcut-cta-body">One tap to add. Then just use Share → TravelInDex whenever you see a place you want to save. No app needed during saving.</div>
+  </div>
+  <a href="https://www.icloud.com/shortcuts/0e3188c3e3194947b86c8c923891767f" target="_blank" class="btn-download">
+    <div class="btn-download-icon">⬇️</div>
+    Add to Shortcuts
+  </a>
+</div>
 
-    <div class="empty-state" id="emptyState">
-      <span class="empty-icon">🗺️</span>
-      <div class="empty-title">Your travel index starts here</div>
-      <div class="empty-body">Install the iOS Shortcut above, then enter your Device ID to browse all the places you've saved.</div>
+<div class="device-bar">
+  <label>Your Device ID</label>
+  <div class="device-input-wrap">
+    <input type="text" class="device-input" id="deviceIdInput" placeholder="Enter the Device ID from your Shortcut…" />
+    <button class="btn-load" onclick="loadTrips()">Load My Saves</button>
+  </div>
+  <div class="device-hint">💡 Your Device ID is shown the first time you run the Shortcut — copy it here to browse your places.</div>
+</div>
+
+<div id="tripsSection" style="display:none;">
+  <div class="section-header" style="margin-bottom:16px;">
+    <div class="section-title">Trip Boards</div>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <span class="section-count" id="tripCount"></span>
+      <button class="btn-load" style="padding:7px 14px;font-size:12px;min-height:40px;" onclick="showCreateTrip()">+ New Trip</button>
     </div>
+  </div>
+
+  <div id="createTripBar" style="display:none;background:var(--warm-white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:16px;gap:10px;align-items:center;flex-wrap:wrap;">
+    <input type="text" id="newTripInput" class="device-input" placeholder="Trip name e.g. Japan 2026" style="flex:1;min-width:180px;" />
+    <button class="btn-load" onclick="doCreateTrip()">Create</button>
+    <button onclick="hideCreateTrip()" style="background:none;border:none;color:var(--ink-muted);cursor:pointer;font-size:13px;min-height:44px;">Cancel</button>
+  </div>
+
+  <div class="trip-tabs-wrap">
+    <div class="trip-tabs" id="tripTabs"></div>
+  </div>
+
+  <div class="filter-bar" id="filterBar">
+    <div class="filter-chip active" data-type="all" onclick="toggleFilter(this)"><span class="chip-icon">🌏</span> All</div>
+    <div class="filter-chip" data-type="restaurant" onclick="toggleFilter(this)"><span class="chip-icon">🍽️</span> Restaurants</div>
+    <div class="filter-chip" data-type="cafe" onclick="toggleFilter(this)"><span class="chip-icon">☕</span> Cafés</div>
+    <div class="filter-chip" data-type="attraction" onclick="toggleFilter(this)"><span class="chip-icon">🏛️</span> Attractions</div>
+    <div class="filter-chip" data-type="hotel" onclick="toggleFilter(this)"><span class="chip-icon">🏨</span> Hotels</div>
+  </div>
+
+  <div class="section-header">
+    <div class="section-title" id="placesTitle">All Places</div>
+    <span class="section-count" id="placesCount"></span>
+  </div>
+  <div class="places-grid" id="placesGrid"></div>
+</div>
+
+<div class="spinner-wrap" id="loadingState" style="display:none;">
+  <div class="spinner"></div>
+  <div class="spinner-label">Loading your places…</div>
+</div>
+
+<div class="empty-state" id="emptyState">
+  <span class="empty-icon">🗺️</span>
+  <div class="empty-title">Your travel index starts here</div>
+  <div class="empty-body">Install the iOS Shortcut above, then enter your Device ID to browse all the places you've saved.</div>
+</div>
+```
 
   </main>
 
@@ -751,6 +673,7 @@
   <div class="toast" id="toast"></div>
 
   <!-- MODAL -->
+
   <div id="modalBackdrop" style="display:none;"></div>
 
   <script>
@@ -811,7 +734,6 @@
         if (!res.ok) throw new Error('Failed');
         trips = await res.json();
 
-        // Filter out the ➕ sentinel from the tab list — it's shortcut-only
         const realTrips = trips.filter(t => t !== '➕ New Trip');
 
         if (!realTrips.length) {
@@ -843,12 +765,10 @@
         btn.className = 'trip-tab' + (i === 0 ? ' active' : '');
         btn.dataset.trip = trip;
 
-        // Label span
         const label = document.createElement('span');
         label.textContent = trip;
         btn.appendChild(label);
 
-        // Action buttons
         const actions = document.createElement('span');
         actions.className = 'trip-tab-actions';
         actions.innerHTML = `
@@ -858,7 +778,6 @@
         btn.appendChild(actions);
 
         btn.onclick = async (e) => {
-          // Don't switch tab if clicking action buttons
           if (e.target.closest('.trip-tab-actions')) return;
           document.querySelectorAll('.trip-tab').forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
@@ -879,7 +798,6 @@
       const label = tab.querySelector('span:first-child');
       const originalName = tripName;
 
-      // Replace label with input
       const input = document.createElement('input');
       input.className = 'trip-tab-rename';
       input.value = originalName;
@@ -890,7 +808,6 @@
       async function commit() {
         const newName = input.value.trim();
         if (!newName || newName === originalName) {
-          // Restore label
           input.replaceWith(label);
           return;
         }
@@ -916,7 +833,6 @@
         showToast(`✅ Renamed to "${newName}"`);
         if (currentTrip === oldName) currentTrip = newName;
         await loadTrips();
-        // Re-select the renamed trip
         const deviceId2 = $('deviceIdInput').value.trim();
         document.querySelectorAll('.trip-tab').forEach(btn => {
           if (btn.dataset.trip === newName) {
@@ -993,46 +909,41 @@
         return;
       }
 
-      // Group places by location (name + country) to detect duplicates
+      // Group places by location (name + country) to merge duplicate saves
       const locationGroups = {};
       displayPlaces.forEach(place => {
         const locKey = `${place.name}|${place.country}`;
-        if (!locationGroups[locKey]) {
-          locationGroups[locKey] = [];
-        }
+        if (!locationGroups[locKey]) locationGroups[locKey] = [];
         locationGroups[locKey].push(place);
       });
 
-      // Render unique locations as cards
       grid.innerHTML = Object.entries(locationGroups).map(([locKey, places]) => {
         const mainPlace = places[0];
-        const duplicates = places.slice(1);
         const type = (mainPlace.type || 'place').toLowerCase();
         const emoji = typeEmoji[type] || '📍';
         const badge = typeBadge[type] || 'badge-default';
         const loc = [mainPlace.city, mainPlace.country].filter(Boolean).join(', ') || 'Location unknown';
-        const dateStr = formatDate(mainPlace.created_at);
-        const summary = mainPlace.summary || '';
         const mapsUrl = mainPlace.maps_url || '';
         const placeId = mainPlace.id || '';
 
-        // Build duplicate entries HTML
-        let duplicatesHtml = '';
-        if (duplicates.length > 0) {
-          duplicatesHtml = `
-            <div class="place-duplicates">
-              ${duplicates.map(dup => `
-                <div class="duplicate-entry">
-                  ${dup.summary ? `<div class="duplicate-caption">${escHtml(dup.summary)}</div>` : ''}
-                  <div class="duplicate-footer">
-                    <span class="duplicate-date">${formatDate(dup.created_at)}</span>
-                    ${dup.source_url ? `<a class="place-source-btn" href="${escHtml(dup.source_url)}" target="_blank" rel="noopener">View ↗</a>` : ''}
-                  </div>
-                </div>
-              `).join('')}
-            </div>
-          `;
-        }
+        // Build one save-entry per grouped place (all saves for this location)
+        const savesHtml = places.map(place => {
+          const dateStr = formatDate(place.created_at);
+          const viewBtn = place.source_url
+            ? `<a class="place-source-btn" href="${escHtml(place.source_url)}" target="_blank" rel="noopener">View ↗</a>`
+            : '';
+          const caption = place.summary
+            ? `<div class="save-summary">${escHtml(place.summary)}</div>`
+            : '';
+          return `
+            <div class="save-entry">
+              ${caption}
+              <div class="save-footer">
+                <span class="save-date">${dateStr}</span>
+                ${viewBtn}
+              </div>
+            </div>`;
+        }).join('');
 
         return `
           <div class="place-card" data-type="${type}" data-id="${escHtml(placeId)}" style="animation: fadeUp 0.4s ease both;">
@@ -1040,7 +951,7 @@
               <button class="card-action-btn move" title="Move to another trip" onclick="showMoveCard('${escHtml(placeId)}', '${escHtml(mainPlace.name || '')}')">↗️</button>
               <button class="card-action-btn delete" title="Delete place" onclick="confirmDeleteCard('${escHtml(placeId)}', '${escHtml(mainPlace.name || '')}')">🗑️</button>
             </div>
-            
+
             <div class="place-card-header">
               <div class="place-card-title">
                 <div class="place-name">${escHtml(mainPlace.name || 'Unnamed place')}</div>
@@ -1056,14 +967,7 @@
               ${mapsUrl ? `<a class="place-map-btn" href="${escHtml(mapsUrl)}" target="_blank" rel="noopener" title="Open in Maps">📍</a>` : ''}
             </div>
 
-            ${summary ? `<div class="place-summary">${escHtml(summary)}</div>` : ''}
-            
-            ${duplicatesHtml}
-
-            <div class="place-card-footer">
-              <span class="place-date">${dateStr}</span>
-              ${mainPlace.source_url ? `<a class="place-source-btn" href="${escHtml(mainPlace.source_url)}" target="_blank" rel="noopener">View ↗</a>` : ''}
-            </div>
+            <div class="place-saves">${savesHtml}</div>
           </div>`;
       }).join('');
 
@@ -1188,5 +1092,6 @@
       $('newTripInput').addEventListener('keydown', e => { if (e.key === 'Enter') doCreateTrip(); });
     });
   </script>
+
 </body>
 </html>
