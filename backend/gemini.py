@@ -225,7 +225,7 @@ async def extract_places(text: str) -> List[Dict]:
             "responseMimeType": "application/json",
         },
         },
-    }
+    
 
     async with httpx.AsyncClient(timeout=30) as client:
 
