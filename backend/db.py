@@ -91,3 +91,23 @@ async def create_trip(trip_id: str, device_id: str) -> Dict:
         "maps_url": "",
     }).execute()
     return result.data[0] if result.data else {}
+
+async def rename_trip_db(old_trip_id: str, new_trip_id: str, device_id: str):
+    db = get_client()
+    db.table("places").update({"trip_id": new_trip_id}) \
+      .eq("trip_id", old_trip_id).eq("device_id", device_id).execute()
+
+async def delete_trip_db(trip_id: str, device_id: str):
+    db = get_client()
+    db.table("places").delete() \
+      .eq("trip_id", trip_id).eq("device_id", device_id).execute()
+
+async def delete_place_db(place_id: str, device_id: str):
+    db = get_client()
+    db.table("places").delete() \
+      .eq("id", place_id).eq("device_id", device_id).execute()
+
+async def move_place_db(place_id: str, new_trip_id: str, device_id: str):
+    db = get_client()
+    db.table("places").update({"trip_id": new_trip_id}) \
+      .eq("id", place_id).eq("device_id", device_id).execute()
