@@ -58,11 +58,10 @@ async def save(request: Request):
 
     # Handle "New Trip" sentinel — don't save, just return the create URL
     if trip_id in ("__new__", "➕ New Trip"):
-        return {
-            "saved": 0,
-            "message": "Tap the link to create a trip first, then re-share 👇",
-            "url": f"https://travelin-dex.vercel.app/?action=create&device_id={device_id}"
-        }
+        from datetime import datetime
+        trip_id = f"My Trip {datetime.now().strftime('%b %Y')}"
+        await create_trip(trip_id=trip_id, device_id=device_id)
+        # fall through — trip_id is now a real name, saving continues below
 
     content = text or url or ""
     places = await extract_places(content)
