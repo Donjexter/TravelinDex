@@ -101,11 +101,13 @@ async def get_trip(trip_id: str, device_id: str = Query(...)):
 async def get_trips(device_id: str):
     trips = await get_trips_by_device(device_id=device_id)
 
-    # Always append the "New Trip" option so the shortcut picker is never empty
-    trips.append({"id": "__new__", "name": "➕ New Trip"})
+    # Extract just the names as a flat list
+    names = [t["name"] for t in trips]
 
-    return trips
+    # Append the sentinel as a plain string
+    names.append("➕ New Trip")
 
+    return names
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
