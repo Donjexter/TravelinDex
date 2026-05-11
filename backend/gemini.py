@@ -37,20 +37,19 @@ Rules:
 
 Format:
 [
-  {
+  {{
     "name": "Place Name",
     "city": "City",
     "country": "Country",
     "type": "restaurant|cafe|attraction|hotel",
     "summary": "Short specific reason to visit",
     "maps_query": "Place Name City Country"
-  }
+  }}
 ]
 
 CONTENT:
 {input}
 """
-
 # -----------------------------
 # INSTAGRAM SCRAPER SETUP
 # -----------------------------
