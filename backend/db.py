@@ -34,6 +34,8 @@ async def save_places(
             "type": p.get("type", "attraction"),
             "source_url": source_url or "",
             "device_id": device_id,
+            "summary": p.get("summary", ""),
+            "maps_url": p.get("maps_url", ""),
         }
         for p in places
     ]
@@ -73,3 +75,19 @@ async def get_trips_by_device(device_id: str) -> List[str]:
             seen.add(t)
             trips.append(t)
     return sorted(trips)
+
+
+async def create_trip(trip_id: str, device_id: str) -> Dict:
+    """Create an empty trip by inserting a placeholder row."""
+    db = get_client()
+    result = db.table("places").insert({
+        "trip_id": trip_id,
+        "name": "__trip_created__",
+        "city": "", "country": "",
+        "type": "system",
+        "source_url": "",
+        "device_id": device_id,
+        "summary": "",
+        "maps_url": "",
+    }).execute()
+    return result.data[0] if result.data else {}
