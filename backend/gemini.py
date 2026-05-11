@@ -3,6 +3,8 @@ import json
 import httpx
 from typing import List, Dict
 from urllib.parse import quote_plus
+import re
+import instaloader
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GEMINI_URL = (
@@ -10,52 +12,106 @@ GEMINI_URL = (
     "gemini-2.5-flash:generateContent"
 )
 
-PROMPT_TEMPLATE = """You are a travel assistant. Extract travel locations from the content below.
+PROMPT_TEMPLATE = """You are a travel assistant.
 
-Return ONLY a valid JSON array. No markdown, no explanation, no preamble.
+Extract ONLY real travel-related places explicitly mentioned in the content.
+
+Prioritize:
+1. Tagged locations
+2. Restaurants
+3. Cafes
+4. Hotels
+5. Attractions
+
+Rules:
+- Only include places clearly mentioned
+- Do not infer unnamed locations
+- Ignore vague references
+- summary max 20 words
+- Return ONLY valid JSON
+- If no places found, return []
 
 Format:
 [
-  {{
+  {
     "name": "Place Name",
     "city": "City",
     "country": "Country",
     "type": "restaurant|cafe|attraction|hotel",
-    "summary": "One compelling sentence about why this place is worth visiting, max 20 words",
+    "summary": "Short specific reason to visit",
     "maps_query": "Place Name City Country"
-  }}
+  }
 ]
 
-Rules:
-- Only include real, identifiable places
-- summary must be specific and useful, not generic
-- maps_query should be the best search string to find this on Google Maps
-- If no places found, return: []
-
 CONTENT:
-{input}"""
+{input}
+"""
 
+L = instaloader.Instaloader(
+    download_pictures=False,
+    download_videos=False,
+    download_video_thumbnails=False,
+    save_metadata=False,
+    compress_json=False,
+)
 
-FACEBOOK_TOKEN = os.getenv("1971481300174118|kmQNkM2g080YILdzyEaSGIJNYQU")
+def extract_shortcode(url: str) -> str:
+    """
+    Extract Instagram shortcode from URL.
+    Example:
+    https://www.instagram.com/p/ABC123/
+    -> ABC123
+    """
+    match = re.search(r"/(?:p|reel)/([^/?]+)/", url)
+
+    if not match:
+        raise ValueError("Invalid Instagram URL")
+
+    return match.group(1)
+
 
 async def fetch_instagram_caption(url: str) -> str:
-    """Fetch Instagram post caption via oEmbed API."""
+    """
+    Fetch Instagram caption and location using Instaloader.
+    """
+
     try:
-        oembed_url = (
-            f"https://graph.facebook.com/v18.0/instagram_oembed"
-            f"?url={url}&access_token={FACEBOOK_TOKEN}&fields=author_name,title"
+        shortcode = extract_shortcode(url)
+
+        post = instaloader.Post.from_shortcode(
+            L.context,
+            shortcode
         )
-        async with httpx.AsyncClient(timeout=10) as client:
-            resp = await client.get(oembed_url)
-            if resp.status_code == 200:
-                data = resp.json()
-                title = data.get("title", "")
-                author = data.get("author_name", "")
-                if title:
-                    return f"Instagram post by {author}: {title}"
-    except Exception:
-        pass
-    return url
+
+        caption = post.caption or ""
+
+        location = ""
+
+        if post.location:
+            location = f"""
+Location:
+Name: {post.location.name}
+Slug: {post.location.slug}
+"""
+
+        hashtags = " ".join(post.caption_hashtags)
+
+        return f"""
+Instagram Post
+
+Caption:
+{caption}
+
+Hashtags:
+{hashtags}
+
+{location}
+"""
+
+    except Exception as e:
+        print(f"Instagram scraping failed: {e}")
+
+        return url
 
 
 async def fetch_url_content(url: str) -> str:
@@ -80,10 +136,16 @@ async def extract_places(text: str) -> List[Dict]:
 
     # If input looks like a URL, try to fetch its content first
     content = text
+    
     if text.strip().startswith("http"):
         fetched = await fetch_url_content(text.strip())
+    
         if fetched != text:
-            content = f"URL: {text}\n\nPage content: {fetched}"
+            content = f"URL: {text}\n\nPage content:\n{fetched}"
+    
+    print("\n========== CONTENT SENT TO GEMINI ==========\n")
+    print(content)
+    print("\n===========================================\n")
 
     payload = {
         "contents": [
