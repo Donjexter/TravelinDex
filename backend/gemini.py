@@ -184,22 +184,15 @@ async def fetch_url_content(url: str) -> str:
 
 
 async def extract_places(text: str) -> List[Dict]:
-    """
-    Extract structured travel places using Gemini.
-    """
 
     if not GEMINI_API_KEY:
         raise RuntimeError("GEMINI_API_KEY not set")
 
     content = text
 
-    # If input is URL, fetch content first
+    # If URL → fetch first
     if text.strip().startswith("http"):
-
-        fetched = await fetch_url_content(
-            text.strip()
-        )
-
+        fetched = await fetch_url_content(text.strip())
         if fetched:
             content = fetched
 
@@ -221,21 +214,17 @@ async def extract_places(text: str) -> List[Dict]:
         ],
         "generationConfig": {
             "temperature": 0,
-            "maxOutputTokens": 2048,
-            "responseMimeType": "application/json",
-        },
-        },
-    
+            "maxOutputTokens": 2048
+        }
+    }
 
     async with httpx.AsyncClient(timeout=30) as client:
-
         resp = await client.post(
             f"{GEMINI_URL}?key={GEMINI_API_KEY}",
             json=payload,
         )
 
         resp.raise_for_status()
-
         data = resp.json()
 
     raw = (
@@ -249,102 +238,71 @@ async def extract_places(text: str) -> List[Dict]:
     print(raw)
     print("\n=======================================\n")
 
-    # Remove markdown wrapping if Gemini adds it
-    if raw.startswith("```"):
+    # ---------------- CLEAN JSON ----------------
 
-        raw = raw.split("```")[1]
+    def clean_json(r: str) -> str:
+        r = r.strip()
 
-        if raw.startswith("json"):
-            raw = raw[4:]
+        if r.startswith("```"):
+            parts = r.split("```")
+            r = parts[1] if len(parts) > 1 else r
 
-        raw = raw.strip()
+            if r.startswith("json"):
+                r = r[4:]
+
+        return r.strip()
+
+    places = []
 
     try:
-    
-        # Remove markdown code blocks
-        if raw.startswith("```"):
-    
-            raw = raw.split("```")[1]
-    
-            if raw.startswith("json"):
-                raw = raw[4:]
-    
-            raw = raw.strip()
-    
-        # Try direct parse
-        places = json.loads(raw)
-    
+        cleaned_raw = clean_json(raw)
+        places = json.loads(cleaned_raw)
+
     except json.JSONDecodeError:
-    
-        print("Initial JSON parse failed.")
-    
-        # Attempt recovery
+        print("Primary JSON parse failed. Trying recovery...")
+
         try:
-    
-            # Find first complete JSON array
             start = raw.find("[")
             end = raw.rfind("]")
-    
+
             if start != -1 and end != -1:
-                recovered = raw[start:end + 1]
-    
-                places = json.loads(recovered)
-    
+                places = json.loads(raw[start:end + 1])
             else:
                 return []
-    
+
         except Exception as e:
-    
-            print(f"Recovery parse failed: {e}")
-    
+            print(f"Recovery failed: {e}")
             return []
 
-        if not isinstance(places, list):
-            return []
+    if not isinstance(places, list):
+        return []
 
-        cleaned = []
+    cleaned = []
 
-        for p in places:
+    for p in places:
 
-            if isinstance(p, dict) and p.get("name"):
+        if isinstance(p, dict) and p.get("name"):
 
-                maps_query = (
-                    p.get("maps_query")
-                    or f"{p.get('name', '')} "
-                       f"{p.get('city', '')} "
-                       f"{p.get('country', '')}"
-                ).strip()
+            maps_query = (
+                p.get("maps_query")
+                or f"{p.get('name','')} {p.get('city','')} {p.get('country','')}"
+            ).strip()
 
-                maps_url = (
-                    "https://www.google.com/maps/search/"
-                    f"?api=1&query={quote_plus(maps_query)}"
-                )
+            maps_url = (
+                "https://www.google.com/maps/search/?api=1&query="
+                + quote_plus(maps_query)
+            )
 
-                cleaned.append({
-                    "name": str(
-                        p.get("name", "")
-                    ).strip(),
+            cleaned.append({
+                "name": str(p.get("name", "")).strip(),
+                "city": str(p.get("city", "")).strip(),
+                "country": str(p.get("country", "")).strip(),
+                "type": str(p.get("type", "attraction")).strip().lower(),
+                "summary": str(p.get("summary", "")).strip(),
+                "maps_url": maps_url,
+            })
 
-                    "city": str(
-                        p.get("city", "")
-                    ).strip(),
-
-                    "country": str(
-                        p.get("country", "")
-                    ).strip(),
-
-                    "type": str(
-                        p.get("type", "attraction")
-                    ).strip().lower(),
-
-                    "summary": str(
-                        p.get("summary", "")
-                    ).strip(),
-
-                    "maps_url": maps_url,
-                })
-
-        return cleaned
+    return cleaned
 
     except json.JSONDecodeError as e:
 
