@@ -99,3 +99,36 @@ async def get_trips(device_id: str):
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+class RenameRequest(BaseModel):
+    old_trip_id: str
+    new_trip_id: str
+    device_id: str
+
+class DeleteTripRequest(BaseModel):
+    trip_id: str
+    device_id: str
+
+class MoveRequest(BaseModel):
+    new_trip_id: str
+    device_id: str
+
+@app.post("/trips/rename")
+async def rename_trip(req: RenameRequest):
+    await rename_trip_db(req.old_trip_id, req.new_trip_id, req.device_id)
+    return {"renamed": True}
+
+@app.post("/trips/delete")
+async def delete_trip(req: DeleteTripRequest):
+    await delete_trip_db(req.trip_id, req.device_id)
+    return {"deleted": True}
+
+@app.delete("/places/{place_id}")
+async def delete_place(place_id: str, request: Request):
+    data = await request.json()
+    await delete_place_db(place_id, data["device_id"])
+    return {"deleted": True}
+
+@app.post("/places/{place_id}/move")
+async def move_place(place_id: str, req: MoveRequest):
+    await move_place_db(place_id, req.new_trip_id, req.device_id)
+    return {"moved": True}
