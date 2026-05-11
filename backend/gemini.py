@@ -2,6 +2,7 @@ import os
 import json
 import httpx
 from typing import List, Dict
+from urllib.parse import quote_plus
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GEMINI_URL = (
@@ -9,42 +10,70 @@ GEMINI_URL = (
     "gemini-2.5-flash:generateContent"
 )
 
-PROMPT_TEMPLATE = """Extract travel locations from the text below.
+PROMPT_TEMPLATE = """You are a travel assistant. Extract travel locations from the content below.
 
 Return ONLY a valid JSON array. No markdown, no explanation, no preamble.
 
 Format:
 [
-  {{"name": "Place Name", "city": "City", "country": "Country", "type": "restaurant|cafe|attraction|hotel"}}
+  {{
+    "name": "Place Name",
+    "city": "City",
+    "country": "Country",
+    "type": "restaurant|cafe|attraction|hotel",
+    "summary": "One compelling sentence about why this place is worth visiting, max 20 words",
+    "maps_query": "Place Name City Country"
+  }}
 ]
 
 Rules:
-- Ignore emojis, hashtags, and irrelevant text
 - Only include real, identifiable places
+- summary must be specific and useful, not generic
+- maps_query should be the best search string to find this on Google Maps
 - If no places found, return: []
 
-TEXT:
+CONTENT:
 {input}"""
 
 
+async def fetch_url_content(url: str) -> str:
+    """Try to fetch readable content from a URL."""
+    try:
+        async with httpx.AsyncClient(timeout=10, follow_redirects=True) as client:
+            headers = {"User-Agent": "Mozilla/5.0 (compatible; TravelInDex/1.0)"}
+            resp = await client.get(url, headers=headers)
+            if resp.status_code == 200:
+                return resp.text[:3000]
+    except Exception:
+        pass
+    return url
+
+
 async def extract_places(text: str) -> List[Dict]:
-    """Call Gemini 1.5 Flash to extract structured travel locations."""
+    """Call Gemini 2.5 Flash to extract structured travel locations."""
     if not GEMINI_API_KEY:
         raise RuntimeError("GEMINI_API_KEY not set")
+
+    # If input looks like a URL, try to fetch its content first
+    content = text
+    if text.strip().startswith("http"):
+        fetched = await fetch_url_content(text.strip())
+        if fetched != text:
+            content = f"URL: {text}\n\nPage content: {fetched}"
 
     payload = {
         "contents": [
             {
-                "parts": [{"text": PROMPT_TEMPLATE.format(input=text[:4000])}]
+                "parts": [{"text": PROMPT_TEMPLATE.format(input=content[:4000])}]
             }
         ],
         "generationConfig": {
-            "temperature": 0.1,
-            "maxOutputTokens": 512,
+            "temperature": 0.2,
+            "maxOutputTokens": 1024,
         },
     }
 
-    async with httpx.AsyncClient(timeout=20) as client:
+    async with httpx.AsyncClient(timeout=30) as client:
         resp = await client.post(
             f"{GEMINI_URL}?key={GEMINI_API_KEY}",
             json=payload,
@@ -54,7 +83,6 @@ async def extract_places(text: str) -> List[Dict]:
 
     raw = data["candidates"][0]["content"]["parts"][0]["text"].strip()
 
-    # Strip markdown fences if present
     if raw.startswith("```"):
         raw = raw.split("```")[1]
         if raw.startswith("json"):
@@ -65,15 +93,18 @@ async def extract_places(text: str) -> List[Dict]:
         places = json.loads(raw)
         if not isinstance(places, list):
             return []
-        # Validate + clean each entry
         cleaned = []
         for p in places:
             if isinstance(p, dict) and p.get("name"):
+                maps_query = p.get("maps_query") or f"{p.get('name', '')} {p.get('city', '')} {p.get('country', '')}".strip()
+                maps_url = f"https://www.google.com/maps/search/?api=1&query={quote_plus(maps_query)}"
                 cleaned.append({
                     "name": str(p.get("name", "")).strip(),
                     "city": str(p.get("city", "")).strip(),
                     "country": str(p.get("country", "")).strip(),
                     "type": str(p.get("type", "attraction")).strip().lower(),
+                    "summary": str(p.get("summary", "")).strip(),
+                    "maps_url": maps_url,
                 })
         return cleaned
     except json.JSONDecodeError:
