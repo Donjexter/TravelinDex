@@ -5,7 +5,6 @@ from typing import Optional
 import uvicorn
 import logging
 import json
-
 from db import save_places, get_places_by_trip, get_trips_by_device, create_trip
 from gemini import extract_places
 
@@ -21,13 +20,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 class SaveRequest(BaseModel):
     text: Optional[str] = None
     url: Optional[str] = None
     trip_id: str
     device_id: str
-
 
 class CreateTripRequest(BaseModel):
     trip_id: str
@@ -65,6 +62,14 @@ async def save(request: Request):
     if not trip_id or not device_id:
         raise HTTPException(status_code=422, detail="Missing trip_id or device_id")
 
+    # Handle "New Trip" sentinel — don't save, just return the create URL
+    if trip_id in ("__new__", "➕ New Trip"):
+        return {
+            "saved": 0,
+            "message": "Tap the link to create a trip first, then re-share 👇",
+            "url": f"https://travelin-dex.vercel.app/?action=create&device_id={device_id}"
+        }
+
     content = text or url or ""
     places = await extract_places(content)
 
@@ -95,6 +100,10 @@ async def get_trip(trip_id: str, device_id: str = Query(...)):
 @app.get("/trips/{device_id}")
 async def get_trips(device_id: str):
     trips = await get_trips_by_device(device_id=device_id)
+
+    # Always append the "New Trip" option so the shortcut picker is never empty
+    trips.append({"id": "__new__", "name": "➕ New Trip"})
+
     return trips
 
 
