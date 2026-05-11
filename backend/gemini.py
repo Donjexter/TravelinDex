@@ -36,8 +36,32 @@ CONTENT:
 {input}"""
 
 
+FACEBOOK_TOKEN = os.getenv("1971481300174118|kmQNkM2g080YILdzyEaSGIJNYQU")
+
+async def fetch_instagram_caption(url: str) -> str:
+    """Fetch Instagram post caption via oEmbed API."""
+    try:
+        oembed_url = (
+            f"https://graph.facebook.com/v18.0/instagram_oembed"
+            f"?url={url}&access_token={FACEBOOK_TOKEN}&fields=author_name,title"
+        )
+        async with httpx.AsyncClient(timeout=10) as client:
+            resp = await client.get(oembed_url)
+            if resp.status_code == 200:
+                data = resp.json()
+                title = data.get("title", "")
+                author = data.get("author_name", "")
+                if title:
+                    return f"Instagram post by {author}: {title}"
+    except Exception:
+        pass
+    return url
+
+
 async def fetch_url_content(url: str) -> str:
-    """Try to fetch readable content from a URL."""
+    """Fetch content from URL — uses oEmbed for Instagram."""
+    if "instagram.com" in url:
+        return await fetch_instagram_caption(url)
     try:
         async with httpx.AsyncClient(timeout=10, follow_redirects=True) as client:
             headers = {"User-Agent": "Mozilla/5.0 (compatible; TravelInDex/1.0)"}
