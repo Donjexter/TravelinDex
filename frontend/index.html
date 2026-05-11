@@ -440,7 +440,7 @@
       border-radius: 100px;
       font-size: 11px;
       font-weight: 500;
-      text-transform: ctalize;
+      text-transform: capitalize;
       letter-spacing: 0.2px;
       flex-shrink: 0;
     }
@@ -879,7 +879,16 @@
     <div id="tripsSection" style="display:none;">
       <div class="section-header" style="margin-bottom:16px;">
         <div class="section-title">Trip Boards</div>
-        <span class="section-count" id="tripCount"></span>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="section-count" id="tripCount"></span>
+          <button class="btn-load" style="padding:7px 14px;font-size:12px;" onclick="showCreateTrip()">+ New Trip</button>
+        </div>
+      </div>
+      <!-- CREATE TRIP MODAL -->
+      <div id="createTripBar" style="display:none;background:var(--warm-white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:16px;display:none;gap:10px;align-items:center;flex-wrap:wrap;">
+        <input type="text" id="newTripInput" class="device-input" placeholder="Trip name e.g. Japan 2026" style="flex:1;min-width:180px;" />
+        <button class="btn-load" onclick="doCreateTrip()">Create</button>
+        <button onclick="hideCreateTrip()" style="background:none;border:none;color:var(--ink-muted);cursor:pointer;font-size:13px;">Cancel</button>
       </div>
       <div class="trip-tabs-wrap">
         <div class="trip-tabs" id="tripTabs"></div>
@@ -934,7 +943,7 @@
 
   <script>
     // ─── CONFIG ───────────────────────────────────────────────────────────────
-    const API_BASE = 'https://travelindex-2ykv.onrender.com' // ← replace with your Render URL
+    const API_BASE = 'https://travelindex-2ykv.onrender.com';
 
     // ─── STATE ────────────────────────────────────────────────────────────────
     let allPlaces = [];
@@ -1062,15 +1071,19 @@
         return;
       }
 
-      grid.innerHTML = filtered.map(place => {
+      const displayPlaces = filtered.filter(p => p.name !== '__trip_created__');
+
+      grid.innerHTML = displayPlaces.map(place => {
         const type = (place.type || 'place').toLowerCase();
         const emoji = typeEmoji[type] || '📍';
         const badge = typeBadge[type] || 'badge-default';
         const loc = [place.city, place.country].filter(Boolean).join(', ') || 'Location unknown';
         const dateStr = formatDate(place.created_at);
+        const summary = place.summary || '';
+        const mapsUrl = place.maps_url || '';
 
         return `
-          <div class="place-card" data-type="${type}" style="animation: fadeUp 0.4s ease both;" >
+          <div class="place-card" data-type="${type}" style="animation: fadeUp 0.4s ease both;">
             <div class="place-card-top">
               <div class="place-name">${escHtml(place.name || 'Unnamed place')}</div>
               <span class="place-type-badge ${badge}">${emoji} ${type}</span>
@@ -1082,11 +1095,17 @@
               </svg>
               ${escHtml(loc)}
             </div>
+            ${summary ? `<div style="font-size:13px;color:var(--ink-soft);line-height:1.5;margin-bottom:10px;font-style:italic;">${escHtml(summary)}</div>` : ''}
             <div class="place-card-footer">
               <span class="place-date">${dateStr}</span>
-              ${place.source_url ? `<a class="place-source-btn" href="${escHtml(place.source_url)}" target="_blank" rel="noopener">
-                View source ↗
-              </a>` : ''}
+              <div style="display:flex;gap:6px;">
+                ${mapsUrl ? `<a class="place-source-btn" href="${escHtml(mapsUrl)}" target="_blank" rel="noopener" style="background:var(--green-pale);color:var(--green);">
+                  📍 Maps
+                </a>` : ''}
+                ${place.source_url ? `<a class="place-source-btn" href="${escHtml(place.source_url)}" target="_blank" rel="noopener">
+                  View ↗
+                </a>` : ''}
+              </div>
             </div>
           </div>`;
       }).join('');
@@ -1108,6 +1127,39 @@
     // ─── UTILS ────────────────────────────────────────────────────────────────
     function escHtml(s) {
       return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // ─── CREATE TRIP ──────────────────────────────────────────────────────────
+    function showCreateTrip() {
+      const bar = $('createTripBar');
+      bar.style.display = 'flex';
+      $('newTripInput').focus();
+    }
+
+    function hideCreateTrip() {
+      $('createTripBar').style.display = 'none';
+      $('newTripInput').value = '';
+    }
+
+    async function doCreateTrip() {
+      const name = $('newTripInput').value.trim();
+      const deviceId = $('deviceIdInput').value.trim();
+      if (!name) { showToast('Enter a trip name'); return; }
+      if (!deviceId) { showToast('Load your saves first'); return; }
+
+      try {
+        const res = await fetch(`${API_BASE}/trips/create`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ trip_id: name, device_id: deviceId })
+        });
+        if (!res.ok) throw new Error();
+        hideCreateTrip();
+        showToast(`✅ "${name}" created!`);
+        await loadTrips();
+      } catch {
+        showToast('❌ Failed to create trip');
+      }
     }
 
     // ─── INIT ─────────────────────────────────────────────────────────────────
