@@ -20,12 +20,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-class SaveRequest(BaseModel):
-    text: Optional[str] = None
-    url: Optional[str] = None
-    trip_id: str
-    device_id: str
-
 class CreateTripRequest(BaseModel):
     trip_id: str
     device_id: str
@@ -100,14 +94,9 @@ async def get_trip(trip_id: str, device_id: str = Query(...)):
 @app.get("/trips/{device_id}")
 async def get_trips(device_id: str):
     trips = await get_trips_by_device(device_id=device_id)
+    trips.append("➕ New Trip")
+    return trips
 
-    # Extract just the names as a flat list
-    names = [t["name"] for t in trips]
-
-    # Append the sentinel as a plain string
-    names.append("➕ New Trip")
-
-    return names
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
