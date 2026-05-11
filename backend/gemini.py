@@ -54,6 +54,7 @@ Format:
 CONTENT:
 {input}
 """
+
 # -----------------------------
 # INSTAGRAM SCRAPER SETUP
 # -----------------------------
@@ -66,24 +67,8 @@ L = instaloader.Instaloader(
     compress_json=False,
 )
 
-# Optional future login if Instagram rate-limits
-# L.login("username", "password")
-
-
 def extract_shortcode(url: str) -> str:
-    """
-    Extract shortcode from Instagram URL.
-
-    Supports:
-    /p/
-    /reel/
-    /tv/
-    """
-
-    match = re.search(
-        r"/(?:p|reel|tv)/([^/?#&]+)",
-        url
-    )
+    match = re.search(r"/(?:p|reel|tv)/([^/?#&]+)", url)
 
     if not match:
         raise ValueError("Invalid Instagram URL")
@@ -92,12 +77,7 @@ def extract_shortcode(url: str) -> str:
 
 
 async def fetch_instagram_caption(url: str) -> str:
-    """
-    Fetch Instagram caption + metadata using Instaloader.
-    """
-
     try:
-        # Small delay to reduce rate limiting
         await asyncio.sleep(random.uniform(1, 2))
 
         shortcode = extract_shortcode(url)
@@ -109,11 +89,9 @@ async def fetch_instagram_caption(url: str) -> str:
         )
 
         caption = post.caption or ""
-
         hashtags = " ".join(post.caption_hashtags)
 
         location = "None"
-
         if post.location:
             location = f"""
 Name: {post.location.name}
@@ -151,25 +129,13 @@ Tagged Location:
 
 
 async def fetch_url_content(url: str) -> str:
-    """
-    Fetch content from URL.
-    Uses specialized Instagram scraper for Instagram links.
-    """
-
     if "instagram.com" in url:
         return await fetch_instagram_caption(url)
 
     try:
-        async with httpx.AsyncClient(
-            timeout=10,
-            follow_redirects=True
-        ) as client:
-
+        async with httpx.AsyncClient(timeout=10, follow_redirects=True) as client:
             headers = {
-                "User-Agent": (
-                    "Mozilla/5.0 "
-                    "(compatible; TravelInDex/1.0)"
-                )
+                "User-Agent": "Mozilla/5.0 (compatible; TravelInDex/1.0)"
             }
 
             resp = await client.get(url, headers=headers)
@@ -190,7 +156,6 @@ async def extract_places(text: str) -> List[Dict]:
 
     content = text
 
-    # If URL → fetch first
     if text.strip().startswith("http"):
         fetched = await fetch_url_content(text.strip())
         if fetched:
@@ -280,7 +245,6 @@ async def extract_places(text: str) -> List[Dict]:
     cleaned = []
 
     for p in places:
-
         if isinstance(p, dict) and p.get("name"):
 
             maps_query = (
@@ -303,9 +267,3 @@ async def extract_places(text: str) -> List[Dict]:
             })
 
     return cleaned
-
-    except json.JSONDecodeError as e:
-
-        print(f"JSON parse failed: {e}")
-
-        return []
