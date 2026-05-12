@@ -111,3 +111,38 @@ async def move_place_db(place_id: str, new_trip_id: str, device_id: str):
     db = get_client()
     db.table("places").update({"trip_id": new_trip_id}) \
       .eq("id", place_id).eq("device_id", device_id).execute()
+
+def update_place_db(place_id, device_id, updates):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    allowed_fields = ["name", "city", "country", "type", "summary"]
+
+    set_parts = []
+    values = []
+
+    for field in allowed_fields:
+        if field in updates:
+            set_parts.append(f"{field} = %s")
+            values.append(updates[field])
+
+    if not set_parts:
+        conn.close()
+        return False
+
+    values.extend([place_id, device_id])
+
+    query = f"""
+        UPDATE places
+        SET {", ".join(set_parts)}
+        WHERE id = %s
+        AND device_id = %s
+    """
+
+    cur.execute(query, values)
+    conn.commit()
+
+    updated = cur.rowcount > 0
+
+    conn.close()
+    return updated
