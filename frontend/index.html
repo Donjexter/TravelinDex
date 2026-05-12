@@ -1106,91 +1106,178 @@
     // ─── EDIT CARD ────────────────────────────────────────────────────────
     function showEditCard(placeId) {
       const place = allPlaces.find(p => String(p.id) === String(placeId));
-      if (!place) { showToast('Place not found'); return; }
-
+      if (!place) {
+        showToast('Place not found');
+        return;
+      }
+    
       const allTypes = getAllTypes();
       const currentTypeId = (place.type || '').toLowerCase();
-
+    
       const typeOptionsHtml = allTypes.map(t => `
-        <div class="type-option${currentTypeId === t.id ? ' selected' : ''}" data-type-id="${escHtml(t.id)}" onclick="selectTypeOption(this)">
+        <div class="type-option${currentTypeId === t.id ? ' selected' : ''}"
+             data-type-id="${escHtml(t.id)}"
+             onclick="selectTypeOption(this)">
           <span class="type-option-emoji">${t.emoji}</span>
           <span class="type-option-label">${escHtml(t.label)}</span>
-        </div>`).join('');
-
+        </div>
+      `).join('');
+    
       showModal(`
         <div class="modal-title">Edit Place</div>
-
+    
         <div class="form-group">
           <label class="form-label">Place Name</label>
-          <input type="text" class="form-input" id="editName" value="${escHtml(place.name || '')}" placeholder="e.g. Noma, Blue Mosque…" />
+          <input
+            type="text"
+            class="form-input"
+            id="editName"
+            value="${escHtml(place.name || '')}"
+            placeholder="e.g. Noma, Blue Mosque…"
+          />
         </div>
-
+    
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
           <div class="form-group">
             <label class="form-label">City</label>
-            <input type="text" class="form-input" id="editCity" value="${escHtml(place.city || '')}" placeholder="Tokyo" />
+            <input
+              type="text"
+              class="form-input"
+              id="editCity"
+              value="${escHtml(place.city || '')}"
+              placeholder="Tokyo"
+            />
           </div>
+    
           <div class="form-group">
             <label class="form-label">Country</label>
-            <input type="text" class="form-input" id="editCountry" value="${escHtml(place.country || '')}" placeholder="Japan" />
+            <input
+              type="text"
+              class="form-input"
+              id="editCountry"
+              value="${escHtml(place.country || '')}"
+              placeholder="Japan"
+            />
           </div>
         </div>
-
+    
         <div class="form-group">
           <label class="form-label">Category</label>
+    
           <div class="type-selector" id="typeSelector">
             ${typeOptionsHtml}
           </div>
         </div>
-
+    
+        <div class="form-group">
+          <label class="form-label">Caption / Notes</label>
+    
+          <textarea
+            class="form-textarea"
+            id="editSummary"
+            placeholder="Add your own notes, caption, food to try, vibes, itinerary ideas, etc..."
+          >${escHtml(place.summary || '')}</textarea>
+        </div>
+    
         <div class="modal-actions">
-          <button class="btn-ghost" onclick="closeModal()">Cancel</button>
-          <button class="btn-load" onclick="doEditCard('${escHtml(placeId)}')">Save Changes</button>
+          <button class="btn-ghost" onclick="closeModal()">
+            Cancel
+          </button>
+    
+          <button class="btn-load" onclick="doEditCard('${escHtml(placeId)}')">
+            Save Changes
+          </button>
         </div>
       `);
-
-      setTimeout(() => { const el = $('editName'); if (el) el.focus(); }, 100);
+    
+      setTimeout(() => {
+        const el = $('editName');
+        if (el) el.focus();
+      }, 100);
     }
-
+    
     function selectTypeOption(el) {
-      document.querySelectorAll('.type-option').forEach(o => o.classList.remove('selected'));
+      document.querySelectorAll('.type-option')
+        .forEach(o => o.classList.remove('selected'));
+    
       el.classList.add('selected');
     }
-
+    
     async function doEditCard(placeId) {
       const name = $('editName')?.value.trim();
       const city = $('editCity')?.value.trim();
       const country = $('editCountry')?.value.trim();
+      const summary = $('editSummary')?.value.trim();
+    
       const selectedType = document.querySelector('.type-option.selected');
       const typeId = selectedType?.dataset.typeId || '';
-
-      if (!name) { showToast('Name is required'); return; }
-
+    
+      if (!name) {
+        showToast('Name is required');
+        return;
+      }
+    
       const deviceId = $('deviceIdInput').value.trim();
-      const payload = { device_id: deviceId, name, city, country, type: typeId };
-
+    
+      const payload = {
+        device_id: deviceId,
+        name,
+        city,
+        country,
+        type: typeId,
+        summary
+      };
+    
       closeModal();
-
+    
       try {
         const res = await fetch(`${API_BASE}/places/${encodeURIComponent(placeId)}`, {
           method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json'
+          },
           body: JSON.stringify(payload)
         });
-
-        // Update locally regardless (API may not support PATCH yet)
-        const idx = allPlaces.findIndex(p => String(p.id) === String(placeId));
+    
+        if (!res.ok) throw new Error();
+    
+        // Update locally
+        const idx = allPlaces.findIndex(
+          p => String(p.id) === String(placeId)
+        );
+    
         if (idx !== -1) {
-          allPlaces[idx] = { ...allPlaces[idx], name, city, country, type: typeId };
+          allPlaces[idx] = {
+            ...allPlaces[idx],
+            name,
+            city,
+            country,
+            type: typeId,
+            summary
+          };
         }
+    
         renderPlaces();
         showToast('✅ Changes saved');
+    
       } catch {
-        // Still update locally so the UI reflects the change
-        const idx = allPlaces.findIndex(p => String(p.id) === String(placeId));
+    
+        // Still update locally even if backend PATCH fails
+        const idx = allPlaces.findIndex(
+          p => String(p.id) === String(placeId)
+        );
+    
         if (idx !== -1) {
-          allPlaces[idx] = { ...allPlaces[idx], name, city, country, type: typeId };
+          allPlaces[idx] = {
+            ...allPlaces[idx],
+            name,
+            city,
+            country,
+            type: typeId,
+            summary
+          };
         }
+    
         renderPlaces();
         showToast('✅ Updated locally');
       }
