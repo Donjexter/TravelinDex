@@ -1083,7 +1083,6 @@
             </div>
             <div class="place-card-top">
               <div class="place-name">${escHtml(main.name || 'Unnamed place')}</div>
-              <span class="place-type-badge ${badge}">${typeInfo.emoji} ${typeInfo.label}</span>
             </div>
             <div class="place-location">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1095,6 +1094,7 @@
             <div class="place-saves">${savesHtml}</div>
             <div class="place-card-footer">
               ${mapsUrl ? `<a class="place-source-btn" href="${escHtml(mapsUrl)}" target="_blank" rel="noopener" style="background:var(--green-pale);color:var(--green);">📍 Maps</a>` : '<div></div>'}
+              <span class="place-type-badge ${badge}">${typeInfo.emoji} ${typeInfo.label}</span>
             </div>
           </div>`;
       }).join('');
