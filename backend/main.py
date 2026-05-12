@@ -14,6 +14,7 @@ from db import (
     delete_trip_db,
     delete_place_db,
     move_place_db,
+    update_place_db,
 )
 from gemini import extract_places
 
@@ -29,6 +30,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+class UpdatePlaceRequest(BaseModel):
+    device_id: str
+    name: Optional[str] = None
+    city: Optional[str] = None
+    country: Optional[str] = None
+    type: Optional[str] = None
+    summary: Optional[str] = None
 class CreateTripRequest(BaseModel):
     trip_id: str
     device_id: str
@@ -141,3 +149,31 @@ async def delete_place(place_id: str, request: Request):
 async def move_place(place_id: str, req: MoveRequest):
     await move_place_db(place_id, req.new_trip_id, req.device_id)
     return {"moved": True}
+    
+@app.patch("/places/{place_id}")
+async def update_place(place_id: int, req: UpdatePlaceRequest):
+
+    updates = {
+        "name": req.name,
+        "city": req.city,
+        "country": req.country,
+        "type": req.type,
+        "summary": req.summary,
+    }
+
+    # remove None values
+    updates = {k: v for k, v in updates.items() if v is not None}
+
+    success = update_place_db(
+        place_id=place_id,
+        device_id=req.device_id,
+        updates=updates
+    )
+
+    if not success:
+        raise HTTPException(status_code=404, detail="Place not found")
+
+    return {
+        "success": True,
+        "updated_fields": list(updates.keys())
+    }
