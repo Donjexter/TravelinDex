@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -56,7 +55,7 @@
       content: '';
       position: fixed;
       inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' result='noise'/%3E%3CfeDisplacementMap in='SourceGraphic' in2='noise' scale='8'/%3E%3C/filter%3E%3Crect width='256' height='256' fill='%23f5f0e8'/%3E%3Crect width='256' height='256' fill='%23e8e0d0' opacity='0.3' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' seed='1'/%3E%3C/filter%3E%3Crect width='256' height='256' fill='%23f5f0e8'/%3E%3Crect width='256' height='256' fill='%23e8e0d0' filter='url(%23n)' opacity='0.3'/%3E%3C/svg%3E");
       background-size: 256px 256px;
       background-attachment: fixed;
       pointer-events: none;
@@ -209,12 +208,12 @@
       cursor: pointer; transition: all 0.2s; color: var(--ink-soft);
       white-space: nowrap; display: flex; align-items: center; gap: 6px;
       position: relative;
-      min-height: 44px;
     }
     .trip-tab:hover { border-color: var(--accent); color: var(--accent); }
     .trip-tab.active { background: var(--ink); border-color: var(--ink); color: var(--cream); }
     .trip-tab.active:hover { background: var(--ink-soft); }
 
+    /* trip tab action buttons — shown on hover */
     .trip-tab-actions {
       display: none;
       align-items: center;
@@ -226,14 +225,13 @@
 
     .trip-tab-btn {
       background: none; border: none; cursor: pointer;
-      padding: 4px 6px; border-radius: 4px; line-height: 1;
+      padding: 2px 4px; border-radius: 4px; line-height: 1;
       font-size: 11px; opacity: 0.6; transition: opacity 0.15s, background 0.15s;
-      min-height: 32px;
-      min-width: 32px;
     }
     .trip-tab-btn:hover { opacity: 1; background: rgba(0,0,0,0.08); }
     .trip-tab.active .trip-tab-btn:hover { background: rgba(255,255,255,0.15); }
 
+    /* inline rename input inside tab */
     .trip-tab-rename {
       background: var(--warm-white); border: 1.5px solid var(--accent);
       border-radius: 100px; padding: 6px 14px;
@@ -252,15 +250,23 @@
       border-radius: 100px; padding: 6px 14px;
       font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s;
       color: var(--ink-soft); user-select: none;
-      min-height: 44px;
     }
     .filter-chip:hover { border-color: var(--ink-soft); }
     .filter-chip.active { background: var(--accent-pale); border-color: var(--accent); color: var(--accent); }
     .filter-chip .chip-icon { font-size: 13px; }
 
+    .add-category-btn {
+      display: flex; align-items: center; gap: 4px;
+      background: var(--accent-pale); border: 1px dashed var(--accent);
+      border-radius: 100px; padding: 6px 12px;
+      font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s;
+      color: var(--accent);
+    }
+    .add-category-btn:hover { background: var(--accent); color: white; border-style: solid; }
+
     /* ── PLACES GRID ── */
     .places-grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 16px; opacity: 0; animation: fadeUp 0.5s ease 0.6s forwards;
     }
 
@@ -270,8 +276,6 @@
       border-radius: var(--radius); padding: 20px;
       transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
       cursor: default; position: relative; overflow: hidden;
-      display: flex;
-      flex-direction: column;
     }
     .place-card::before {
       content: ''; position: absolute; top: 0; left: 0; right: 0;
@@ -287,37 +291,17 @@
     .place-card[data-type="hotel"]::before { background: linear-gradient(90deg, #2d6a4f, #4aaa82); }
     .place-card[data-type="hidden"]::before { background: linear-gradient(90deg, #5c3d7a, #9b6cc4); }
 
-    .place-card-header {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 16px;
-      align-items: flex-start;
+    .place-card-top {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 12px; margin-bottom: 12px;
     }
-
-    .place-card-title {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .place-name {
-      font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 600;
-      line-height: 1.3; color: var(--ink); letter-spacing: -0.2px;
-    }
-
-    .place-location {
-      display: flex; align-items: center; gap: 5px;
-      color: var(--ink-muted); font-size: 13px;
-    }
-    .place-location svg { flex-shrink: 0; opacity: 0.6; }
-
     .place-type-badge {
       display: inline-flex; align-items: center; gap: 4px;
       padding: 3px 10px; border-radius: 100px; font-size: 11px; font-weight: 500;
       text-transform: capitalize; letter-spacing: 0.2px; flex-shrink: 0;
-      white-space: nowrap;
+      cursor: pointer; transition: all 0.2s;
     }
+    .place-type-badge:hover { opacity: 0.8; }
     .badge-restaurant { background: var(--accent-pale); color: var(--accent); }
     .badge-cafe { background: var(--gold-pale); color: var(--gold); }
     .badge-attraction { background: var(--blue-pale); color: var(--blue); }
@@ -325,99 +309,111 @@
     .badge-hidden { background: var(--purple-pale); color: var(--purple); }
     .badge-default { background: var(--sand); color: var(--ink-muted); }
 
-    .place-map-btn {
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 44px;
-      height: 44px;
-      border-radius: 8px;
-      background: var(--green-pale);
-      color: var(--green);
-      text-decoration: none;
-      font-size: 20px;
-      transition: all 0.2s;
-      border: none;
-      cursor: pointer;
+    .place-name {
+      font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 600;
+      line-height: 1.3; color: var(--ink); letter-spacing: -0.2px; flex: 1;
+      cursor: pointer; padding: 4px; border-radius: 4px; transition: background 0.2s;
     }
-    .place-map-btn:hover {
-      background: var(--green);
-      color: white;
-      transform: scale(1.05);
-    }
+    .place-name:hover { background: rgba(192,83,26,0.1); }
 
+    .place-location {
+      display: flex; align-items: center; gap: 5px;
+      color: var(--ink-muted); font-size: 13px; margin-bottom: 14px;
+      cursor: pointer; padding: 4px; border-radius: 4px; transition: background 0.2s;
+    }
+    .place-location:hover { background: rgba(192,83,26,0.1); }
+    .place-location svg { flex-shrink: 0; opacity: 0.6; }
+
+    .place-summary {
+      font-size: 13px; color: var(--ink-soft); line-height: 1.5;
+      margin-bottom: 10px; font-style: italic;
+      cursor: pointer; padding: 4px; border-radius: 4px; transition: background 0.2s;
+    }
+    .place-summary:hover { background: rgba(192,83,26,0.1); }
+
+    /* card action buttons (delete + move + edit) */
     .card-actions {
       position: absolute; top: 12px; right: 12px;
       display: flex; gap: 4px;
       opacity: 0; transition: opacity 0.2s;
     }
     .card-action-btn {
-      width: 44px; height: 44px; border-radius: 8px;
+      width: 28px; height: 28px; border-radius: 8px;
       border: 1px solid var(--border); background: var(--warm-white);
       cursor: pointer; display: flex; align-items: center; justify-content: center;
       font-size: 13px; transition: all 0.15s; box-shadow: var(--shadow-sm);
-      min-height: 44px;
-      min-width: 44px;
     }
     .card-action-btn:hover { transform: scale(1.1); }
     .card-action-btn.delete:hover { background: var(--red-pale); border-color: rgba(185,28,28,0.3); }
     .card-action-btn.move:hover { background: var(--blue-pale); border-color: rgba(29,78,122,0.3); }
+    .card-action-btn.edit:hover { background: var(--accent-pale); border-color: rgba(192,83,26,0.3); }
 
-    /* ── SAVE ENTRIES (first + duplicates unified) ── */
-
-    /* Each "save" is one entry: a summary line + a footer row */
-    .save-entry {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
+    .place-card-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-top: 12px; border-top: 1px solid var(--border); gap: 8px;
     }
-
-    .save-summary {
-      font-size: 13px;
-      color: var(--ink-soft);
-      line-height: 1.5;
-      font-style: italic;
-    }
-
-    .save-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .save-date {
-      font-size: 11px;
-      color: var(--ink-faint);
-    }
-
+    .place-date { font-size: 11px; color: var(--ink-faint); }
     .place-source-btn {
       display: flex; align-items: center; gap: 4px;
       font-size: 11px; color: var(--ink-muted); text-decoration: none; font-weight: 500;
       padding: 4px 10px; border-radius: 100px; background: var(--sand);
       transition: background 0.2s, color 0.2s;
-      border: none;
-      cursor: pointer;
-      min-height: 32px;
     }
     .place-source-btn:hover { background: var(--ink); color: var(--cream); }
 
-    /* Divider between multiple save entries */
-    .save-entry + .save-entry {
-      padding-top: 10px;
-      border-top: 1px solid var(--border);
-      margin-top: 4px;
+    /* ── MODAL ── */
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(26,23,20,0.5);
+      z-index: 500; display: flex; align-items: center; justify-content: center;
+      padding: 20px; opacity: 0; animation: fadeIn 0.2s ease forwards;
     }
+    .modal {
+      background: var(--warm-white); border-radius: var(--radius);
+      padding: 28px; max-width: 480px; width: 100%;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(20px); animation: modalUp 0.25s ease forwards;
+      max-height: 85vh; overflow-y: auto;
+    }
+    .modal-title {
+      font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 600;
+      margin-bottom: 16px; letter-spacing: -0.2px;
+    }
+    .modal-body { font-size: 14px; color: var(--ink-muted); margin-bottom: 20px; line-height: 1.6; }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
 
-    /* Wrapper for all save entries inside the card */
-    .place-saves {
-      display: flex;
-      flex-direction: column;
-      margin-top: auto;
-      padding-top: 4px;
+    .form-group {
+      margin-bottom: 16px;
     }
+    .form-label {
+      display: block; font-size: 12px; font-weight: 600;
+      color: var(--ink-soft); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .form-input, .form-select {
+      width: 100%; border: 1px solid var(--sand); border-radius: var(--radius-sm);
+      padding: 10px 12px; font-family: 'DM Sans', sans-serif; font-size: 14px;
+      background: var(--cream); color: var(--ink); outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-input:focus, .form-select:focus { border-color: var(--accent); }
+    .form-input::placeholder { color: var(--ink-faint); }
+
+    .form-textarea {
+      width: 100%; border: 1px solid var(--sand); border-radius: var(--radius-sm);
+      padding: 10px 12px; font-family: 'DM Sans', sans-serif; font-size: 14px;
+      background: var(--cream); color: var(--ink); outline: none;
+      transition: border-color 0.2s; resize: vertical; min-height: 70px;
+    }
+    .form-textarea:focus { border-color: var(--accent); }
+
+    /* move trip select */
+    .move-select {
+      width: 100%; border: 1px solid var(--sand); border-radius: var(--radius-sm);
+      padding: 10px 14px; font-family: 'DM Sans', sans-serif; font-size: 14px;
+      background: var(--cream); color: var(--ink); outline: none;
+      margin-bottom: 16px; cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .move-select:focus { border-color: var(--accent); }
 
     /* ── EMPTY / LOADING ── */
     .empty-state {
@@ -474,7 +470,6 @@
       cursor: pointer; text-decoration: none; transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
       white-space: nowrap; position: relative; z-index: 1; box-shadow: 0 4px 20px rgba(192,83,26,0.4);
       min-height: 44px;
-      min-width: 44px;
     }
     .btn-download:hover { background: var(--accent-light); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(192,83,26,0.5); }
     .btn-download-icon { width: 32px; height: 32px; background: rgba(255,255,255,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; }
@@ -501,12 +496,6 @@
     @keyframes modalUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    @media (max-width: 768px) {
-      .places-grid {
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      }
-    }
-
     @media (max-width: 600px) {
       .hero { padding: 48px 20px 40px; }
       .how-steps::before { display: none; }
@@ -517,32 +506,10 @@
       main { padding: 24px 16px 60px; }
       .shortcut-cta { padding: 24px 20px; }
       .how-section { padding: 24px 20px; }
-      .device-bar { padding: 14px 16px; flex-direction: column; align-items: stretch; }
-      .device-input-wrap { flex-direction: column; }
-      .device-input { width: 100%; min-width: unset; }
-      .btn-load { width: 100%; }
-      .card-actions { opacity: 1; }
-      
-      .place-card { padding: 16px; }
-      .place-card-header { flex-direction: column; gap: 8px; }
-      .place-map-btn { width: 40px; height: 40px; font-size: 18px; }
-      .card-action-btn { width: 40px; height: 40px; }
-      .place-source-btn { width: 100%; justify-content: center; flex: 1; }
-      .trip-tab { font-size: 12px; padding: 6px 14px; min-height: 40px; }
-      .filter-chip { min-height: 40px; font-size: 11px; }
-      .places-grid { grid-template-columns: 1fr; }
-      .device-hint { font-size: 11px; }
-    }
-
-    @media (max-width: 400px) {
-      main { padding: 16px 12px 60px; }
-      .place-card { padding: 12px; }
-      .place-name { font-size: 15px; }
-      .card-action-btn { width: 36px; height: 36px; font-size: 12px; }
-      .place-map-btn { width: 36px; height: 36px; font-size: 16px; }
+      .device-bar { padding: 14px 16px; }
+      .card-actions { opacity: 1; } /* always show on mobile */
     }
   </style>
-
 </head>
 <body>
 
@@ -574,95 +541,94 @@
 
   <main>
 
-```
-<div class="how-section">
-  <div class="how-title">How TravelInDex works</div>
-  <div class="how-steps">
-    <div class="how-step">
-      <div class="how-step-num">📱</div>
-      <div><div class="how-step-label">See a great spot</div><div class="how-step-sub">On Instagram, TikTok, YouTube or anywhere</div></div>
+    <div class="how-section">
+      <div class="how-title">How TravelInDex works</div>
+      <div class="how-steps">
+        <div class="how-step">
+          <div class="how-step-num">📱</div>
+          <div><div class="how-step-label">See a great spot</div><div class="how-step-sub">On Instagram, TikTok, YouTube or anywhere</div></div>
+        </div>
+        <div class="how-step">
+          <div class="how-step-num">↗️</div>
+          <div><div class="how-step-label">Tap Share</div><div class="how-step-sub">Select the TravelInDex shortcut from the share sheet</div></div>
+        </div>
+        <div class="how-step">
+          <div class="how-step-num accent">✓</div>
+          <div><div class="how-step-label">Pick your trip</div><div class="how-step-sub">Choose a trip board — it's saved automatically</div></div>
+        </div>
+        <div class="how-step">
+          <div class="how-step-num">🗺️</div>
+          <div><div class="how-step-label">Browse here</div><div class="how-step-sub">All your saved places appear in this web app</div></div>
+        </div>
+      </div>
     </div>
-    <div class="how-step">
-      <div class="how-step-num">↗️</div>
-      <div><div class="how-step-label">Tap Share</div><div class="how-step-sub">Select the TravelInDex shortcut from the share sheet</div></div>
+
+    <div class="shortcut-cta">
+      <div class="shortcut-cta-text">
+        <div class="shortcut-cta-eyebrow">Step 1 — Get started</div>
+        <div class="shortcut-cta-title">Install the iOS Shortcut 📲</div>
+        <div class="shortcut-cta-body">One tap to add. Then just use Share → TravelInDex whenever you see a place you want to save. No app needed during saving.</div>
+      </div>
+      <a href="https://www.icloud.com/shortcuts/0e3188c3e3194947b86c8c923891767f" target="_blank" class="btn-download">
+        <div class="btn-download-icon">⬇️</div>
+        Add to Shortcuts
+      </a>
     </div>
-    <div class="how-step">
-      <div class="how-step-num accent">✓</div>
-      <div><div class="how-step-label">Pick your trip</div><div class="how-step-sub">Choose a trip board — it's saved automatically</div></div>
+
+    <div class="device-bar">
+      <label>Your Device ID</label>
+      <div class="device-input-wrap">
+        <input type="text" class="device-input" id="deviceIdInput" placeholder="Enter the Device ID from your Shortcut…" />
+        <button class="btn-load" onclick="loadTrips()">Load My Saves</button>
+      </div>
+      <div class="device-hint">💡 Your Device ID is shown the first time you run the Shortcut — copy it here to browse your places.</div>
     </div>
-    <div class="how-step">
-      <div class="how-step-num">🗺️</div>
-      <div><div class="how-step-label">Browse here</div><div class="how-step-sub">All your saved places appear in this web app</div></div>
+
+    <div id="tripsSection" style="display:none;">
+      <div class="section-header" style="margin-bottom:16px;">
+        <div class="section-title">Trip Boards</div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="section-count" id="tripCount"></span>
+          <button class="btn-load" style="padding:7px 14px;font-size:12px;" onclick="showCreateTrip()">+ New Trip</button>
+        </div>
+      </div>
+
+      <div id="createTripBar" style="display:none;background:var(--warm-white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:16px;gap:10px;align-items:center;flex-wrap:wrap;">
+        <input type="text" id="newTripInput" class="device-input" placeholder="Trip name e.g. Japan 2026" style="flex:1;min-width:180px;" />
+        <button class="btn-load" onclick="doCreateTrip()">Create</button>
+        <button onclick="hideCreateTrip()" style="background:none;border:none;color:var(--ink-muted);cursor:pointer;font-size:13px;">Cancel</button>
+      </div>
+
+      <div class="trip-tabs-wrap">
+        <div class="trip-tabs" id="tripTabs"></div>
+      </div>
+
+      <div class="filter-bar" id="filterBar">
+        <div class="filter-chip active" data-type="all" onclick="toggleFilter(this)"><span class="chip-icon">🌏</span> All</div>
+        <div class="filter-chip" data-type="restaurant" onclick="toggleFilter(this)"><span class="chip-icon">🍽️</span> Restaurants</div>
+        <div class="filter-chip" data-type="cafe" onclick="toggleFilter(this)"><span class="chip-icon">☕</span> Cafés</div>
+        <div class="filter-chip" data-type="attraction" onclick="toggleFilter(this)"><span class="chip-icon">🏛️</span> Attractions</div>
+        <div class="filter-chip" data-type="hotel" onclick="toggleFilter(this)"><span class="chip-icon">🏨</span> Hotels</div>
+        <button class="add-category-btn" onclick="showAddCategory()">+ Add Category</button>
+      </div>
+
+      <div class="section-header">
+        <div class="section-title" id="placesTitle">All Places</div>
+        <span class="section-count" id="placesCount"></span>
+      </div>
+      <div class="places-grid" id="placesGrid"></div>
     </div>
-  </div>
-</div>
 
-<div class="shortcut-cta">
-  <div class="shortcut-cta-text">
-    <div class="shortcut-cta-eyebrow">Step 1 — Get started</div>
-    <div class="shortcut-cta-title">Install the iOS Shortcut 📲</div>
-    <div class="shortcut-cta-body">One tap to add. Then just use Share → TravelInDex whenever you see a place you want to save. No app needed during saving.</div>
-  </div>
-  <a href="https://www.icloud.com/shortcuts/0e3188c3e3194947b86c8c923891767f" target="_blank" class="btn-download">
-    <div class="btn-download-icon">⬇️</div>
-    Add to Shortcuts
-  </a>
-</div>
-
-<div class="device-bar">
-  <label>Your Device ID</label>
-  <div class="device-input-wrap">
-    <input type="text" class="device-input" id="deviceIdInput" placeholder="Enter the Device ID from your Shortcut…" />
-    <button class="btn-load" onclick="loadTrips()">Load My Saves</button>
-  </div>
-  <div class="device-hint">💡 Your Device ID is shown the first time you run the Shortcut — copy it here to browse your places.</div>
-</div>
-
-<div id="tripsSection" style="display:none;">
-  <div class="section-header" style="margin-bottom:16px;">
-    <div class="section-title">Trip Boards</div>
-    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span class="section-count" id="tripCount"></span>
-      <button class="btn-load" style="padding:7px 14px;font-size:12px;min-height:40px;" onclick="showCreateTrip()">+ New Trip</button>
+    <div class="spinner-wrap" id="loadingState" style="display:none;">
+      <div class="spinner"></div>
+      <div class="spinner-label">Loading your places…</div>
     </div>
-  </div>
 
-  <div id="createTripBar" style="display:none;background:var(--warm-white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:16px;gap:10px;align-items:center;flex-wrap:wrap;">
-    <input type="text" id="newTripInput" class="device-input" placeholder="Trip name e.g. Japan 2026" style="flex:1;min-width:180px;" />
-    <button class="btn-load" onclick="doCreateTrip()">Create</button>
-    <button onclick="hideCreateTrip()" style="background:none;border:none;color:var(--ink-muted);cursor:pointer;font-size:13px;min-height:44px;">Cancel</button>
-  </div>
-
-  <div class="trip-tabs-wrap">
-    <div class="trip-tabs" id="tripTabs"></div>
-  </div>
-
-  <div class="filter-bar" id="filterBar">
-    <div class="filter-chip active" data-type="all" onclick="toggleFilter(this)"><span class="chip-icon">🌏</span> All</div>
-    <div class="filter-chip" data-type="restaurant" onclick="toggleFilter(this)"><span class="chip-icon">🍽️</span> Restaurants</div>
-    <div class="filter-chip" data-type="cafe" onclick="toggleFilter(this)"><span class="chip-icon">☕</span> Cafés</div>
-    <div class="filter-chip" data-type="attraction" onclick="toggleFilter(this)"><span class="chip-icon">🏛️</span> Attractions</div>
-    <div class="filter-chip" data-type="hotel" onclick="toggleFilter(this)"><span class="chip-icon">🏨</span> Hotels</div>
-  </div>
-
-  <div class="section-header">
-    <div class="section-title" id="placesTitle">All Places</div>
-    <span class="section-count" id="placesCount"></span>
-  </div>
-  <div class="places-grid" id="placesGrid"></div>
-</div>
-
-<div class="spinner-wrap" id="loadingState" style="display:none;">
-  <div class="spinner"></div>
-  <div class="spinner-label">Loading your places…</div>
-</div>
-
-<div class="empty-state" id="emptyState">
-  <span class="empty-icon">🗺️</span>
-  <div class="empty-title">Your travel index starts here</div>
-  <div class="empty-body">Install the iOS Shortcut above, then enter your Device ID to browse all the places you've saved.</div>
-</div>
-```
+    <div class="empty-state" id="emptyState">
+      <span class="empty-icon">🗺️</span>
+      <div class="empty-title">Your travel index starts here</div>
+      <div class="empty-body">Install the iOS Shortcut above, then enter your Device ID to browse all the places you've saved.</div>
+    </div>
 
   </main>
 
@@ -673,7 +639,6 @@
   <div class="toast" id="toast"></div>
 
   <!-- MODAL -->
-
   <div id="modalBackdrop" style="display:none;"></div>
 
   <script>
@@ -683,6 +648,7 @@
     let currentTrip = null;
     let currentFilter = 'all';
     let trips = [];
+    let customCategories = [];
 
     const $ = id => document.getElementById(id);
     function show(id) { $(id).style.display = ''; }
@@ -707,7 +673,26 @@
       return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
-    // ─── MODAL ─────────────────────────────────────────────────────────
+    function savePreferences() {
+      localStorage.setItem('travelindex_current_trip', currentTrip || '');
+      localStorage.setItem('travelindex_current_filter', currentFilter || 'all');
+      localStorage.setItem('travelindex_custom_categories', JSON.stringify(customCategories));
+    }
+
+    function loadPreferences() {
+      const savedTrip = localStorage.getItem('travelindex_current_trip');
+      const savedFilter = localStorage.getItem('travelindex_current_filter');
+      const savedCategories = localStorage.getItem('travelindex_custom_categories');
+      
+      if (savedTrip) currentTrip = savedTrip;
+      if (savedFilter) currentFilter = savedFilter;
+      if (savedCategories) {
+        try { customCategories = JSON.parse(savedCategories); }
+        catch { customCategories = []; }
+      }
+    }
+
+    // ─── MODAL ───────────────────────────────────────────────────────────
     function showModal(html) {
       const backdrop = $('modalBackdrop');
       backdrop.className = 'modal-backdrop';
@@ -722,7 +707,7 @@
       backdrop.innerHTML = '';
     }
 
-    // ─── LOAD TRIPS ───────────────────────────────────────────────────────
+    // ─── LOAD TRIPS ─────────────────────────────────────────────────────────
     async function loadTrips() {
       const deviceId = $('deviceIdInput').value.trim();
       if (!deviceId) { showToast('Please enter your Device ID first'); return; }
@@ -744,9 +729,16 @@
         }
 
         trips = realTrips;
+        
+        // Restore trip preference if it still exists
+        loadPreferences();
+        if (!currentTrip || !trips.includes(currentTrip)) {
+          currentTrip = trips[0];
+        }
+
         renderTripTabs(trips);
         $('tripCount').textContent = `${trips.length} trip${trips.length !== 1 ? 's' : ''}`;
-        currentTrip = trips[0];
+        renderCustomCategories();
         await loadPlaces(deviceId, currentTrip);
       } catch {
         hide('loadingState'); show('emptyState');
@@ -762,7 +754,7 @@
       container.innerHTML = '';
       tripList.forEach((trip, i) => {
         const btn = document.createElement('button');
-        btn.className = 'trip-tab' + (i === 0 ? ' active' : '');
+        btn.className = 'trip-tab' + (trip === currentTrip ? ' active' : '');
         btn.dataset.trip = trip;
 
         const label = document.createElement('span');
@@ -783,6 +775,7 @@
           btn.classList.add('active');
           currentTrip = trip;
           currentFilter = 'all';
+          savePreferences();
           document.querySelectorAll('.filter-chip').forEach(c => c.classList.toggle('active', c.dataset.type === 'all'));
           await loadPlaces($('deviceIdInput').value.trim(), trip);
         };
@@ -791,7 +784,7 @@
       });
     }
 
-    // ─── RENAME TRIP ───────────────────────────────────────────────────────
+    // ─── RENAME TRIP ─────────────────────────────────────────────────────────
     function startRenameTrip(e, tripName, btnEl) {
       e.stopPropagation();
       const tab = btnEl.closest('.trip-tab');
@@ -832,6 +825,7 @@
         if (!res.ok) throw new Error();
         showToast(`✅ Renamed to "${newName}"`);
         if (currentTrip === oldName) currentTrip = newName;
+        savePreferences();
         await loadTrips();
         const deviceId2 = $('deviceIdInput').value.trim();
         document.querySelectorAll('.trip-tab').forEach(btn => {
@@ -847,7 +841,7 @@
       }
     }
 
-    // ─── DELETE TRIP ───────────────────────────────────────────────────────
+    // ─── DELETE TRIP ─────────────────────────────────────────────────────────
     function confirmDeleteTrip(e, tripName) {
       e.stopPropagation();
       showModal(`
@@ -877,7 +871,7 @@
       }
     }
 
-    // ─── LOAD PLACES ───────────────────────────────────────────────────────
+    // ─── LOAD PLACES ─────────────────────────────────────────────────────────
     async function loadPlaces(deviceId, tripId) {
       hide('tripsSection'); show('loadingState');
       try {
@@ -892,7 +886,58 @@
       }
     }
 
-    // ─── RENDER PLACES ──────────────────────────────────────────────────────
+    // ─── RENDER CUSTOM CATEGORIES ─────────────────────────────────────────────
+    function renderCustomCategories() {
+      const filterBar = $('filterBar');
+      const existing = filterBar.querySelectorAll('.filter-chip[data-type]:not([data-type="all"])');
+      
+      // Remove old custom category chips
+      filterBar.querySelectorAll('.custom-category-chip').forEach(el => el.remove());
+      
+      // Add new custom category chips
+      customCategories.forEach(cat => {
+        const chip = document.createElement('div');
+        chip.className = 'filter-chip custom-category-chip';
+        chip.dataset.type = cat.id;
+        chip.innerHTML = `<span class="chip-icon">${cat.emoji}</span> ${escHtml(cat.name)}`;
+        chip.onclick = function() { toggleFilter(this); };
+        filterBar.insertBefore(chip, filterBar.querySelector('.add-category-btn'));
+      });
+    }
+
+    function showAddCategory() {
+      showModal(`
+        <div class="modal-title">Add Category</div>
+        <div class="form-group">
+          <label class="form-label">Category Name</label>
+          <input type="text" class="form-input" id="catName" placeholder="e.g. Museums" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Emoji</label>
+          <input type="text" class="form-input" id="catEmoji" placeholder="e.g. 🏛️" maxlength="2" style="font-size:20px;text-align:center;" />
+        </div>
+        <div class="modal-actions">
+          <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+          <button class="btn-load" onclick="doAddCategory()">Add</button>
+        </div>
+      `);
+      setTimeout(() => $('catName').focus(), 100);
+    }
+
+    function doAddCategory() {
+      const name = $('catName').value.trim();
+      const emoji = $('catEmoji').value.trim();
+      if (!name || !emoji) { showToast('Fill all fields'); return; }
+      
+      const id = 'cat_' + Date.now();
+      customCategories.push({ id, name, emoji });
+      savePreferences();
+      renderCustomCategories();
+      closeModal();
+      showToast(`✅ Category "${name}" added!`);
+    }
+
+    // ─── RENDER PLACES ────────────────────────────────────────────────────────
     function renderPlaces() {
       const grid = $('placesGrid');
       const filtered = currentFilter === 'all'
@@ -905,69 +950,46 @@
       const displayPlaces = filtered.filter(p => p.name !== '__trip_created__');
 
       if (!displayPlaces.length) {
-        grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px 0;color:var(--ink-muted);font-size:14px;">No ${currentFilter !== 'all' ? currentFilter + 's' : 'places'} saved yet.</div>`;
+        grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px 0;color:var(--ink-muted);font-size:14px;">No ${currentFilter !== 'all' ? currentFilter + 's' : 'places'} saved in this trip yet.</div>`;
         return;
       }
 
-      // Group places by location (name + country) to merge duplicate saves
-      const locationGroups = {};
-      displayPlaces.forEach(place => {
-        const locKey = `${place.name}|${place.country}`;
-        if (!locationGroups[locKey]) locationGroups[locKey] = [];
-        locationGroups[locKey].push(place);
-      });
-
-      grid.innerHTML = Object.entries(locationGroups).map(([locKey, places]) => {
-        const mainPlace = places[0];
-        const type = (mainPlace.type || 'place').toLowerCase();
+      grid.innerHTML = displayPlaces.map(place => {
+        const type = (place.type || 'place').toLowerCase();
         const emoji = typeEmoji[type] || '📍';
         const badge = typeBadge[type] || 'badge-default';
-        const loc = [mainPlace.city, mainPlace.country].filter(Boolean).join(', ') || 'Location unknown';
-        const mapsUrl = mainPlace.maps_url || '';
-        const placeId = mainPlace.id || '';
-
-        // Build one save-entry per grouped place (all saves for this location)
-        const savesHtml = places.map(place => {
-          const dateStr = formatDate(place.created_at);
-          const viewBtn = place.source_url
-            ? `<a class="place-source-btn" href="${escHtml(place.source_url)}" target="_blank" rel="noopener">View ↗</a>`
-            : '';
-          const caption = place.summary
-            ? `<div class="save-summary">${escHtml(place.summary)}</div>`
-            : '';
-          return `
-            <div class="save-entry">
-              ${caption}
-              <div class="save-footer">
-                <span class="save-date">${dateStr}</span>
-                ${viewBtn}
-              </div>
-            </div>`;
-        }).join('');
+        const loc = [place.city, place.country].filter(Boolean).join(', ') || 'Location unknown';
+        const dateStr = formatDate(place.created_at);
+        const summary = place.summary || '';
+        const mapsUrl = place.maps_url || '';
+        const placeId = place.id || '';
 
         return `
           <div class="place-card" data-type="${type}" data-id="${escHtml(placeId)}" style="animation: fadeUp 0.4s ease both;">
             <div class="card-actions">
-              <button class="card-action-btn move" title="Move to another trip" onclick="showMoveCard('${escHtml(placeId)}', '${escHtml(mainPlace.name || '')}')">↗️</button>
-              <button class="card-action-btn delete" title="Delete place" onclick="confirmDeleteCard('${escHtml(placeId)}', '${escHtml(mainPlace.name || '')}')">🗑️</button>
+              <button class="card-action-btn edit" title="Edit place" onclick="showEditCard('${escHtml(placeId)}')">✏️</button>
+              <button class="card-action-btn move" title="Move to another trip" onclick="showMoveCard('${escHtml(placeId)}', '${escHtml(place.name || '')}')">↗️</button>
+              <button class="card-action-btn delete" title="Delete place" onclick="confirmDeleteCard('${escHtml(placeId)}', '${escHtml(place.name || '')}')">🗑️</button>
             </div>
-
-            <div class="place-card-header">
-              <div class="place-card-title">
-                <div class="place-name">${escHtml(mainPlace.name || 'Unnamed place')}</div>
-                <div class="place-location">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/>
-                    <circle cx="12" cy="9" r="2.5"/>
-                  </svg>
-                  ${escHtml(loc)}
-                </div>
+            <div class="place-card-top">
+              <div class="place-name" onclick="editPlaceName('${escHtml(placeId)}', '${escHtml(place.name || '')}')">${escHtml(place.name || 'Unnamed place')}</div>
+              <span class="place-type-badge ${badge}" onclick="showChangeType('${escHtml(placeId)}', '${type}')">${emoji} ${type}</span>
+            </div>
+            <div class="place-location" onclick="editPlaceLocation('${escHtml(placeId)}', '${escHtml(place.city)}', '${escHtml(place.country)}')">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/>
+                <circle cx="12" cy="9" r="2.5"/>
+              </svg>
+              ${escHtml(loc)}
+            </div>
+            ${summary ? `<div class="place-summary" onclick="editPlaceSummary('${escHtml(placeId)}', '${escHtml(summary)}')">${escHtml(summary)}</div>` : ''}
+            <div class="place-card-footer">
+              <span class="place-date">${dateStr}</span>
+              <div style="display:flex;gap:6px;">
+                ${mapsUrl ? `<a class="place-source-btn" href="${escHtml(mapsUrl)}" target="_blank" rel="noopener" style="background:var(--green-pale);color:var(--green);">📍 Maps</a>` : ''}
+                ${place.source_url ? `<a class="place-source-btn" href="${escHtml(place.source_url)}" target="_blank" rel="noopener">View ↗</a>` : ''}
               </div>
-              <span class="place-type-badge ${badge}">${emoji}</span>
-              ${mapsUrl ? `<a class="place-map-btn" href="${escHtml(mapsUrl)}" target="_blank" rel="noopener" title="Open in Maps">📍</a>` : ''}
             </div>
-
-            <div class="place-saves">${savesHtml}</div>
           </div>`;
       }).join('');
 
@@ -976,7 +998,176 @@
       });
     }
 
-    // ─── DELETE CARD ───────────────────────────────────────────────────────
+    // ─── EDIT PLACE CARD ───────────────────────────────────────────────────────
+    function showEditCard(placeId) {
+      const place = allPlaces.find(p => String(p.id) === String(placeId));
+      if (!place) return;
+      
+      showModal(`
+        <div class="modal-title">Edit Place</div>
+        <div class="form-group">
+          <label class="form-label">Place Name</label>
+          <input type="text" class="form-input" id="editName" value="${escHtml(place.name || '')}" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">City</label>
+          <input type="text" class="form-input" id="editCity" value="${escHtml(place.city || '')}" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Country</label>
+          <input type="text" class="form-input" id="editCountry" value="${escHtml(place.country || '')}" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select class="form-select" id="editType">
+            <option value="restaurant" ${place.type === 'restaurant' ? 'selected' : ''}>🍽️ Restaurant</option>
+            <option value="cafe" ${place.type === 'cafe' ? 'selected' : ''}>☕ Café</option>
+            <option value="attraction" ${place.type === 'attraction' ? 'selected' : ''}>🏛️ Attraction</option>
+            <option value="hotel" ${place.type === 'hotel' ? 'selected' : ''}>🏨 Hotel</option>
+            ${customCategories.map(cat => `<option value="${escHtml(cat.id)}" ${place.type === cat.id ? 'selected' : ''}>${cat.emoji} ${escHtml(cat.name)}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Notes / Caption</label>
+          <textarea class="form-textarea" id="editSummary">${escHtml(place.summary || '')}</textarea>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+          <button class="btn-load" onclick="doSaveEdit('${escHtml(placeId)}')">Save Changes</button>
+        </div>
+      `);
+      setTimeout(() => $('editName').focus(), 100);
+    }
+
+    async function doSaveEdit(placeId) {
+      const name = $('editName').value.trim();
+      const city = $('editCity').value.trim();
+      const country = $('editCountry').value.trim();
+      const type = $('editType').value;
+      const summary = $('editSummary').value.trim();
+
+      if (!name) { showToast('Place name is required'); return; }
+
+      const place = allPlaces.find(p => String(p.id) === String(placeId));
+      if (!place) return;
+
+      place.name = name;
+      place.city = city;
+      place.country = country;
+      place.type = type;
+      place.summary = summary;
+
+      closeModal();
+      renderPlaces();
+      showToast('✅ Place updated!');
+    }
+
+    function editPlaceName(placeId, currentName) {
+      showModal(`
+        <div class="modal-title">Edit Place Name</div>
+        <div class="form-group">
+          <input type="text" class="form-input" id="quickEditInput" value="${escHtml(currentName)}" />
+        </div>
+        <div class="modal-actions">
+          <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+          <button class="btn-load" onclick="doQuickEdit('${escHtml(placeId)}', 'name')">Save</button>
+        </div>
+      `);
+      setTimeout(() => $('quickEditInput').focus(), 100);
+    }
+
+    function editPlaceLocation(placeId, city, country) {
+      showModal(`
+        <div class="modal-title">Edit Location</div>
+        <div class="form-group">
+          <label class="form-label">City</label>
+          <input type="text" class="form-input" id="quickEditCity" value="${escHtml(city)}" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Country</label>
+          <input type="text" class="form-input" id="quickEditCountry" value="${escHtml(country)}" />
+        </div>
+        <div class="modal-actions">
+          <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+          <button class="btn-load" onclick="doQuickEditLocation('${escHtml(placeId)}')">Save</button>
+        </div>
+      `);
+      setTimeout(() => $('quickEditCity').focus(), 100);
+    }
+
+    function editPlaceSummary(placeId, currentSummary) {
+      showModal(`
+        <div class="modal-title">Edit Notes</div>
+        <div class="form-group">
+          <textarea class="form-textarea" id="quickEditSummary">${escHtml(currentSummary)}</textarea>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+          <button class="btn-load" onclick="doQuickEdit('${escHtml(placeId)}', 'summary')">Save</button>
+        </div>
+      `);
+      setTimeout(() => $('quickEditSummary').focus(), 100);
+    }
+
+    function doQuickEdit(placeId, field) {
+      const place = allPlaces.find(p => String(p.id) === String(placeId));
+      if (!place) return;
+
+      const value = $(field === 'name' ? 'quickEditInput' : 'quickEditSummary').value.trim();
+      if (field === 'name' && !value) { showToast('Name is required'); return; }
+
+      place[field] = value;
+      closeModal();
+      renderPlaces();
+      showToast('✅ Updated!');
+    }
+
+    function doQuickEditLocation(placeId) {
+      const place = allPlaces.find(p => String(p.id) === String(placeId));
+      if (!place) return;
+
+      place.city = $('quickEditCity').value.trim();
+      place.country = $('quickEditCountry').value.trim();
+      closeModal();
+      renderPlaces();
+      showToast('✅ Location updated!');
+    }
+
+    function showChangeType(placeId, currentType) {
+      const typeOptions = [
+        { value: 'restaurant', label: '🍽️ Restaurant' },
+        { value: 'cafe', label: '☕ Café' },
+        { value: 'attraction', label: '🏛️ Attraction' },
+        { value: 'hotel', label: '🏨 Hotel' },
+        ...customCategories.map(cat => ({ value: cat.id, label: `${cat.emoji} ${cat.name}` }))
+      ];
+
+      showModal(`
+        <div class="modal-title">Change Category</div>
+        <div class="form-group">
+          <select class="form-select" id="typeSelect">
+            ${typeOptions.map(opt => `<option value="${escHtml(opt.value)}" ${opt.value === currentType ? 'selected' : ''}>${opt.label}</option>`).join('')}
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+          <button class="btn-load" onclick="doChangeType('${escHtml(placeId)}')">Change</button>
+        </div>
+      `);
+    }
+
+    function doChangeType(placeId) {
+      const newType = $('typeSelect').value;
+      const place = allPlaces.find(p => String(p.id) === String(placeId));
+      if (!place) return;
+
+      place.type = newType;
+      closeModal();
+      renderPlaces();
+      showToast('✅ Category changed!');
+    }
+
+    // ─── DELETE CARD ─────────────────────────────────────────────────────────
     function confirmDeleteCard(placeId, placeName) {
       showModal(`
         <div class="modal-title">Delete "${escHtml(placeName)}"?</div>
@@ -1006,7 +1197,7 @@
       }
     }
 
-    // ─── MOVE CARD ───────────────────────────────────────────────────────
+    // ─── MOVE CARD ─────────────────────────────────────────────────────────
     function showMoveCard(placeId, placeName) {
       const otherTrips = trips.filter(t => t !== currentTrip);
       if (!otherTrips.length) {
@@ -1044,15 +1235,16 @@
       }
     }
 
-    // ─── FILTER ─────────────────────────────────────────────────────────
+    // ─── FILTER ──────────────────────────────────────────────────────────
     function toggleFilter(chip) {
       document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
       chip.classList.add('active');
       currentFilter = chip.dataset.type;
+      savePreferences();
       renderPlaces();
     }
 
-    // ─── CREATE TRIP ───────────────────────────────────────────────────────
+    // ─── CREATE TRIP ─────────────────────────────────────────────────────────
     function showCreateTrip() {
       const bar = $('createTripBar');
       bar.style.display = 'flex';
@@ -1084,14 +1276,16 @@
       }
     }
 
-    // ─── INIT ─────────────────────────────────────────────────────────
+    // ─── INIT ───────────────────────────────────────────────────────────
     window.addEventListener('DOMContentLoaded', () => {
       const saved = localStorage.getItem('travelindex_device');
-      if (saved) { $('deviceIdInput').value = saved; loadTrips(); }
+      if (saved) { 
+        $('deviceIdInput').value = saved; 
+        loadTrips(); 
+      }
       $('deviceIdInput').addEventListener('keydown', e => { if (e.key === 'Enter') loadTrips(); });
       $('newTripInput').addEventListener('keydown', e => { if (e.key === 'Enter') doCreateTrip(); });
     });
   </script>
-
 </body>
 </html>
