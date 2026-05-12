@@ -122,8 +122,7 @@ async def get_trips(device_id: str):
     return trips
 
 
-if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+
 class RenameRequest(BaseModel):
     old_trip_id: str
     new_trip_id: str
@@ -172,7 +171,7 @@ async def update_place(place_id: int, req: UpdatePlaceRequest):
     # remove None values
     updates = {k: v for k, v in updates.items() if v is not None}
 
-    success = update_place_db(
+    success = await update_place_db(
         place_id=place_id,
         device_id=req.device_id,
         updates=updates
@@ -185,26 +184,6 @@ async def update_place(place_id: int, req: UpdatePlaceRequest):
         "success": True,
         "updated_fields": list(updates.keys())
     }
-@app.patch("/places/{place_id}")
-async def update_place(place_id: int, req: UpdatePlaceRequest):
 
-    updates = {
-        "name": req.name,
-        "city": req.city,
-        "country": req.country,
-        "type": req.type,
-        "summary": req.summary,
-    }
-
-    updates = {k: v for k, v in updates.items() if v is not None}
-
-    success = update_place_db(
-        place_id=place_id,
-        device_id=req.device_id,
-        updates=updates
-    )
-
-    if not success:
-        raise HTTPException(status_code=404, detail="Place not found")
-
-    return {"success": True}
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
