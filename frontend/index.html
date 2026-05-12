@@ -55,7 +55,7 @@
       content: '';
       position: fixed;
       inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' seed='1'/%3E%3C/filter%3E%3Crect width='256' height='256' fill='%23f5f0e8'/%3E%3Crect width='256' height='256' fill='%23e8e0d0' filter='url(%23n)' opacity='0.3'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' result='noise' /%3E%3CfeDisplacementMap in='SourceGraphic' in2='noise' scale='20' /%3E%3C/filter%3E%3Crect width='256' height='256' fill='%23f5f0e8' /%3E%3C/svg%3E");
       background-size: 256px 256px;
       background-attachment: fixed;
       pointer-events: none;
@@ -208,12 +208,12 @@
       cursor: pointer; transition: all 0.2s; color: var(--ink-soft);
       white-space: nowrap; display: flex; align-items: center; gap: 6px;
       position: relative;
+      min-height: 44px;
     }
     .trip-tab:hover { border-color: var(--accent); color: var(--accent); }
     .trip-tab.active { background: var(--ink); border-color: var(--ink); color: var(--cream); }
     .trip-tab.active:hover { background: var(--ink-soft); }
 
-    /* trip tab action buttons — shown on hover */
     .trip-tab-actions {
       display: none;
       align-items: center;
@@ -225,13 +225,14 @@
 
     .trip-tab-btn {
       background: none; border: none; cursor: pointer;
-      padding: 2px 4px; border-radius: 4px; line-height: 1;
+      padding: 4px 6px; border-radius: 4px; line-height: 1;
       font-size: 11px; opacity: 0.6; transition: opacity 0.15s, background 0.15s;
+      min-height: 32px;
+      min-width: 32px;
     }
     .trip-tab-btn:hover { opacity: 1; background: rgba(0,0,0,0.08); }
     .trip-tab.active .trip-tab-btn:hover { background: rgba(255,255,255,0.15); }
 
-    /* inline rename input inside tab */
     .trip-tab-rename {
       background: var(--warm-white); border: 1.5px solid var(--accent);
       border-radius: 100px; padding: 6px 14px;
@@ -250,6 +251,7 @@
       border-radius: 100px; padding: 6px 14px;
       font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s;
       color: var(--ink-soft); user-select: none;
+      min-height: 44px;
     }
     .filter-chip:hover { border-color: var(--ink-soft); }
     .filter-chip.active { background: var(--accent-pale); border-color: var(--accent); color: var(--accent); }
@@ -276,6 +278,8 @@
       border-radius: var(--radius); padding: 20px;
       transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
       cursor: default; position: relative; overflow: hidden;
+      display: flex;
+      flex-direction: column;
     }
     .place-card::before {
       content: ''; position: absolute; top: 0; left: 0; right: 0;
@@ -351,6 +355,7 @@
     .place-card-footer {
       display: flex; align-items: center; justify-content: space-between;
       padding-top: 12px; border-top: 1px solid var(--border); gap: 8px;
+      margin-top: auto;
     }
     .place-date { font-size: 11px; color: var(--ink-faint); }
     .place-source-btn {
@@ -360,6 +365,46 @@
       transition: background 0.2s, color 0.2s;
     }
     .place-source-btn:hover { background: var(--ink); color: var(--cream); }
+
+    /* ── SAVE ENTRIES (duplicates grouped) ── */
+    .save-entry {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 8px 0;
+    }
+
+    .save-entry:not(:first-child) {
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+
+    .save-summary {
+      font-size: 13px;
+      color: var(--ink-soft);
+      line-height: 1.5;
+      font-style: italic;
+    }
+
+    .save-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .save-date {
+      font-size: 11px;
+      color: var(--ink-faint);
+    }
+
+    .place-saves {
+      display: flex;
+      flex-direction: column;
+      margin-top: auto;
+      padding-top: 4px;
+    }
 
     /* ── MODAL ── */
     .modal-backdrop {
@@ -593,7 +638,7 @@
         </div>
       </div>
 
-      <div id="createTripBar" style="display:none;background:var(--warm-white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:16px;gap:10px;align-items:center;flex-wrap:wrap;">
+      <div id="createTripBar" style="display:none;background:var(--warm-white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:16px;gap:10px;align-items:flex-end;flex-wrap:wrap;flex-direction:row;display:none;">
         <input type="text" id="newTripInput" class="device-input" placeholder="Trip name e.g. Japan 2026" style="flex:1;min-width:180px;" />
         <button class="btn-load" onclick="doCreateTrip()">Create</button>
         <button onclick="hideCreateTrip()" style="background:none;border:none;color:var(--ink-muted);cursor:pointer;font-size:13px;">Cancel</button>
@@ -692,7 +737,7 @@
       }
     }
 
-    // ─── MODAL ───────────────────────────────────────────────────────────
+    // ─── MODAL ─────────────────────────────────────────────────────────
     function showModal(html) {
       const backdrop = $('modalBackdrop');
       backdrop.className = 'modal-backdrop';
@@ -707,7 +752,7 @@
       backdrop.innerHTML = '';
     }
 
-    // ─── LOAD TRIPS ─────────────────────────────────────────────────────────
+    // ─── LOAD TRIPS ───────────────────────────────────────────────────────
     async function loadTrips() {
       const deviceId = $('deviceIdInput').value.trim();
       if (!deviceId) { showToast('Please enter your Device ID first'); return; }
@@ -784,7 +829,7 @@
       });
     }
 
-    // ─── RENAME TRIP ─────────────────────────────────────────────────────────
+    // ─── RENAME TRIP ───────────────────────────────────────────────────────
     function startRenameTrip(e, tripName, btnEl) {
       e.stopPropagation();
       const tab = btnEl.closest('.trip-tab');
@@ -841,7 +886,7 @@
       }
     }
 
-    // ─── DELETE TRIP ─────────────────────────────────────────────────────────
+    // ─── DELETE TRIP ───────────────────────────────────────────────────────
     function confirmDeleteTrip(e, tripName) {
       e.stopPropagation();
       showModal(`
@@ -871,7 +916,7 @@
       }
     }
 
-    // ─── LOAD PLACES ─────────────────────────────────────────────────────────
+    // ─── LOAD PLACES ───────────────────────────────────────────────────────
     async function loadPlaces(deviceId, tripId) {
       hide('tripsSection'); show('loadingState');
       try {
@@ -937,7 +982,7 @@
       showToast(`✅ Category "${name}" added!`);
     }
 
-    // ─── RENDER PLACES ────────────────────────────────────────────────────────
+    // ─── RENDER PLACES ──────────────────────────────────────────────────────
     function renderPlaces() {
       const grid = $('placesGrid');
       const filtered = currentFilter === 'all'
@@ -950,45 +995,66 @@
       const displayPlaces = filtered.filter(p => p.name !== '__trip_created__');
 
       if (!displayPlaces.length) {
-        grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px 0;color:var(--ink-muted);font-size:14px;">No ${currentFilter !== 'all' ? currentFilter + 's' : 'places'} saved in this trip yet.</div>`;
+        grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px 0;color:var(--ink-muted);font-size:14px;">No ${currentFilter !== 'all' ? currentFilter + 's' : 'places'} saved yet.</div>`;
         return;
       }
 
-      grid.innerHTML = displayPlaces.map(place => {
-        const type = (place.type || 'place').toLowerCase();
+      // Group places by location (name + country) to merge duplicate saves
+      const locationGroups = {};
+      displayPlaces.forEach(place => {
+        const locKey = `${place.name}|${place.country}`;
+        if (!locationGroups[locKey]) locationGroups[locKey] = [];
+        locationGroups[locKey].push(place);
+      });
+
+      grid.innerHTML = Object.entries(locationGroups).map(([locKey, places]) => {
+        const mainPlace = places[0];
+        const type = (mainPlace.type || 'place').toLowerCase();
         const emoji = typeEmoji[type] || '📍';
         const badge = typeBadge[type] || 'badge-default';
-        const loc = [place.city, place.country].filter(Boolean).join(', ') || 'Location unknown';
-        const dateStr = formatDate(place.created_at);
-        const summary = place.summary || '';
-        const mapsUrl = place.maps_url || '';
-        const placeId = place.id || '';
+        const loc = [mainPlace.city, mainPlace.country].filter(Boolean).join(', ') || 'Location unknown';
+        const mapsUrl = mainPlace.maps_url || '';
+        const placeId = mainPlace.id || '';
+
+        // Build one save-entry per grouped place (all saves for this location)
+        const savesHtml = places.map(place => {
+          const dateStr = formatDate(place.created_at);
+          const viewBtn = place.source_url
+            ? `<a class="place-source-btn" href="${escHtml(place.source_url)}" target="_blank" rel="noopener">View ↗</a>`
+            : '';
+          const caption = place.summary
+            ? `<div class="save-summary">${escHtml(place.summary)}</div>`
+            : '';
+          return `
+            <div class="save-entry">
+              ${caption}
+              <div class="save-footer">
+                <span class="save-date">${dateStr}</span>
+                ${viewBtn}
+              </div>
+            </div>`;
+        }).join('');
 
         return `
           <div class="place-card" data-type="${type}" data-id="${escHtml(placeId)}" style="animation: fadeUp 0.4s ease both;">
             <div class="card-actions">
-              <button class="card-action-btn edit" title="Edit place" onclick="showEditCard('${escHtml(placeId)}')">✏️</button>
-              <button class="card-action-btn move" title="Move to another trip" onclick="showMoveCard('${escHtml(placeId)}', '${escHtml(place.name || '')}')">↗️</button>
-              <button class="card-action-btn delete" title="Delete place" onclick="confirmDeleteCard('${escHtml(placeId)}', '${escHtml(place.name || '')}')">🗑️</button>
+              <button class="card-action-btn move" title="Move to another trip" onclick="showMoveCard('${escHtml(placeId)}', '${escHtml(mainPlace.name || '')}')">↗️</button>
+              <button class="card-action-btn delete" title="Delete place" onclick="confirmDeleteCard('${escHtml(placeId)}', '${escHtml(mainPlace.name || '')}')">🗑️</button>
             </div>
             <div class="place-card-top">
-              <div class="place-name" onclick="editPlaceName('${escHtml(placeId)}', '${escHtml(place.name || '')}')">${escHtml(place.name || 'Unnamed place')}</div>
-              <span class="place-type-badge ${badge}" onclick="showChangeType('${escHtml(placeId)}', '${type}')">${emoji} ${type}</span>
+              <div class="place-name">${escHtml(mainPlace.name || 'Unnamed place')}</div>
+              <span class="place-type-badge ${badge}">${emoji} ${type}</span>
             </div>
-            <div class="place-location" onclick="editPlaceLocation('${escHtml(placeId)}', '${escHtml(place.city)}', '${escHtml(place.country)}')">
+            <div class="place-location">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/>
                 <circle cx="12" cy="9" r="2.5"/>
               </svg>
               ${escHtml(loc)}
             </div>
-            ${summary ? `<div class="place-summary" onclick="editPlaceSummary('${escHtml(placeId)}', '${escHtml(summary)}')">${escHtml(summary)}</div>` : ''}
+            <div class="place-saves">${savesHtml}</div>
             <div class="place-card-footer">
-              <span class="place-date">${dateStr}</span>
-              <div style="display:flex;gap:6px;">
-                ${mapsUrl ? `<a class="place-source-btn" href="${escHtml(mapsUrl)}" target="_blank" rel="noopener" style="background:var(--green-pale);color:var(--green);">📍 Maps</a>` : ''}
-                ${place.source_url ? `<a class="place-source-btn" href="${escHtml(place.source_url)}" target="_blank" rel="noopener">View ↗</a>` : ''}
-              </div>
+              ${mapsUrl ? `<a class="place-source-btn" href="${escHtml(mapsUrl)}" target="_blank" rel="noopener" style="background:var(--green-pale);color:var(--green);">📍 Maps</a>` : '<div></div>'}
             </div>
           </div>`;
       }).join('');
@@ -998,176 +1064,46 @@
       });
     }
 
-    // ─── EDIT PLACE CARD ───────────────────────────────────────────────────────
-    function showEditCard(placeId) {
-      const place = allPlaces.find(p => String(p.id) === String(placeId));
-      if (!place) return;
+    // ─── FILTER CHIPS ───────────────────────────────────────────────────────
+    function toggleFilter(el) {
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      currentFilter = el.dataset.type;
+      savePreferences();
+      renderPlaces();
+    }
+
+    // ─── CREATE TRIP ───────────────────────────────────────────────────────
+    function showCreateTrip() {
+      show('createTripBar');
+      $('newTripInput').focus();
+    }
+
+    function hideCreateTrip() {
+      hide('createTripBar');
+    }
+
+    async function doCreateTrip() {
+      const tripName = $('newTripInput').value.trim();
+      if (!tripName) { showToast('Enter a trip name'); return; }
+      const deviceId = $('deviceIdInput').value.trim();
       
-      showModal(`
-        <div class="modal-title">Edit Place</div>
-        <div class="form-group">
-          <label class="form-label">Place Name</label>
-          <input type="text" class="form-input" id="editName" value="${escHtml(place.name || '')}" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">City</label>
-          <input type="text" class="form-input" id="editCity" value="${escHtml(place.city || '')}" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Country</label>
-          <input type="text" class="form-input" id="editCountry" value="${escHtml(place.country || '')}" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Category</label>
-          <select class="form-select" id="editType">
-            <option value="restaurant" ${place.type === 'restaurant' ? 'selected' : ''}>🍽️ Restaurant</option>
-            <option value="cafe" ${place.type === 'cafe' ? 'selected' : ''}>☕ Café</option>
-            <option value="attraction" ${place.type === 'attraction' ? 'selected' : ''}>🏛️ Attraction</option>
-            <option value="hotel" ${place.type === 'hotel' ? 'selected' : ''}>🏨 Hotel</option>
-            ${customCategories.map(cat => `<option value="${escHtml(cat.id)}" ${place.type === cat.id ? 'selected' : ''}>${cat.emoji} ${escHtml(cat.name)}</option>`).join('')}
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Notes / Caption</label>
-          <textarea class="form-textarea" id="editSummary">${escHtml(place.summary || '')}</textarea>
-        </div>
-        <div class="modal-actions">
-          <button class="btn-ghost" onclick="closeModal()">Cancel</button>
-          <button class="btn-load" onclick="doSaveEdit('${escHtml(placeId)}')">Save Changes</button>
-        </div>
-      `);
-      setTimeout(() => $('editName').focus(), 100);
+      try {
+        const res = await fetch(`${API_BASE}/trips/create`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ trip_id: tripName, device_id: deviceId })
+        });
+        if (!res.ok) throw new Error();
+        showToast(`✅ Trip "${tripName}" created!`);
+        hideCreateTrip();
+        await loadTrips();
+      } catch {
+        showToast('❌ Failed to create trip');
+      }
     }
 
-    async function doSaveEdit(placeId) {
-      const name = $('editName').value.trim();
-      const city = $('editCity').value.trim();
-      const country = $('editCountry').value.trim();
-      const type = $('editType').value;
-      const summary = $('editSummary').value.trim();
-
-      if (!name) { showToast('Place name is required'); return; }
-
-      const place = allPlaces.find(p => String(p.id) === String(placeId));
-      if (!place) return;
-
-      place.name = name;
-      place.city = city;
-      place.country = country;
-      place.type = type;
-      place.summary = summary;
-
-      closeModal();
-      renderPlaces();
-      showToast('✅ Place updated!');
-    }
-
-    function editPlaceName(placeId, currentName) {
-      showModal(`
-        <div class="modal-title">Edit Place Name</div>
-        <div class="form-group">
-          <input type="text" class="form-input" id="quickEditInput" value="${escHtml(currentName)}" />
-        </div>
-        <div class="modal-actions">
-          <button class="btn-ghost" onclick="closeModal()">Cancel</button>
-          <button class="btn-load" onclick="doQuickEdit('${escHtml(placeId)}', 'name')">Save</button>
-        </div>
-      `);
-      setTimeout(() => $('quickEditInput').focus(), 100);
-    }
-
-    function editPlaceLocation(placeId, city, country) {
-      showModal(`
-        <div class="modal-title">Edit Location</div>
-        <div class="form-group">
-          <label class="form-label">City</label>
-          <input type="text" class="form-input" id="quickEditCity" value="${escHtml(city)}" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Country</label>
-          <input type="text" class="form-input" id="quickEditCountry" value="${escHtml(country)}" />
-        </div>
-        <div class="modal-actions">
-          <button class="btn-ghost" onclick="closeModal()">Cancel</button>
-          <button class="btn-load" onclick="doQuickEditLocation('${escHtml(placeId)}')">Save</button>
-        </div>
-      `);
-      setTimeout(() => $('quickEditCity').focus(), 100);
-    }
-
-    function editPlaceSummary(placeId, currentSummary) {
-      showModal(`
-        <div class="modal-title">Edit Notes</div>
-        <div class="form-group">
-          <textarea class="form-textarea" id="quickEditSummary">${escHtml(currentSummary)}</textarea>
-        </div>
-        <div class="modal-actions">
-          <button class="btn-ghost" onclick="closeModal()">Cancel</button>
-          <button class="btn-load" onclick="doQuickEdit('${escHtml(placeId)}', 'summary')">Save</button>
-        </div>
-      `);
-      setTimeout(() => $('quickEditSummary').focus(), 100);
-    }
-
-    function doQuickEdit(placeId, field) {
-      const place = allPlaces.find(p => String(p.id) === String(placeId));
-      if (!place) return;
-
-      const value = $(field === 'name' ? 'quickEditInput' : 'quickEditSummary').value.trim();
-      if (field === 'name' && !value) { showToast('Name is required'); return; }
-
-      place[field] = value;
-      closeModal();
-      renderPlaces();
-      showToast('✅ Updated!');
-    }
-
-    function doQuickEditLocation(placeId) {
-      const place = allPlaces.find(p => String(p.id) === String(placeId));
-      if (!place) return;
-
-      place.city = $('quickEditCity').value.trim();
-      place.country = $('quickEditCountry').value.trim();
-      closeModal();
-      renderPlaces();
-      showToast('✅ Location updated!');
-    }
-
-    function showChangeType(placeId, currentType) {
-      const typeOptions = [
-        { value: 'restaurant', label: '🍽️ Restaurant' },
-        { value: 'cafe', label: '☕ Café' },
-        { value: 'attraction', label: '🏛️ Attraction' },
-        { value: 'hotel', label: '🏨 Hotel' },
-        ...customCategories.map(cat => ({ value: cat.id, label: `${cat.emoji} ${cat.name}` }))
-      ];
-
-      showModal(`
-        <div class="modal-title">Change Category</div>
-        <div class="form-group">
-          <select class="form-select" id="typeSelect">
-            ${typeOptions.map(opt => `<option value="${escHtml(opt.value)}" ${opt.value === currentType ? 'selected' : ''}>${opt.label}</option>`).join('')}
-          </select>
-        </div>
-        <div class="modal-actions">
-          <button class="btn-ghost" onclick="closeModal()">Cancel</button>
-          <button class="btn-load" onclick="doChangeType('${escHtml(placeId)}')">Change</button>
-        </div>
-      `);
-    }
-
-    function doChangeType(placeId) {
-      const newType = $('typeSelect').value;
-      const place = allPlaces.find(p => String(p.id) === String(placeId));
-      if (!place) return;
-
-      place.type = newType;
-      closeModal();
-      renderPlaces();
-      showToast('✅ Category changed!');
-    }
-
-    // ─── DELETE CARD ─────────────────────────────────────────────────────────
+    // ─── DELETE CARD ───────────────────────────────────────────────────────
     function confirmDeleteCard(placeId, placeName) {
       showModal(`
         <div class="modal-title">Delete "${escHtml(placeName)}"?</div>
@@ -1197,37 +1133,42 @@
       }
     }
 
-    // ─── MOVE CARD ─────────────────────────────────────────────────────────
+    // ─── MOVE CARD ───────────────────────────────────────────────────────
     function showMoveCard(placeId, placeName) {
       const otherTrips = trips.filter(t => t !== currentTrip);
       if (!otherTrips.length) {
-        showToast('No other trips to move to — create one first');
+        showToast('Create another trip first');
         return;
       }
-      const options = otherTrips.map(t => `<option value="${escHtml(t)}">${escHtml(t)}</option>`).join('');
+      const tripOptions = otherTrips.map(t => `<option value="${escHtml(t)}">${escHtml(t)}</option>`).join('');
       showModal(`
         <div class="modal-title">Move "${escHtml(placeName)}"</div>
-        <div class="modal-body">Choose which trip to move this place to:</div>
-        <select class="move-select" id="moveTripSelect">${options}</select>
+        <div class="form-group">
+          <label class="form-label">To Trip</label>
+          <select class="move-select" id="moveTrip">
+            ${tripOptions}
+          </select>
+        </div>
         <div class="modal-actions">
           <button class="btn-ghost" onclick="closeModal()">Cancel</button>
           <button class="btn-load" onclick="doMoveCard('${escHtml(placeId)}')">Move</button>
         </div>
       `);
+      setTimeout(() => $('moveTrip').focus(), 100);
     }
 
     async function doMoveCard(placeId) {
-      const newTrip = $('moveTripSelect').value;
+      const targetTrip = $('moveTrip').value;
       closeModal();
       const deviceId = $('deviceIdInput').value.trim();
       try {
         const res = await fetch(`${API_BASE}/places/${encodeURIComponent(placeId)}/move`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ new_trip_id: newTrip, device_id: deviceId })
+          body: JSON.stringify({ trip_id: targetTrip, device_id: deviceId })
         });
         if (!res.ok) throw new Error();
-        showToast(`✅ Moved to "${newTrip}"`);
+        showToast(`✅ Moved to "${targetTrip}"`);
         allPlaces = allPlaces.filter(p => String(p.id) !== String(placeId));
         renderPlaces();
       } catch {
@@ -1235,57 +1176,12 @@
       }
     }
 
-    // ─── FILTER ──────────────────────────────────────────────────────────
-    function toggleFilter(chip) {
-      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-      currentFilter = chip.dataset.type;
-      savePreferences();
-      renderPlaces();
+    // Initialize
+    const savedDevice = localStorage.getItem('travelindex_device');
+    if (savedDevice) {
+      $('deviceIdInput').value = savedDevice;
+      loadPreferences();
     }
-
-    // ─── CREATE TRIP ─────────────────────────────────────────────────────────
-    function showCreateTrip() {
-      const bar = $('createTripBar');
-      bar.style.display = 'flex';
-      $('newTripInput').focus();
-    }
-
-    function hideCreateTrip() {
-      $('createTripBar').style.display = 'none';
-      $('newTripInput').value = '';
-    }
-
-    async function doCreateTrip() {
-      const name = $('newTripInput').value.trim();
-      const deviceId = $('deviceIdInput').value.trim();
-      if (!name) { showToast('Enter a trip name'); return; }
-      if (!deviceId) { showToast('Load your saves first'); return; }
-      try {
-        const res = await fetch(`${API_BASE}/trips/create`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ trip_id: name, device_id: deviceId })
-        });
-        if (!res.ok) throw new Error();
-        hideCreateTrip();
-        showToast(`✅ "${name}" created!`);
-        await loadTrips();
-      } catch {
-        showToast('❌ Failed to create trip');
-      }
-    }
-
-    // ─── INIT ───────────────────────────────────────────────────────────
-    window.addEventListener('DOMContentLoaded', () => {
-      const saved = localStorage.getItem('travelindex_device');
-      if (saved) { 
-        $('deviceIdInput').value = saved; 
-        loadTrips(); 
-      }
-      $('deviceIdInput').addEventListener('keydown', e => { if (e.key === 'Enter') loadTrips(); });
-      $('newTripInput').addEventListener('keydown', e => { if (e.key === 'Enter') doCreateTrip(); });
-    });
   </script>
 </body>
 </html>
