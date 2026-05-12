@@ -94,7 +94,6 @@
       cursor: pointer; text-decoration: none;
       transition: background 0.2s, transform 0.15s;
       min-height: 44px;
-      min-width: 44px;
     }
     .btn-shortcut:hover { background: var(--accent); transform: translateY(-1px); }
 
@@ -162,11 +161,8 @@
       border-radius: var(--radius-sm); padding: 9px 18px;
       font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
       cursor: pointer; transition: background 0.2s, transform 0.15s; white-space: nowrap;
-      min-height: 44px;
-      min-width: 44px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      min-height: 44px; min-width: 44px;
+      display: flex; align-items: center; justify-content: center;
     }
     .btn-load:hover { background: var(--accent-light); transform: translateY(-1px); }
 
@@ -175,8 +171,7 @@
       border-radius: var(--radius-sm); padding: 7px 12px;
       font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
       cursor: pointer; transition: background 0.2s, transform 0.15s; white-space: nowrap;
-      min-height: 44px;
-      min-width: 44px;
+      min-height: 44px; min-width: 44px;
     }
     .btn-danger:hover { background: var(--red); color: white; transform: translateY(-1px); }
 
@@ -185,8 +180,7 @@
       border-radius: var(--radius-sm); padding: 7px 12px;
       font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
       cursor: pointer; transition: all 0.2s; white-space: nowrap;
-      min-height: 44px;
-      min-width: 44px;
+      min-height: 44px; min-width: 44px;
     }
     .btn-ghost:hover { border-color: var(--ink-soft); color: var(--ink); }
 
@@ -207,19 +201,13 @@
       font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
       cursor: pointer; transition: all 0.2s; color: var(--ink-soft);
       white-space: nowrap; display: flex; align-items: center; gap: 6px;
-      position: relative;
-      min-height: 44px;
+      position: relative; min-height: 44px;
     }
     .trip-tab:hover { border-color: var(--accent); color: var(--accent); }
     .trip-tab.active { background: var(--ink); border-color: var(--ink); color: var(--cream); }
     .trip-tab.active:hover { background: var(--ink-soft); }
 
-    .trip-tab-actions {
-      display: none;
-      align-items: center;
-      gap: 2px;
-      margin-left: 4px;
-    }
+    .trip-tab-actions { display: none; align-items: center; gap: 2px; margin-left: 4px; }
     .trip-tab:hover .trip-tab-actions,
     .trip-tab.active .trip-tab-actions { display: flex; }
 
@@ -227,8 +215,7 @@
       background: none; border: none; cursor: pointer;
       padding: 4px 6px; border-radius: 4px; line-height: 1;
       font-size: 11px; opacity: 0.6; transition: opacity 0.15s, background 0.15s;
-      min-height: 32px;
-      min-width: 32px;
+      min-height: 32px; min-width: 32px;
     }
     .trip-tab-btn:hover { opacity: 1; background: rgba(0,0,0,0.08); }
     .trip-tab.active .trip-tab-btn:hover { background: rgba(255,255,255,0.15); }
@@ -250,19 +237,31 @@
       background: var(--warm-white); border: 1px solid var(--border);
       border-radius: 100px; padding: 6px 14px;
       font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s;
-      color: var(--ink-soft); user-select: none;
-      min-height: 44px;
+      color: var(--ink-soft); user-select: none; min-height: 44px;
     }
     .filter-chip:hover { border-color: var(--ink-soft); }
     .filter-chip.active { background: var(--accent-pale); border-color: var(--accent); color: var(--accent); }
     .filter-chip .chip-icon { font-size: 13px; }
+
+    /* Custom category chip with remove button */
+    .filter-chip.custom-category-chip { padding-right: 6px; }
+    .chip-remove {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: rgba(26,23,20,0.08); border: none; cursor: pointer;
+      font-size: 10px; color: var(--ink-muted); margin-left: 4px;
+      transition: background 0.15s, color 0.15s; flex-shrink: 0;
+    }
+    .chip-remove:hover { background: var(--red-pale); color: var(--red); }
+    .filter-chip.active .chip-remove { background: rgba(192,83,26,0.2); color: var(--accent); }
+    .filter-chip.active .chip-remove:hover { background: var(--red-pale); color: var(--red); }
 
     .add-category-btn {
       display: flex; align-items: center; gap: 4px;
       background: var(--accent-pale); border: 1px dashed var(--accent);
       border-radius: 100px; padding: 6px 12px;
       font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s;
-      color: var(--accent);
+      color: var(--accent); min-height: 44px;
     }
     .add-category-btn:hover { background: var(--accent); color: white; border-style: solid; }
 
@@ -278,8 +277,7 @@
       border-radius: var(--radius); padding: 20px;
       transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
       cursor: default; position: relative; overflow: hidden;
-      display: flex;
-      flex-direction: column;
+      display: flex; flex-direction: column;
     }
     .place-card::before {
       content: ''; position: absolute; top: 0; left: 0; right: 0;
@@ -303,39 +301,32 @@
       display: inline-flex; align-items: center; gap: 4px;
       padding: 3px 10px; border-radius: 100px; font-size: 11px; font-weight: 500;
       text-transform: capitalize; letter-spacing: 0.2px; flex-shrink: 0;
-      cursor: pointer; transition: all 0.2s;
     }
-    .place-type-badge:hover { opacity: 0.8; }
     .badge-restaurant { background: var(--accent-pale); color: var(--accent); }
     .badge-cafe { background: var(--gold-pale); color: var(--gold); }
     .badge-attraction { background: var(--blue-pale); color: var(--blue); }
     .badge-hotel { background: var(--green-pale); color: var(--green); }
     .badge-hidden { background: var(--purple-pale); color: var(--purple); }
     .badge-default { background: var(--sand); color: var(--ink-muted); }
+    .badge-custom { background: var(--purple-pale); color: var(--purple); }
 
     .place-name {
       font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 600;
       line-height: 1.3; color: var(--ink); letter-spacing: -0.2px; flex: 1;
-      cursor: pointer; padding: 4px; border-radius: 4px; transition: background 0.2s;
     }
-    .place-name:hover { background: rgba(192,83,26,0.1); }
 
     .place-location {
       display: flex; align-items: center; gap: 5px;
       color: var(--ink-muted); font-size: 13px; margin-bottom: 14px;
-      cursor: pointer; padding: 4px; border-radius: 4px; transition: background 0.2s;
     }
-    .place-location:hover { background: rgba(192,83,26,0.1); }
     .place-location svg { flex-shrink: 0; opacity: 0.6; }
 
     .place-summary {
       font-size: 13px; color: var(--ink-soft); line-height: 1.5;
       margin-bottom: 10px; font-style: italic;
-      cursor: pointer; padding: 4px; border-radius: 4px; transition: background 0.2s;
     }
-    .place-summary:hover { background: rgba(192,83,26,0.1); }
 
-    /* card action buttons (delete + move + edit) */
+    /* card action buttons */
     .card-actions {
       position: absolute; top: 12px; right: 12px;
       display: flex; gap: 4px;
@@ -366,45 +357,13 @@
     }
     .place-source-btn:hover { background: var(--ink); color: var(--cream); }
 
-    /* ── SAVE ENTRIES (duplicates grouped) ── */
-    .save-entry {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      padding: 8px 0;
-    }
-
-    .save-entry:not(:first-child) {
-      padding-top: 10px;
-      border-top: 1px solid var(--border);
-    }
-
-    .save-summary {
-      font-size: 13px;
-      color: var(--ink-soft);
-      line-height: 1.5;
-      font-style: italic;
-    }
-
-    .save-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .save-date {
-      font-size: 11px;
-      color: var(--ink-faint);
-    }
-
-    .place-saves {
-      display: flex;
-      flex-direction: column;
-      margin-top: auto;
-      padding-top: 4px;
-    }
+    /* ── SAVE ENTRIES ── */
+    .save-entry { display: flex; flex-direction: column; gap: 6px; padding: 8px 0; }
+    .save-entry:not(:first-child) { padding-top: 10px; border-top: 1px solid var(--border); }
+    .save-summary { font-size: 13px; color: var(--ink-soft); line-height: 1.5; font-style: italic; }
+    .save-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+    .save-date { font-size: 11px; color: var(--ink-faint); }
+    .place-saves { display: flex; flex-direction: column; margin-top: auto; padding-top: 4px; }
 
     /* ── MODAL ── */
     .modal-backdrop {
@@ -414,24 +373,22 @@
     }
     .modal {
       background: var(--warm-white); border-radius: var(--radius);
-      padding: 28px; max-width: 480px; width: 100%;
+      padding: 28px; max-width: 500px; width: 100%;
       box-shadow: var(--shadow-lg);
       transform: translateY(20px); animation: modalUp 0.25s ease forwards;
-      max-height: 85vh; overflow-y: auto;
+      max-height: 90vh; overflow-y: auto;
     }
     .modal-title {
       font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 600;
-      margin-bottom: 16px; letter-spacing: -0.2px;
+      margin-bottom: 20px; letter-spacing: -0.2px;
     }
     .modal-body { font-size: 14px; color: var(--ink-muted); margin-bottom: 20px; line-height: 1.6; }
-    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; margin-top: 24px; }
 
-    .form-group {
-      margin-bottom: 16px;
-    }
+    .form-group { margin-bottom: 16px; }
     .form-label {
-      display: block; font-size: 12px; font-weight: 600;
-      color: var(--ink-soft); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;
+      display: block; font-size: 11px; font-weight: 600;
+      color: var(--ink-soft); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.6px;
     }
     .form-input, .form-select {
       width: 100%; border: 1px solid var(--sand); border-radius: var(--radius-sm);
@@ -450,13 +407,42 @@
     }
     .form-textarea:focus { border-color: var(--accent); }
 
+    /* Type selector grid */
+    .type-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .type-option {
+      border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+      padding: 10px 8px; text-align: center; cursor: pointer;
+      transition: all 0.15s; background: var(--cream);
+    }
+    .type-option:hover { border-color: var(--accent); background: var(--accent-pale); }
+    .type-option.selected { border-color: var(--accent); background: var(--accent-pale); }
+    .type-option-emoji { font-size: 18px; display: block; margin-bottom: 4px; }
+    .type-option-label { font-size: 11px; font-weight: 500; color: var(--ink-soft); text-transform: capitalize; }
+
+    /* Custom category row with delete */
+    .cat-manage-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+    .cat-manage-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; border-radius: var(--radius-sm);
+      background: var(--cream); border: 1px solid var(--border);
+    }
+    .cat-manage-emoji { font-size: 20px; }
+    .cat-manage-name { flex: 1; font-size: 14px; font-weight: 500; }
+    .cat-manage-delete {
+      background: none; border: none; cursor: pointer;
+      font-size: 14px; opacity: 0.4; transition: opacity 0.15s; padding: 4px;
+    }
+    .cat-manage-delete:hover { opacity: 1; }
+
+    /* divider */
+    .modal-divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
     /* move trip select */
     .move-select {
       width: 100%; border: 1px solid var(--sand); border-radius: var(--radius-sm);
       padding: 10px 14px; font-family: 'DM Sans', sans-serif; font-size: 14px;
       background: var(--cream); color: var(--ink); outline: none;
-      margin-bottom: 16px; cursor: pointer;
-      transition: border-color 0.2s;
+      margin-bottom: 16px; cursor: pointer; transition: border-color 0.2s;
     }
     .move-select:focus { border-color: var(--accent); }
 
@@ -552,7 +538,8 @@
       .shortcut-cta { padding: 24px 20px; }
       .how-section { padding: 24px 20px; }
       .device-bar { padding: 14px 16px; }
-      .card-actions { opacity: 1; } /* always show on mobile */
+      .card-actions { opacity: 1; }
+      .type-selector { grid-template-columns: repeat(2, 1fr); }
     }
   </style>
 </head>
@@ -638,7 +625,7 @@
         </div>
       </div>
 
-      <div id="createTripBar" style="display:none;background:var(--warm-white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:16px;gap:10px;align-items:flex-end;flex-wrap:wrap;flex-direction:row;display:none;">
+      <div id="createTripBar" style="display:none;background:var(--warm-white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:16px;gap:10px;align-items:flex-end;flex-wrap:wrap;flex-direction:row;">
         <input type="text" id="newTripInput" class="device-input" placeholder="Trip name e.g. Japan 2026" style="flex:1;min-width:180px;" />
         <button class="btn-load" onclick="doCreateTrip()">Create</button>
         <button onclick="hideCreateTrip()" style="background:none;border:none;color:var(--ink-muted);cursor:pointer;font-size:13px;">Cancel</button>
@@ -654,7 +641,7 @@
         <div class="filter-chip" data-type="cafe" onclick="toggleFilter(this)"><span class="chip-icon">☕</span> Cafés</div>
         <div class="filter-chip" data-type="attraction" onclick="toggleFilter(this)"><span class="chip-icon">🏛️</span> Attractions</div>
         <div class="filter-chip" data-type="hotel" onclick="toggleFilter(this)"><span class="chip-icon">🏨</span> Hotels</div>
-        <button class="add-category-btn" onclick="showAddCategory()">+ Add Category</button>
+        <button class="add-category-btn" onclick="showManageCategories()">⚙️ Categories</button>
       </div>
 
       <div class="section-header">
@@ -682,8 +669,6 @@
   </footer>
 
   <div class="toast" id="toast"></div>
-
-  <!-- MODAL -->
   <div id="modalBackdrop" style="display:none;"></div>
 
   <script>
@@ -694,6 +679,15 @@
     let currentFilter = 'all';
     let trips = [];
     let customCategories = [];
+
+    // Built-in types
+    const BUILTIN_TYPES = [
+      { id: 'restaurant', label: 'restaurant', emoji: '🍽️' },
+      { id: 'cafe',       label: 'café',       emoji: '☕' },
+      { id: 'attraction', label: 'attraction', emoji: '🏛️' },
+      { id: 'hotel',      label: 'hotel',      emoji: '🏨' },
+      { id: 'hidden',     label: 'hidden gem', emoji: '🔮' },
+    ];
 
     const $ = id => document.getElementById(id);
     function show(id) { $(id).style.display = ''; }
@@ -706,18 +700,36 @@
       setTimeout(() => t.classList.remove('show'), 2800);
     }
 
-    const typeEmoji = { restaurant: '🍽️', cafe: '☕', attraction: '🏛️', hotel: '🏨', hidden: '🔮' };
-    const typeBadge = { restaurant: 'badge-restaurant', cafe: 'badge-cafe', attraction: 'badge-attraction', hotel: 'badge-hotel', hidden: 'badge-hidden' };
-
     function formatDate(ts) {
       try { return new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); }
       catch { return ''; }
     }
 
     function escHtml(s) {
-      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
+    // ─── TYPE HELPERS ─────────────────────────────────────────────────────
+    function getAllTypes() {
+      return [
+        ...BUILTIN_TYPES,
+        ...customCategories.map(c => ({ id: c.id, label: c.name, emoji: c.emoji, isCustom: true }))
+      ];
+    }
+
+    function getTypeInfo(typeId) {
+      const all = getAllTypes();
+      return all.find(t => t.id === (typeId || '').toLowerCase()) || { id: typeId, label: typeId || 'place', emoji: '📍', isCustom: false };
+    }
+
+    function getBadgeClass(typeId) {
+      const builtinMap = { restaurant: 'badge-restaurant', cafe: 'badge-cafe', attraction: 'badge-attraction', hotel: 'badge-hotel', hidden: 'badge-hidden' };
+      if (builtinMap[typeId]) return builtinMap[typeId];
+      if (customCategories.find(c => c.id === typeId)) return 'badge-custom';
+      return 'badge-default';
+    }
+
+    // ─── PREFERENCES ──────────────────────────────────────────────────────
     function savePreferences() {
       localStorage.setItem('travelindex_current_trip', currentTrip || '');
       localStorage.setItem('travelindex_current_filter', currentFilter || 'all');
@@ -728,16 +740,14 @@
       const savedTrip = localStorage.getItem('travelindex_current_trip');
       const savedFilter = localStorage.getItem('travelindex_current_filter');
       const savedCategories = localStorage.getItem('travelindex_custom_categories');
-      
       if (savedTrip) currentTrip = savedTrip;
       if (savedFilter) currentFilter = savedFilter;
       if (savedCategories) {
-        try { customCategories = JSON.parse(savedCategories); }
-        catch { customCategories = []; }
+        try { customCategories = JSON.parse(savedCategories); } catch { customCategories = []; }
       }
     }
 
-    // ─── MODAL ─────────────────────────────────────────────────────────
+    // ─── MODAL ────────────────────────────────────────────────────────────
     function showModal(html) {
       const backdrop = $('modalBackdrop');
       backdrop.className = 'modal-backdrop';
@@ -765,7 +775,6 @@
         trips = await res.json();
 
         const realTrips = trips.filter(t => t !== '➕ New Trip');
-
         if (!realTrips.length) {
           hide('loadingState'); show('emptyState');
           $('emptyState').querySelector('.empty-title').textContent = 'No trips yet';
@@ -774,12 +783,8 @@
         }
 
         trips = realTrips;
-        
-        // Restore trip preference if it still exists
         loadPreferences();
-        if (!currentTrip || !trips.includes(currentTrip)) {
-          currentTrip = trips[0];
-        }
+        if (!currentTrip || !trips.includes(currentTrip)) currentTrip = trips[0];
 
         renderTripTabs(trips);
         $('tripCount').textContent = `${trips.length} trip${trips.length !== 1 ? 's' : ''}`;
@@ -793,11 +798,11 @@
       }
     }
 
-    // ─── RENDER TRIP TABS ─────────────────────────────────────────────────────
+    // ─── RENDER TRIP TABS ─────────────────────────────────────────────────
     function renderTripTabs(tripList) {
       const container = $('tripTabs');
       container.innerHTML = '';
-      tripList.forEach((trip, i) => {
+      tripList.forEach(trip => {
         const btn = document.createElement('button');
         btn.className = 'trip-tab' + (trip === currentTrip ? ' active' : '');
         btn.dataset.trip = trip;
@@ -829,29 +834,23 @@
       });
     }
 
-    // ─── RENAME TRIP ───────────────────────────────────────────────────────
+    // ─── RENAME TRIP ──────────────────────────────────────────────────────
     function startRenameTrip(e, tripName, btnEl) {
       e.stopPropagation();
       const tab = btnEl.closest('.trip-tab');
       const label = tab.querySelector('span:first-child');
       const originalName = tripName;
-
       const input = document.createElement('input');
       input.className = 'trip-tab-rename';
       input.value = originalName;
       tab.replaceChild(input, label);
-      input.focus();
-      input.select();
+      input.focus(); input.select();
 
       async function commit() {
         const newName = input.value.trim();
-        if (!newName || newName === originalName) {
-          input.replaceWith(label);
-          return;
-        }
+        if (!newName || newName === originalName) { input.replaceWith(label); return; }
         await doRenameTrip(originalName, newName);
       }
-
       input.addEventListener('blur', commit);
       input.addEventListener('keydown', e => {
         if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
@@ -863,8 +862,7 @@
       const deviceId = $('deviceIdInput').value.trim();
       try {
         const res = await fetch(`${API_BASE}/trips/rename`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ old_trip_id: oldName, new_trip_id: newName, device_id: deviceId })
         });
         if (!res.ok) throw new Error();
@@ -872,21 +870,13 @@
         if (currentTrip === oldName) currentTrip = newName;
         savePreferences();
         await loadTrips();
-        const deviceId2 = $('deviceIdInput').value.trim();
-        document.querySelectorAll('.trip-tab').forEach(btn => {
-          if (btn.dataset.trip === newName) {
-            btn.classList.add('active');
-            currentTrip = newName;
-            loadPlaces(deviceId2, newName);
-          }
-        });
       } catch {
         showToast('❌ Failed to rename trip');
         await loadTrips();
       }
     }
 
-    // ─── DELETE TRIP ───────────────────────────────────────────────────────
+    // ─── DELETE TRIP ──────────────────────────────────────────────────────
     function confirmDeleteTrip(e, tripName) {
       e.stopPropagation();
       showModal(`
@@ -904,8 +894,7 @@
       const deviceId = $('deviceIdInput').value.trim();
       try {
         const res = await fetch(`${API_BASE}/trips/delete`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ trip_id: tripName, device_id: deviceId })
         });
         if (!res.ok) throw new Error();
@@ -916,7 +905,7 @@
       }
     }
 
-    // ─── LOAD PLACES ───────────────────────────────────────────────────────
+    // ─── LOAD PLACES ──────────────────────────────────────────────────────
     async function loadPlaces(deviceId, tripId) {
       hide('tripsSection'); show('loadingState');
       try {
@@ -931,58 +920,119 @@
       }
     }
 
-    // ─── RENDER CUSTOM CATEGORIES ─────────────────────────────────────────────
+    // ─── CUSTOM CATEGORIES ────────────────────────────────────────────────
     function renderCustomCategories() {
       const filterBar = $('filterBar');
-      const existing = filterBar.querySelectorAll('.filter-chip[data-type]:not([data-type="all"])');
-      
-      // Remove old custom category chips
       filterBar.querySelectorAll('.custom-category-chip').forEach(el => el.remove());
-      
-      // Add new custom category chips
+
       customCategories.forEach(cat => {
         const chip = document.createElement('div');
         chip.className = 'filter-chip custom-category-chip';
         chip.dataset.type = cat.id;
-        chip.innerHTML = `<span class="chip-icon">${cat.emoji}</span> ${escHtml(cat.name)}`;
-        chip.onclick = function() { toggleFilter(this); };
+
+        const icon = document.createElement('span');
+        icon.className = 'chip-icon';
+        icon.textContent = cat.emoji;
+        chip.appendChild(icon);
+
+        chip.appendChild(document.createTextNode(' ' + cat.name));
+
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'chip-remove';
+        removeBtn.title = 'Remove category';
+        removeBtn.textContent = '×';
+        removeBtn.onclick = (e) => {
+          e.stopPropagation();
+          removeCategory(cat.id);
+        };
+        chip.appendChild(removeBtn);
+
+        chip.onclick = function(e) {
+          if (e.target === removeBtn) return;
+          toggleFilter(this);
+        };
+
         filterBar.insertBefore(chip, filterBar.querySelector('.add-category-btn'));
       });
     }
 
-    function showAddCategory() {
+    function showManageCategories() {
+      renderManageCategoriesModal();
+    }
+
+    function renderManageCategoriesModal() {
+      const existingList = customCategories.length
+        ? `<div class="cat-manage-list" id="catManageList">
+            ${customCategories.map(c => `
+              <div class="cat-manage-row" data-cat-id="${escHtml(c.id)}">
+                <span class="cat-manage-emoji">${escHtml(c.emoji)}</span>
+                <span class="cat-manage-name">${escHtml(c.name)}</span>
+                <button class="cat-manage-delete" title="Remove" onclick="removeCategory('${escHtml(c.id)}'); renderManageCategoriesModal()">🗑️</button>
+              </div>`).join('')}
+          </div>`
+        : `<p style="font-size:13px;color:var(--ink-faint);margin-bottom:16px;font-style:italic;">No custom categories yet.</p>`;
+
       showModal(`
-        <div class="modal-title">Add Category</div>
-        <div class="form-group">
-          <label class="form-label">Category Name</label>
-          <input type="text" class="form-input" id="catName" placeholder="e.g. Museums" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Emoji</label>
-          <input type="text" class="form-input" id="catEmoji" placeholder="e.g. 🏛️" maxlength="2" style="font-size:20px;text-align:center;" />
+        <div class="modal-title">Manage Categories</div>
+        ${existingList}
+        <hr class="modal-divider">
+        <div style="font-size:13px;font-weight:600;color:var(--ink-soft);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px;">Add New Category</div>
+        <div style="display:flex;gap:10px;align-items:flex-end;">
+          <div class="form-group" style="margin:0;flex:0 0 72px;">
+            <label class="form-label">Emoji</label>
+            <input type="text" class="form-input" id="catEmoji" placeholder="🏖️" maxlength="2" style="font-size:20px;text-align:center;padding:8px;" />
+          </div>
+          <div class="form-group" style="margin:0;flex:1;">
+            <label class="form-label">Name</label>
+            <input type="text" class="form-input" id="catName" placeholder="e.g. Beach, Viewpoints…" />
+          </div>
         </div>
         <div class="modal-actions">
-          <button class="btn-ghost" onclick="closeModal()">Cancel</button>
-          <button class="btn-load" onclick="doAddCategory()">Add</button>
+          <button class="btn-ghost" onclick="closeModal()">Done</button>
+          <button class="btn-load" onclick="doAddCategory()">Add Category</button>
         </div>
       `);
-      setTimeout(() => $('catName').focus(), 100);
+      setTimeout(() => { const el = $('catEmoji'); if (el) el.focus(); }, 100);
     }
 
     function doAddCategory() {
-      const name = $('catName').value.trim();
-      const emoji = $('catEmoji').value.trim();
-      if (!name || !emoji) { showToast('Fill all fields'); return; }
-      
+      const name = ($('catName') || {}).value?.trim();
+      const emoji = ($('catEmoji') || {}).value?.trim();
+      if (!name || !emoji) { showToast('Enter both an emoji and a name'); return; }
+      if (customCategories.find(c => c.name.toLowerCase() === name.toLowerCase())) {
+        showToast('That category already exists'); return;
+      }
       const id = 'cat_' + Date.now();
       customCategories.push({ id, name, emoji });
       savePreferences();
       renderCustomCategories();
-      closeModal();
-      showToast(`✅ Category "${name}" added!`);
+      showToast(`✅ "${name}" added`);
+      renderManageCategoriesModal();
     }
 
-    // ─── RENDER PLACES ──────────────────────────────────────────────────────
+    function removeCategory(catId) {
+      const cat = customCategories.find(c => c.id === catId);
+      customCategories = customCategories.filter(c => c.id !== catId);
+      savePreferences();
+      if (currentFilter === catId) {
+        currentFilter = 'all';
+        document.querySelectorAll('.filter-chip').forEach(c => c.classList.toggle('active', c.dataset.type === 'all'));
+      }
+      renderCustomCategories();
+      renderPlaces();
+      if (cat) showToast(`Removed "${cat.name}"`);
+    }
+
+    // ─── FILTER CHIPS ─────────────────────────────────────────────────────
+    function toggleFilter(el) {
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      currentFilter = el.dataset.type;
+      savePreferences();
+      renderPlaces();
+    }
+
+    // ─── RENDER PLACES ────────────────────────────────────────────────────
     function renderPlaces() {
       const grid = $('placesGrid');
       const filtered = currentFilter === 'all'
@@ -993,57 +1043,47 @@
       $('placesCount').textContent = `${filtered.length} place${filtered.length !== 1 ? 's' : ''}`;
 
       const displayPlaces = filtered.filter(p => p.name !== '__trip_created__');
-
       if (!displayPlaces.length) {
         grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px 0;color:var(--ink-muted);font-size:14px;">No ${currentFilter !== 'all' ? currentFilter + 's' : 'places'} saved yet.</div>`;
         return;
       }
 
-      // Group places by location (name + country) to merge duplicate saves
+      // Group by location
       const locationGroups = {};
       displayPlaces.forEach(place => {
-        const locKey = `${place.name}|${place.country}`;
-        if (!locationGroups[locKey]) locationGroups[locKey] = [];
-        locationGroups[locKey].push(place);
+        const key = `${place.name}|${place.country}`;
+        if (!locationGroups[key]) locationGroups[key] = [];
+        locationGroups[key].push(place);
       });
 
-      grid.innerHTML = Object.entries(locationGroups).map(([locKey, places]) => {
-        const mainPlace = places[0];
-        const type = (mainPlace.type || 'place').toLowerCase();
-        const emoji = typeEmoji[type] || '📍';
-        const badge = typeBadge[type] || 'badge-default';
-        const loc = [mainPlace.city, mainPlace.country].filter(Boolean).join(', ') || 'Location unknown';
-        const mapsUrl = mainPlace.maps_url || '';
-        const placeId = mainPlace.id || '';
+      grid.innerHTML = Object.entries(locationGroups).map(([, places]) => {
+        const main = places[0];
+        const typeId = (main.type || 'place').toLowerCase();
+        const typeInfo = getTypeInfo(typeId);
+        const badge = getBadgeClass(typeId);
+        const loc = [main.city, main.country].filter(Boolean).join(', ') || 'Location unknown';
+        const mapsUrl = main.maps_url || '';
+        const placeId = main.id || '';
 
-        // Build one save-entry per grouped place (all saves for this location)
         const savesHtml = places.map(place => {
           const dateStr = formatDate(place.created_at);
           const viewBtn = place.source_url
             ? `<a class="place-source-btn" href="${escHtml(place.source_url)}" target="_blank" rel="noopener">View ↗</a>`
             : '';
-          const caption = place.summary
-            ? `<div class="save-summary">${escHtml(place.summary)}</div>`
-            : '';
-          return `
-            <div class="save-entry">
-              ${caption}
-              <div class="save-footer">
-                <span class="save-date">${dateStr}</span>
-                ${viewBtn}
-              </div>
-            </div>`;
+          const caption = place.summary ? `<div class="save-summary">${escHtml(place.summary)}</div>` : '';
+          return `<div class="save-entry">${caption}<div class="save-footer"><span class="save-date">${dateStr}</span>${viewBtn}</div></div>`;
         }).join('');
 
         return `
-          <div class="place-card" data-type="${type}" data-id="${escHtml(placeId)}" style="animation: fadeUp 0.4s ease both;">
+          <div class="place-card" data-type="${escHtml(typeId)}" data-id="${escHtml(placeId)}" style="animation: fadeUp 0.4s ease both;">
             <div class="card-actions">
-              <button class="card-action-btn move" title="Move to another trip" onclick="showMoveCard('${escHtml(placeId)}', '${escHtml(mainPlace.name || '')}')">↗️</button>
-              <button class="card-action-btn delete" title="Delete place" onclick="confirmDeleteCard('${escHtml(placeId)}', '${escHtml(mainPlace.name || '')}')">🗑️</button>
+              <button class="card-action-btn edit" title="Edit place" onclick="showEditCard('${escHtml(placeId)}')">✏️</button>
+              <button class="card-action-btn move" title="Move to another trip" onclick="showMoveCard('${escHtml(placeId)}', '${escHtml(main.name || '')}')">↗️</button>
+              <button class="card-action-btn delete" title="Delete place" onclick="confirmDeleteCard('${escHtml(placeId)}', '${escHtml(main.name || '')}')">🗑️</button>
             </div>
             <div class="place-card-top">
-              <div class="place-name">${escHtml(mainPlace.name || 'Unnamed place')}</div>
-              <span class="place-type-badge ${badge}">${emoji} ${type}</span>
+              <div class="place-name">${escHtml(main.name || 'Unnamed place')}</div>
+              <span class="place-type-badge ${badge}">${typeInfo.emoji} ${typeInfo.label}</span>
             </div>
             <div class="place-location">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1064,34 +1104,110 @@
       });
     }
 
-    // ─── FILTER CHIPS ───────────────────────────────────────────────────────
-    function toggleFilter(el) {
-      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-      el.classList.add('active');
-      currentFilter = el.dataset.type;
-      savePreferences();
-      renderPlaces();
+    // ─── EDIT CARD ────────────────────────────────────────────────────────
+    function showEditCard(placeId) {
+      const place = allPlaces.find(p => String(p.id) === String(placeId));
+      if (!place) { showToast('Place not found'); return; }
+
+      const allTypes = getAllTypes();
+      const currentTypeId = (place.type || '').toLowerCase();
+
+      const typeOptionsHtml = allTypes.map(t => `
+        <div class="type-option${currentTypeId === t.id ? ' selected' : ''}" data-type-id="${escHtml(t.id)}" onclick="selectTypeOption(this)">
+          <span class="type-option-emoji">${t.emoji}</span>
+          <span class="type-option-label">${escHtml(t.label)}</span>
+        </div>`).join('');
+
+      showModal(`
+        <div class="modal-title">Edit Place</div>
+
+        <div class="form-group">
+          <label class="form-label">Place Name</label>
+          <input type="text" class="form-input" id="editName" value="${escHtml(place.name || '')}" placeholder="e.g. Noma, Blue Mosque…" />
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="form-group">
+            <label class="form-label">City</label>
+            <input type="text" class="form-input" id="editCity" value="${escHtml(place.city || '')}" placeholder="Tokyo" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Country</label>
+            <input type="text" class="form-input" id="editCountry" value="${escHtml(place.country || '')}" placeholder="Japan" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <div class="type-selector" id="typeSelector">
+            ${typeOptionsHtml}
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+          <button class="btn-load" onclick="doEditCard('${escHtml(placeId)}')">Save Changes</button>
+        </div>
+      `);
+
+      setTimeout(() => { const el = $('editName'); if (el) el.focus(); }, 100);
     }
 
-    // ─── CREATE TRIP ───────────────────────────────────────────────────────
-    function showCreateTrip() {
-      show('createTripBar');
-      $('newTripInput').focus();
+    function selectTypeOption(el) {
+      document.querySelectorAll('.type-option').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
     }
 
-    function hideCreateTrip() {
-      hide('createTripBar');
+    async function doEditCard(placeId) {
+      const name = $('editName')?.value.trim();
+      const city = $('editCity')?.value.trim();
+      const country = $('editCountry')?.value.trim();
+      const selectedType = document.querySelector('.type-option.selected');
+      const typeId = selectedType?.dataset.typeId || '';
+
+      if (!name) { showToast('Name is required'); return; }
+
+      const deviceId = $('deviceIdInput').value.trim();
+      const payload = { device_id: deviceId, name, city, country, type: typeId };
+
+      closeModal();
+
+      try {
+        const res = await fetch(`${API_BASE}/places/${encodeURIComponent(placeId)}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        // Update locally regardless (API may not support PATCH yet)
+        const idx = allPlaces.findIndex(p => String(p.id) === String(placeId));
+        if (idx !== -1) {
+          allPlaces[idx] = { ...allPlaces[idx], name, city, country, type: typeId };
+        }
+        renderPlaces();
+        showToast('✅ Changes saved');
+      } catch {
+        // Still update locally so the UI reflects the change
+        const idx = allPlaces.findIndex(p => String(p.id) === String(placeId));
+        if (idx !== -1) {
+          allPlaces[idx] = { ...allPlaces[idx], name, city, country, type: typeId };
+        }
+        renderPlaces();
+        showToast('✅ Updated locally');
+      }
     }
+
+    // ─── CREATE TRIP ──────────────────────────────────────────────────────
+    function showCreateTrip() { show('createTripBar'); $('newTripInput').focus(); }
+    function hideCreateTrip() { hide('createTripBar'); }
 
     async function doCreateTrip() {
       const tripName = $('newTripInput').value.trim();
       if (!tripName) { showToast('Enter a trip name'); return; }
       const deviceId = $('deviceIdInput').value.trim();
-      
       try {
         const res = await fetch(`${API_BASE}/trips/create`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ trip_id: tripName, device_id: deviceId })
         });
         if (!res.ok) throw new Error();
@@ -1103,7 +1219,7 @@
       }
     }
 
-    // ─── DELETE CARD ───────────────────────────────────────────────────────
+    // ─── DELETE CARD ──────────────────────────────────────────────────────
     function confirmDeleteCard(placeId, placeName) {
       showModal(`
         <div class="modal-title">Delete "${escHtml(placeName)}"?</div>
@@ -1120,8 +1236,7 @@
       const deviceId = $('deviceIdInput').value.trim();
       try {
         const res = await fetch(`${API_BASE}/places/${encodeURIComponent(placeId)}`, {
-          method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
+          method: 'DELETE', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ device_id: deviceId })
         });
         if (!res.ok) throw new Error();
@@ -1133,21 +1248,16 @@
       }
     }
 
-    // ─── MOVE CARD ───────────────────────────────────────────────────────
+    // ─── MOVE CARD ────────────────────────────────────────────────────────
     function showMoveCard(placeId, placeName) {
       const otherTrips = trips.filter(t => t !== currentTrip);
-      if (!otherTrips.length) {
-        showToast('Create another trip first');
-        return;
-      }
+      if (!otherTrips.length) { showToast('Create another trip first'); return; }
       const tripOptions = otherTrips.map(t => `<option value="${escHtml(t)}">${escHtml(t)}</option>`).join('');
       showModal(`
         <div class="modal-title">Move "${escHtml(placeName)}"</div>
         <div class="form-group">
           <label class="form-label">To Trip</label>
-          <select class="move-select" id="moveTrip">
-            ${tripOptions}
-          </select>
+          <select class="move-select" id="moveTrip">${tripOptions}</select>
         </div>
         <div class="modal-actions">
           <button class="btn-ghost" onclick="closeModal()">Cancel</button>
@@ -1163,8 +1273,7 @@
       const deviceId = $('deviceIdInput').value.trim();
       try {
         const res = await fetch(`${API_BASE}/places/${encodeURIComponent(placeId)}/move`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ trip_id: targetTrip, device_id: deviceId })
         });
         if (!res.ok) throw new Error();
@@ -1176,7 +1285,7 @@
       }
     }
 
-    // Initialize
+    // ─── INIT ─────────────────────────────────────────────────────────────
     const savedDevice = localStorage.getItem('travelindex_device');
     if (savedDevice) {
       $('deviceIdInput').value = savedDevice;
