@@ -38,13 +38,6 @@ class UpdatePlaceRequest(BaseModel):
     type: Optional[str] = None
     summary: Optional[str] = None
     
-class UpdatePlaceRequest(BaseModel):
-    device_id: str
-    name: Optional[str] = None
-    city: Optional[str] = None
-    country: Optional[str] = None
-    type: Optional[str] = None
-    summary: Optional[str] = None
 class CreateTripRequest(BaseModel):
     trip_id: str
     device_id: str
