@@ -613,12 +613,33 @@
     </div>
 
     <div class="device-bar">
-      <label>Your Device ID</label>
+      <label>Login</label>
+    
       <div class="device-input-wrap">
-        <input type="text" class="device-input" id="deviceIdInput" placeholder="Enter the Device ID from your Shortcut…" />
-        <button class="btn-load" onclick="loadTrips()">Load My Saves</button>
+    
+        <input
+          type="text"
+          class="device-input"
+          id="usernameInput"
+          placeholder="Username"
+        />
+    
+        <input
+          type="password"
+          class="device-input"
+          id="passwordInput"
+          placeholder="Password"
+        />
+    
+        <button class="btn-load" onclick="loadTrips()">
+          Login
+        </button>
+    
       </div>
-      <div class="device-hint">💡 Your Device ID is shown the first time you run the Shortcut — copy it here to browse your places.</div>
+    
+      <div class="device-hint">
+        Use the username + password from your iOS Shortcut.
+      </div>
     </div>
 
     <div id="tripsSection" style="display:none;">
@@ -774,13 +795,24 @@
 
     // ─── LOAD TRIPS ───────────────────────────────────────────────────────
     async function loadTrips() {
-      const deviceId = $('deviceIdInput').value.trim();
+      const deviceId = $('usernameInput').value.trim();
+      const password = $('passwordInput').value.trim();
+      
+      if (!deviceId || !password) {
+        showToast('Please enter username + password');
+        return;
+      }
+      
+      localStorage.setItem('travelindex_device', deviceId);
+      localStorage.setItem('travelindex_password', password);
       if (!deviceId) { showToast('Please enter your Device ID first'); return; }
       localStorage.setItem('travelindex_device', deviceId);
       hide('emptyState'); hide('tripsSection'); show('loadingState');
 
       try {
-        const res = await fetch(`${API_BASE}/trips/${encodeURIComponent(deviceId)}`);
+        const res = await fetch(
+          `${API_BASE}/trips/${encodeURIComponent(deviceId)}?password=${encodeURIComponent(password)}`
+        );
         if (!res.ok) throw new Error('Failed');
         trips = await res.json();
 
@@ -873,7 +905,7 @@
       try {
         const res = await fetch(`${API_BASE}/trips/rename`, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ old_trip_id: oldName, new_trip_id: newName, device_id: deviceId })
+          body: JSON.stringify({ old_trip_id: oldName, new_trip_id: newName, device_id: deviceId, password: password })
         });
         if (!res.ok) throw new Error();
         showToast(`✅ Renamed to "${newName}"`);
@@ -919,7 +951,11 @@
     async function loadPlaces(deviceId, tripId) {
       hide('tripsSection'); show('loadingState');
       try {
-        const res = await fetch(`${API_BASE}/trip/${encodeURIComponent(tripId)}?device_id=${encodeURIComponent(deviceId)}`);
+        const password = $('passwordInput').value.trim();
+
+        const res = await fetch(
+          `${API_BASE}/trip/${encodeURIComponent(tripId)}?device_id=${encodeURIComponent(deviceId)}&password=${encodeURIComponent(password)}`
+        );
         if (!res.ok) throw new Error();
         allPlaces = await res.json();
         hide('loadingState'); show('tripsSection');
@@ -1305,7 +1341,13 @@
       try {
         const res = await fetch(`${API_BASE}/trips/create`, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ trip_id: tripName, device_id: deviceId })
+          const password = $('passwordInput').value.trim();
+
+          body: JSON.stringify({
+            trip_id: tripName,
+            device_id: deviceId,
+            password: password
+          })
         });
         if (!res.ok) throw new Error();
         showToast(`✅ Trip "${tripName}" created!`);
@@ -1384,6 +1426,10 @@
 
     // ─── INIT ─────────────────────────────────────────────────────────────
     const savedDevice = localStorage.getItem('travelindex_device');
+    const savedPassword = localStorage.getItem('travelindex_password');
+    
+    if (savedDevice) $('usernameInput').value = savedDevice;
+    if (savedPassword) $('passwordInput').value = savedPassword;
     if (savedDevice) {
       $('deviceIdInput').value = savedDevice;
       loadPreferences();
