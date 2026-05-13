@@ -242,7 +242,7 @@ async def move_place(place_id: str, req: MoveRequest):
 # UPDATE PLACE
 # -----------------------------
 @app.patch("/places/{place_id}")
-async def update_place(place_id: int, req: UpdatePlaceRequest):
+async def update_place(place_id: str, req: UpdatePlaceRequest):
 
     updates = {
         "name": req.name,
