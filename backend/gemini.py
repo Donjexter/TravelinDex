@@ -26,6 +26,9 @@ Prioritize:
 3. Cafes
 4. Hotels
 5. Attractions
+6. Sightseeing
+7. Retail
+8. Hiking
 
 Rules:
 - Only include places clearly mentioned
@@ -45,7 +48,7 @@ Format:
     "name": "Place Name",
     "city": "City",
     "country": "Country",
-    "type": "restaurant|cafe|attraction|hotel",
+    "type": "restaurant|cafe|attraction|hotel|sightseeing|retail|hiking",
     "summary": "Short specific reason to visit",
     "maps_query": "Place Name City Country"
   }}
