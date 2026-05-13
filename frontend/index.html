@@ -905,7 +905,7 @@
       try {
         const res = await fetch(`${API_BASE}/trips/rename`, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ old_trip_id: oldName, new_trip_id: newName, device_id: deviceId, password: password })
+          body: JSON.stringify({ old_trip_id: oldName, new_trip_id: targetTrip, device_id: deviceId, password: password })
         });
         if (!res.ok) throw new Error();
         showToast(`✅ Renamed to "${newName}"`);
