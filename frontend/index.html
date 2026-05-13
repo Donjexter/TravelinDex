@@ -291,6 +291,9 @@
     .place-card[data-type="cafe"]::before { background: linear-gradient(90deg, #b8860b, #d4a017); }
     .place-card[data-type="attraction"]::before { background: linear-gradient(90deg, #1d4e7a, #3a7ec4); }
     .place-card[data-type="hotel"]::before { background: linear-gradient(90deg, #2d6a4f, #4aaa82); }
+    .place-card[data-type="sightseeing"]::before { background: linear-gradient(90deg, #1d4e7a, #3a7ec4); }
+    .place-card[data-type="retail"]::before      { background: linear-gradient(90deg, #b8860b, #d4a017); }
+    .place-card[data-type="hiking"]::before      { background: linear-gradient(90deg, #2d6a4f, #6abf8a); }
 
 
     .place-card-top {
@@ -306,7 +309,9 @@
     .badge-cafe { background: var(--gold-pale); color: var(--gold); }
     .badge-attraction { background: var(--blue-pale); color: var(--blue); }
     .badge-hotel { background: var(--green-pale); color: var(--green); }
-    .badge-hidden { background: var(--purple-pale); color: var(--purple); }
+    .badge-sightseeing { background: var(--blue-pale); color: var(--blue); }
+    .badge-retail      { background: var(--gold-pale); color: var(--gold); }
+    .badge-hiking      { background: var(--green-pale); color: var(--green); }
     .badge-default { background: var(--sand); color: var(--ink-muted); }
     .badge-custom { background: var(--purple-pale); color: var(--purple); }
 
@@ -641,6 +646,9 @@
         <div class="filter-chip" data-type="cafe" onclick="toggleFilter(this)"><span class="chip-icon">☕</span> Cafés</div>
         <div class="filter-chip" data-type="attraction" onclick="toggleFilter(this)"><span class="chip-icon">🏛️</span> Attractions</div>
         <div class="filter-chip" data-type="hotel" onclick="toggleFilter(this)"><span class="chip-icon">🏨</span> Hotels</div>
+        <div class="filter-chip" data-type="sightseeing" onclick="toggleFilter(this)"><span class="chip-icon">👁️</span> Sightseeing</div>
+        <div class="filter-chip" data-type="retail" onclick="toggleFilter(this)"><span class="chip-icon">🛍️</span> Retail</div>
+        <div class="filter-chip" data-type="hiking" onclick="toggleFilter(this)"><span class="chip-icon">🥾</span> Hiking</div>
         <button class="add-category-btn" onclick="showManageCategories()">⚙️ Categories</button>
       </div>
 
@@ -686,6 +694,9 @@
       { id: 'cafe',       label: 'café',       emoji: '☕' },
       { id: 'attraction', label: 'attraction', emoji: '🏛️' },
       { id: 'hotel',      label: 'hotel',      emoji: '🏨' },
+      { id: 'sightseeing', label: 'sightseeing', emoji: '👁️' },
+      { id: 'retail',      label: 'retail',      emoji: '🛍️' },
+      { id: 'hiking',      label: 'hiking',      emoji: '🥾' },
     ];
 
     const $ = id => document.getElementById(id);
@@ -722,7 +733,7 @@
     }
 
     function getBadgeClass(typeId) {
-      const builtinMap = { restaurant: 'badge-restaurant', cafe: 'badge-cafe', attraction: 'badge-attraction', hotel: 'badge-hotel', hidden: 'badge-hidden' };
+      const builtinMap = { restaurant: 'badge-restaurant', cafe: 'badge-cafe', attraction: 'badge-attraction', hotel: 'badge-hotel', sightseeing: 'badge-sightseeing', retail: 'badge-retail', hiking: 'badge-hiking',};
       if (builtinMap[typeId]) return builtinMap[typeId];
       if (customCategories.find(c => c.id === typeId)) return 'badge-custom';
       return 'badge-default';
