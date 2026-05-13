@@ -937,7 +937,7 @@
       try {
         const res = await fetch(`${API_BASE}/trips/delete`, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ trip_id: tripName, device_id: deviceId })
+          body: JSON.stringify({ trip_id: tripName, device_id: deviceId, password: password })
         });
         if (!res.ok) throw new Error();
         showToast(`🗑️ "${tripName}" deleted`);
@@ -1268,6 +1268,7 @@
     
       const payload = {
         device_id: deviceId,
+        password,
         name,
         city,
         country,
@@ -1384,7 +1385,7 @@
       try {
         const res = await fetch(`${API_BASE}/places/${encodeURIComponent(placeId)}`, {
           method: 'DELETE', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ device_id: deviceId })
+          body: JSON.stringify({ device_id: deviceId, password: password })
         });
         if (!res.ok) throw new Error();
         showToast('🗑️ Place deleted');
@@ -1421,7 +1422,7 @@
       try {
         const res = await fetch(`${API_BASE}/places/${encodeURIComponent(placeId)}/move`, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ trip_id: targetTrip, device_id: deviceId })
+          body: JSON.stringify({ trip_id: targetTrip, device_id: deviceId, password: password })
         });
         if (!res.ok) throw new Error();
         showToast(`✅ Moved to "${targetTrip}"`);
