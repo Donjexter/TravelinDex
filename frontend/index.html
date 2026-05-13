@@ -1336,23 +1336,31 @@
 
     async function doCreateTrip() {
       const tripName = $('newTripInput').value.trim();
-      if (!tripName) { showToast('Enter a trip name'); return; }
       const deviceId = $('deviceIdInput').value.trim();
+      const password = $('passwordInput').value.trim();
+    
+      if (!tripName) {
+        showToast('Enter a trip name');
+        return;
+      }
+    
       try {
         const res = await fetch(`${API_BASE}/trips/create`, {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          const password = $('passwordInput').value.trim();
-
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             trip_id: tripName,
             device_id: deviceId,
             password: password
           })
         });
+    
         if (!res.ok) throw new Error();
+    
         showToast(`✅ Trip "${tripName}" created!`);
         hideCreateTrip();
         await loadTrips();
+    
       } catch {
         showToast('❌ Failed to create trip');
       }
