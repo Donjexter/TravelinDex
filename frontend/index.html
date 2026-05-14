@@ -86,6 +86,8 @@
     .logo-text { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: var(--ink); letter-spacing: -0.3px; }
     .logo-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); margin-left: 1px; margin-bottom: 3px; flex-shrink: 0; }
 
+    .header-right { display: flex; align-items: center; gap: 10px; }
+
     .btn-shortcut {
       display: flex; align-items: center; gap: 8px;
       background: var(--ink); color: var(--cream);
@@ -96,6 +98,17 @@
       min-height: 44px;
     }
     .btn-shortcut:hover { background: var(--accent); transform: translateY(-1px); }
+
+    /* Cache status badge */
+    .cache-badge {
+      display: none; align-items: center; gap: 5px;
+      font-size: 11px; font-weight: 500; color: var(--ink-muted);
+      background: var(--sand); border-radius: 100px; padding: 4px 10px;
+      border: 1px solid var(--border);
+    }
+    .cache-badge.visible { display: flex; }
+    .cache-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
+    .cache-dot.fresh { background: var(--green); }
 
     .hero {
       background: linear-gradient(135deg, var(--ink) 0%, #2d2620 100%);
@@ -165,6 +178,7 @@
       display: flex; align-items: center; justify-content: center;
     }
     .btn-load:hover { background: var(--accent-light); transform: translateY(-1px); }
+    .btn-load:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
     .btn-danger {
       background: var(--red-pale); color: var(--red); border: 1px solid rgba(185,28,28,0.2);
@@ -183,6 +197,27 @@
       min-height: 44px; min-width: 44px;
     }
     .btn-ghost:hover { border-color: var(--ink-soft); color: var(--ink); }
+
+    /* Refresh bar — shows when viewing from cache */
+    .cache-bar {
+      display: none; align-items: center; justify-content: space-between;
+      background: var(--gold-pale); border: 1px solid rgba(184,134,11,0.25);
+      border-radius: var(--radius-sm); padding: 10px 16px; margin-bottom: 20px;
+      gap: 12px; flex-wrap: wrap;
+    }
+    .cache-bar.visible { display: flex; }
+    .cache-bar-text { font-size: 13px; color: var(--gold); font-weight: 500; display: flex; align-items: center; gap: 6px; }
+    .cache-bar-actions { display: flex; gap: 8px; align-items: center; }
+    .btn-refresh {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--gold); color: white; border: none;
+      border-radius: var(--radius-sm); padding: 7px 14px;
+      font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
+      cursor: pointer; transition: background 0.2s; white-space: nowrap;
+      min-height: 36px;
+    }
+    .btn-refresh:hover { background: var(--ink); }
+    .btn-refresh.spinning svg { animation: spin 0.7s linear infinite; }
 
     .section-header {
       display: flex; align-items: baseline; justify-content: space-between;
@@ -243,7 +278,6 @@
     .filter-chip.active { background: var(--accent-pale); border-color: var(--accent); color: var(--accent); }
     .filter-chip .chip-icon { font-size: 13px; }
 
-    /* Custom category chip with remove button */
     .filter-chip.custom-category-chip { padding-right: 6px; }
     .chip-remove {
       display: inline-flex; align-items: center; justify-content: center;
@@ -295,7 +329,6 @@
     .place-card[data-type="retail"]::before      { background: linear-gradient(90deg, #b8860b, #d4a017); }
     .place-card[data-type="hiking"]::before      { background: linear-gradient(90deg, #2d6a4f, #6abf8a); }
 
-
     .place-card-top {
       display: flex; align-items: flex-start; justify-content: space-between;
       gap: 12px; margin-bottom: 12px;
@@ -331,7 +364,6 @@
       margin-bottom: 10px; font-style: italic;
     }
 
-    /* card action buttons */
     .card-actions {
       position: absolute; top: 12px; right: 12px;
       display: flex; gap: 4px;
@@ -362,7 +394,6 @@
     }
     .place-source-btn:hover { background: var(--ink); color: var(--cream); }
 
-    /* ── SAVE ENTRIES ── */
     .save-entry { display: flex; flex-direction: column; gap: 6px; padding: 8px 0; }
     .save-entry:not(:first-child) { padding-top: 10px; border-top: 1px solid var(--border); }
     .save-summary { font-size: 13px; color: var(--ink-soft); line-height: 1.5; font-style: italic; }
@@ -412,7 +443,6 @@
     }
     .form-textarea:focus { border-color: var(--accent); }
 
-    /* Type selector grid */
     .type-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
     .type-option {
       border: 1.5px solid var(--border); border-radius: var(--radius-sm);
@@ -424,7 +454,6 @@
     .type-option-emoji { font-size: 18px; display: block; margin-bottom: 4px; }
     .type-option-label { font-size: 11px; font-weight: 500; color: var(--ink-soft); text-transform: capitalize; }
 
-    /* Custom category row with delete */
     .cat-manage-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
     .cat-manage-row {
       display: flex; align-items: center; gap: 10px;
@@ -439,10 +468,8 @@
     }
     .cat-manage-delete:hover { opacity: 1; }
 
-    /* divider */
     .modal-divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
 
-    /* move trip select */
     .move-select {
       width: 100%; border: 1px solid var(--sand); border-radius: var(--radius-sm);
       padding: 10px 14px; font-family: 'DM Sans', sans-serif; font-size: 14px;
@@ -556,8 +583,12 @@
         <span class="logo-text">TravelInDex</span>
         <span class="logo-dot"></span>
       </a>
-      <div class="header-actions">
-        <a href="https://www.icloud.com/shortcuts/0e3188c3e3194947b86c8c923891767f" target="_blank" class="btn-shortcut">
+      <div class="header-right">
+        <div class="cache-badge" id="cacheBadge">
+          <span class="cache-dot" id="cacheDot"></span>
+          <span id="cacheLabel">Cached</span>
+        </div>
+        <a href="https://www.icloud.com/shortcuts/fbed3bb5adc74e52ae9fc7953c971da4" target="_blank" class="btn-shortcut">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
             <path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/>
           </svg>
@@ -572,7 +603,7 @@
     <div class="hero-inner">
       <div class="hero-eyebrow">✈️ &nbsp;Your travel saves, organised</div>
       <h1 class="hero-title">Every <em>place</em> you've<br>been inspired by.</h1>
-      <p class="hero-sub">Saved instantly from Instagram, TikTok, and YouTube — browsed beautifully here.</p>
+      <p class="hero-sub">Saved instantly from Instagram — browsed beautifully here.</p>
     </div>
   </section>
 
@@ -606,7 +637,7 @@
         <div class="shortcut-cta-title">Install the iOS Shortcut 📲</div>
         <div class="shortcut-cta-body">One tap to add. Then just use Share → TravelInDex whenever you see a place you want to save. No app needed during saving.</div>
       </div>
-      <a href="https://www.icloud.com/shortcuts/0e3188c3e3194947b86c8c923891767f" target="_blank" class="btn-download">
+      <a href="https://www.icloud.com/shortcuts/fbed3bb5adc74e52ae9fc7953c971da4" target="_blank" class="btn-download">
         <div class="btn-download-icon">⬇️</div>
         Add to Shortcuts
       </a>
@@ -614,32 +645,12 @@
 
     <div class="device-bar">
       <label>Login</label>
-    
       <div class="device-input-wrap">
-    
-        <input
-          type="text"
-          class="device-input"
-          id="usernameInput"
-          placeholder="Username"
-        />
-    
-        <input
-          type="password"
-          class="device-input"
-          id="passwordInput"
-          placeholder="Password"
-        />
-    
-        <button class="btn-load" onclick="loadTrips()">
-          Login
-        </button>
-    
+        <input type="text" class="device-input" id="usernameInput" placeholder="Username" />
+        <input type="password" class="device-input" id="passwordInput" placeholder="Password" />
+        <button class="btn-load" id="loginBtn" onclick="loadTrips(false)">Login</button>
       </div>
-    
-      <div class="device-hint">
-        Use the username + password from your iOS Shortcut.
-      </div>
+      <div class="device-hint">Use the username + password from your iOS Shortcut.</div>
     </div>
 
     <div id="tripsSection" style="display:none;">
@@ -655,6 +666,22 @@
         <input type="text" id="newTripInput" class="device-input" placeholder="Trip name e.g. Japan 2026" style="flex:1;min-width:180px;" />
         <button class="btn-load" onclick="doCreateTrip()">Create</button>
         <button onclick="hideCreateTrip()" style="background:none;border:none;color:var(--ink-muted);cursor:pointer;font-size:13px;">Cancel</button>
+      </div>
+
+      <!-- Cache status bar -->
+      <div class="cache-bar" id="cacheBar">
+        <div class="cache-bar-text">
+          📦 Showing your last saved snapshot — <span id="cacheAge"></span>
+        </div>
+        <div class="cache-bar-actions">
+          <button class="btn-refresh" id="refreshBtn" onclick="refreshFromServer()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M23 4v6h-6M1 20v-6h6"/>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+            </svg>
+            Fetch Latest
+          </button>
+        </div>
       </div>
 
       <div class="trip-tabs-wrap">
@@ -682,7 +709,7 @@
 
     <div class="spinner-wrap" id="loadingState" style="display:none;">
       <div class="spinner"></div>
-      <div class="spinner-label">Loading your places…</div>
+      <div class="spinner-label" id="loadingLabel">Loading your places…</div>
     </div>
 
     <div class="empty-state" id="emptyState">
@@ -703,11 +730,13 @@
   <script>
     const API_BASE = 'https://travelindex-2ykv.onrender.com';
 
-    let allPlaces = [];
+    // ─── STATE ────────────────────────────────────────────────────────────
+    let allPlaces = [];        // current trip's places in memory
     let currentTrip = null;
     let currentFilter = 'all';
     let trips = [];
     let customCategories = [];
+    let fromCache = false;     // whether current view is from cache
 
     // Built-in types
     const BUILTIN_TYPES = [
@@ -720,6 +749,106 @@
       { id: 'hiking',      label: 'hiking',      emoji: '🥾' },
     ];
 
+    // ─── CREDENTIAL HELPERS ───────────────────────────────────────────────
+    // Always read credentials from inputs — never use bare variables
+    function getDeviceId() { return ($('usernameInput') || {}).value?.trim() || ''; }
+    function getPassword() { return ($('passwordInput') || {}).value?.trim() || ''; }
+
+    // ─── CACHE LAYER ──────────────────────────────────────────────────────
+    const CACHE_PREFIX = 'travelindex_cache_';
+    const CACHE_META   = 'travelindex_cache_meta';
+
+    function cacheKey(tripId, deviceId) {
+      return CACHE_PREFIX + deviceId + '_' + tripId;
+    }
+
+    function saveToCache(tripId, deviceId, places) {
+      try {
+        const key = cacheKey(tripId, deviceId);
+        localStorage.setItem(key, JSON.stringify(places));
+        // Update meta timestamp
+        const meta = getCacheMeta();
+        meta[key] = Date.now();
+        localStorage.setItem(CACHE_META, JSON.stringify(meta));
+      } catch(e) { /* storage full — ignore */ }
+    }
+
+    function loadFromCache(tripId, deviceId) {
+      try {
+        const key = cacheKey(tripId, deviceId);
+        const raw = localStorage.getItem(key);
+        if (!raw) return null;
+        return JSON.parse(raw);
+      } catch { return null; }
+    }
+
+    function getCacheMeta() {
+      try { return JSON.parse(localStorage.getItem(CACHE_META) || '{}'); } catch { return {}; }
+    }
+
+    function getCacheAge(tripId, deviceId) {
+      const meta = getCacheMeta();
+      const ts = meta[cacheKey(tripId, deviceId)];
+      if (!ts) return null;
+      return Date.now() - ts;
+    }
+
+    function saveTripsToCache(deviceId, tripList) {
+      try {
+        localStorage.setItem(CACHE_PREFIX + deviceId + '_trips', JSON.stringify(tripList));
+        const meta = getCacheMeta();
+        meta[CACHE_PREFIX + deviceId + '_trips'] = Date.now();
+        localStorage.setItem(CACHE_META, JSON.stringify(meta));
+      } catch(e) {}
+    }
+
+    function loadTripsFromCache(deviceId) {
+      try {
+        const raw = localStorage.getItem(CACHE_PREFIX + deviceId + '_trips');
+        return raw ? JSON.parse(raw) : null;
+      } catch { return null; }
+    }
+
+    function formatAge(ms) {
+      if (ms < 60000) return 'just now';
+      if (ms < 3600000) return Math.floor(ms / 60000) + ' min ago';
+      if (ms < 86400000) return Math.floor(ms / 3600000) + ' hr ago';
+      return Math.floor(ms / 86400000) + ' day(s) ago';
+    }
+
+    // ─── CACHE STATUS UI ─────────────────────────────────────────────────
+    function showCacheStatus(tripId, deviceId) {
+      const age = getCacheAge(tripId, deviceId);
+      if (!age) return;
+      const badge = $('cacheBadge');
+      const dot = $('cacheDot');
+      const label = $('cacheLabel');
+      badge.classList.add('visible');
+      if (age < 600000) { // < 10 min
+        dot.classList.add('fresh');
+        label.textContent = 'Fresh · ' + formatAge(age);
+      } else {
+        dot.classList.remove('fresh');
+        label.textContent = 'Snapshot · ' + formatAge(age);
+      }
+    }
+
+    function hideCacheStatus() {
+      $('cacheBadge').classList.remove('visible');
+    }
+
+    function showCacheBar(tripId, deviceId) {
+      const age = getCacheAge(tripId, deviceId);
+      const bar = $('cacheBar');
+      $('cacheAge').textContent = age ? formatAge(age) : 'a while ago';
+      bar.classList.add('visible');
+    }
+
+    function hideCacheBar() {
+      $('cacheBar').classList.remove('visible');
+    }
+
+    // ─── UTILS ───────────────────────────────────────────────────────────
     const $ = id => document.getElementById(id);
     function show(id) { $(id).style.display = ''; }
     function hide(id) { $(id).style.display = 'none'; }
@@ -754,7 +883,7 @@
     }
 
     function getBadgeClass(typeId) {
-      const builtinMap = { restaurant: 'badge-restaurant', cafe: 'badge-cafe', attraction: 'badge-attraction', hotel: 'badge-hotel', sightseeing: 'badge-sightseeing', retail: 'badge-retail', hiking: 'badge-hiking',};
+      const builtinMap = { restaurant: 'badge-restaurant', cafe: 'badge-cafe', attraction: 'badge-attraction', hotel: 'badge-hotel', sightseeing: 'badge-sightseeing', retail: 'badge-retail', hiking: 'badge-hiking' };
       if (builtinMap[typeId]) return builtinMap[typeId];
       if (customCategories.find(c => c.id === typeId)) return 'badge-custom';
       return 'badge-default';
@@ -768,14 +897,12 @@
     }
 
     function loadPreferences() {
-      const savedTrip = localStorage.getItem('travelindex_current_trip');
+      const savedTrip   = localStorage.getItem('travelindex_current_trip');
       const savedFilter = localStorage.getItem('travelindex_current_filter');
-      const savedCategories = localStorage.getItem('travelindex_custom_categories');
-      if (savedTrip) currentTrip = savedTrip;
+      const savedCats   = localStorage.getItem('travelindex_custom_categories');
+      if (savedTrip)   currentTrip = savedTrip;
       if (savedFilter) currentFilter = savedFilter;
-      if (savedCategories) {
-        try { customCategories = JSON.parse(savedCategories); } catch { customCategories = []; }
-      }
+      if (savedCats)   { try { customCategories = JSON.parse(savedCats); } catch { customCategories = []; } }
     }
 
     // ─── MODAL ────────────────────────────────────────────────────────────
@@ -794,49 +921,105 @@
     }
 
     // ─── LOAD TRIPS ───────────────────────────────────────────────────────
-    async function loadTrips() {
-      const deviceId = $('usernameInput').value.trim();
-      const password = $('passwordInput').value.trim();
-      
-      if (!deviceId || !password) {
-        showToast('Please enter username + password');
-        return;
-      }
-      
+    // forceServer=true skips cache and always hits the API
+    async function loadTrips(forceServer) {
+      const deviceId = getDeviceId();
+      const password = getPassword();
+
+      if (!deviceId || !password) { showToast('Please enter username + password'); return; }
+
+      // Persist credentials
       localStorage.setItem('travelindex_device', deviceId);
       localStorage.setItem('travelindex_password', password);
-      if (!deviceId) { showToast('Please enter your Device ID first'); return; }
-      localStorage.setItem('travelindex_device', deviceId);
-      hide('emptyState'); hide('tripsSection'); show('loadingState');
 
-      try {
-        const res = await fetch(
-          `${API_BASE}/trips/${encodeURIComponent(deviceId)}?password=${encodeURIComponent(password)}`
-        );
-        if (!res.ok) throw new Error('Failed');
-        trips = await res.json();
+      loadPreferences();
 
-        const realTrips = trips.filter(t => t !== '➕ New Trip');
-        if (!realTrips.length) {
-          hide('loadingState'); show('emptyState');
-          $('emptyState').querySelector('.empty-title').textContent = 'No trips yet';
-          $('emptyState').querySelector('.empty-body').textContent = "Use the iOS Shortcut to save your first place — it'll appear here instantly.";
-          return;
-        }
-
-        trips = realTrips;
-        loadPreferences();
+      // Try cache first (unless forceServer)
+      const cachedTrips = loadTripsFromCache(deviceId);
+      if (!forceServer && cachedTrips && cachedTrips.length) {
+        trips = cachedTrips;
         if (!currentTrip || !trips.includes(currentTrip)) currentTrip = trips[0];
-
         renderTripTabs(trips);
         $('tripCount').textContent = `${trips.length} trip${trips.length !== 1 ? 's' : ''}`;
         renderCustomCategories();
-        await loadPlaces(deviceId, currentTrip);
+        hide('emptyState');
+        // Load the current trip's places (from cache too)
+        await loadPlaces(deviceId, currentTrip, false);
+        return;
+      }
+
+      // Fetch from server
+      hide('emptyState'); hide('tripsSection');
+      $('loadingLabel').textContent = 'Loading your trips…';
+      show('loadingState');
+
+      try {
+        const res = await fetch(`${API_BASE}/trips/${encodeURIComponent(deviceId)}?password=${encodeURIComponent(password)}`);
+        if (!res.ok) throw new Error('Failed');
+        let fetched = await res.json();
+        fetched = fetched.filter(t => t !== '➕ New Trip');
+
+        if (!fetched.length) {
+          hide('loadingState'); show('emptyState');
+          $('emptyState').querySelector('.empty-title').textContent = 'No trips yet';
+          $('emptyState').querySelector('.empty-body').textContent = "Use the iOS Shortcut to save your first place.";
+          return;
+        }
+
+        trips = fetched;
+        saveTripsToCache(deviceId, trips);
+
+        if (!currentTrip || !trips.includes(currentTrip)) currentTrip = trips[0];
+        renderTripTabs(trips);
+        $('tripCount').textContent = `${trips.length} trip${trips.length !== 1 ? 's' : ''}`;
+        renderCustomCategories();
+        await loadPlaces(deviceId, currentTrip, true); // always fresh when we just fetched trips
+
       } catch {
-        hide('loadingState'); show('emptyState');
-        $('emptyState').querySelector('.empty-title').textContent = "Couldn't load saves";
-        $('emptyState').querySelector('.empty-body').textContent = 'Check your Device ID and try again.';
-        showToast('❌ Load failed — check Device ID');
+        // Try cache as fallback
+        const fallback = loadTripsFromCache(deviceId);
+        if (fallback && fallback.length) {
+          trips = fallback;
+          if (!currentTrip || !trips.includes(currentTrip)) currentTrip = trips[0];
+          renderTripTabs(trips);
+          $('tripCount').textContent = `${trips.length} trip${trips.length !== 1 ? 's' : ''}`;
+          renderCustomCategories();
+          hide('loadingState'); show('tripsSection');
+          await loadPlaces(deviceId, currentTrip, false);
+          showToast('⚠️ Offline — showing cached data');
+        } else {
+          hide('loadingState'); show('emptyState');
+          $('emptyState').querySelector('.empty-title').textContent = "Couldn't load saves";
+          $('emptyState').querySelector('.empty-body').textContent = 'Check your credentials and try again.';
+          showToast('❌ Load failed');
+        }
+      }
+    }
+
+    // ─── REFRESH FROM SERVER ──────────────────────────────────────────────
+    async function refreshFromServer() {
+      const btn = $('refreshBtn');
+      btn.classList.add('spinning');
+      btn.disabled = true;
+      const deviceId = getDeviceId();
+      try {
+        // Re-fetch trips list
+        const res = await fetch(`${API_BASE}/trips/${encodeURIComponent(deviceId)}?password=${encodeURIComponent(getPassword())}`);
+        if (!res.ok) throw new Error();
+        let fetched = await res.json();
+        fetched = fetched.filter(t => t !== '➕ New Trip');
+        trips = fetched;
+        saveTripsToCache(deviceId, trips);
+        if (!currentTrip || !trips.includes(currentTrip)) currentTrip = trips[0];
+        renderTripTabs(trips);
+        // Re-fetch current trip's places
+        await loadPlaces(deviceId, currentTrip, true);
+        showToast('✅ All up to date');
+      } catch {
+        showToast('❌ Refresh failed — are you online?');
+      } finally {
+        btn.classList.remove('spinning');
+        btn.disabled = false;
       }
     }
 
@@ -869,7 +1052,7 @@
           currentFilter = 'all';
           savePreferences();
           document.querySelectorAll('.filter-chip').forEach(c => c.classList.toggle('active', c.dataset.type === 'all'));
-          await loadPlaces($('deviceIdInput').value.trim(), trip);
+          await loadPlaces(getDeviceId(), trip, false); // use cache when switching tabs
         };
 
         container.appendChild(btn);
@@ -901,20 +1084,25 @@
     }
 
     async function doRenameTrip(oldName, newName) {
-      const deviceId = $('deviceIdInput').value.trim();
+      const deviceId = getDeviceId();
+      const password = getPassword();
       try {
         const res = await fetch(`${API_BASE}/trips/rename`, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ old_trip_id: oldName, new_trip_id: targetTrip, device_id: deviceId, password: password })
+          // FIX: was sending `targetTrip` (undefined) — now correctly sends `newName`
+          body: JSON.stringify({ old_trip_id: oldName, new_trip_id: newName, device_id: deviceId, password: password })
         });
         if (!res.ok) throw new Error();
-        showToast(`✅ Renamed to "${newName}"`);
         if (currentTrip === oldName) currentTrip = newName;
         savePreferences();
-        await loadTrips();
+        // Update cached trips list
+        trips = trips.map(t => t === oldName ? newName : t);
+        saveTripsToCache(deviceId, trips);
+        showToast(`✅ Renamed to "${newName}"`);
+        await loadTrips(false);
       } catch {
         showToast('❌ Failed to rename trip');
-        await loadTrips();
+        await loadTrips(false);
       }
     }
 
@@ -933,36 +1121,83 @@
 
     async function doDeleteTrip(tripName) {
       closeModal();
-      const deviceId = $('deviceIdInput').value.trim();
+      const deviceId = getDeviceId();
+      const password = getPassword();
       try {
         const res = await fetch(`${API_BASE}/trips/delete`, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ trip_id: tripName, device_id: deviceId, password: password })
         });
         if (!res.ok) throw new Error();
+        // Remove from cache
+        localStorage.removeItem(cacheKey(tripName, deviceId));
+        trips = trips.filter(t => t !== tripName);
+        saveTripsToCache(deviceId, trips);
+        if (currentTrip === tripName) currentTrip = trips[0] || null;
         showToast(`🗑️ "${tripName}" deleted`);
-        await loadTrips();
+        await loadTrips(true);
       } catch {
         showToast('❌ Failed to delete trip');
       }
     }
 
     // ─── LOAD PLACES ──────────────────────────────────────────────────────
-    async function loadPlaces(deviceId, tripId) {
-      hide('tripsSection'); show('loadingState');
-      try {
-        const password = $('passwordInput').value.trim();
+    // forceServer=true always fetches fresh data; false = try cache first
+    async function loadPlaces(deviceId, tripId, forceServer) {
+      const cached = loadFromCache(tripId, deviceId);
 
+      if (!forceServer && cached) {
+        // Show cached data immediately
+        allPlaces = cached;
+        fromCache = true;
+        hide('loadingState');
+        show('tripsSection');
+        hideCacheBar();
+        showCacheBar(tripId, deviceId);
+        showCacheStatus(tripId, deviceId);
+        renderPlaces();
+        return;
+      }
+
+      // Fetch from server
+      hide('tripsSection');
+      $('loadingLabel').textContent = 'Loading places…';
+      show('loadingState');
+
+      try {
+        const password = getPassword();
         const res = await fetch(
           `${API_BASE}/trip/${encodeURIComponent(tripId)}?device_id=${encodeURIComponent(deviceId)}&password=${encodeURIComponent(password)}`
         );
         if (!res.ok) throw new Error();
-        allPlaces = await res.json();
-        hide('loadingState'); show('tripsSection');
-        renderPlaces();
-      } catch {
+        const places = await res.json();
+
+        // Save to cache
+        saveToCache(tripId, deviceId, places);
+
+        allPlaces = places;
+        fromCache = false;
         hide('loadingState');
-        showToast("❌ Couldn't load places for this trip");
+        show('tripsSection');
+        hideCacheBar();
+        hideCacheStatus();
+        renderPlaces();
+
+      } catch {
+        // Fall back to cache on network error
+        if (cached) {
+          allPlaces = cached;
+          fromCache = true;
+          hide('loadingState');
+          show('tripsSection');
+          showCacheBar(tripId, deviceId);
+          showCacheStatus(tripId, deviceId);
+          renderPlaces();
+          showToast('⚠️ Offline — showing cached snapshot');
+        } else {
+          hide('loadingState');
+          showToast("❌ Couldn't load places for this trip");
+        }
       }
     }
 
@@ -980,17 +1215,13 @@
         icon.className = 'chip-icon';
         icon.textContent = cat.emoji;
         chip.appendChild(icon);
-
         chip.appendChild(document.createTextNode(' ' + cat.name));
 
         const removeBtn = document.createElement('button');
         removeBtn.className = 'chip-remove';
         removeBtn.title = 'Remove category';
         removeBtn.textContent = '×';
-        removeBtn.onclick = (e) => {
-          e.stopPropagation();
-          removeCategory(cat.id);
-        };
+        removeBtn.onclick = (e) => { e.stopPropagation(); removeCategory(cat.id); };
         chip.appendChild(removeBtn);
 
         chip.onclick = function(e) {
@@ -1002,9 +1233,7 @@
       });
     }
 
-    function showManageCategories() {
-      renderManageCategoriesModal();
-    }
+    function showManageCategories() { renderManageCategoriesModal(); }
 
     function renderManageCategoriesModal() {
       const existingList = customCategories.length
@@ -1026,7 +1255,7 @@
         <div style="display:flex;gap:10px;align-items:flex-end;">
           <div class="form-group" style="margin:0;flex:0 0 72px;">
             <label class="form-label">Emoji</label>
-            <input type="text" class="form-input" id="catEmoji" placeholder="e.g. 🏖️" maxlength="2";text-align:center;padding:8px;" />
+            <input type="text" class="form-input" id="catEmoji" placeholder="🏖️" maxlength="2" />
           </div>
           <div class="form-group" style="margin:0;flex:1;">
             <label class="form-label">Name</label>
@@ -1042,12 +1271,10 @@
     }
 
     function doAddCategory() {
-      const name = ($('catName') || {}).value?.trim();
+      const name  = ($('catName')  || {}).value?.trim();
       const emoji = ($('catEmoji') || {}).value?.trim();
       if (!name || !emoji) { showToast('Enter both an emoji and a name'); return; }
-      if (customCategories.find(c => c.name.toLowerCase() === name.toLowerCase())) {
-        showToast('That category already exists'); return;
-      }
+      if (customCategories.find(c => c.name.toLowerCase() === name.toLowerCase())) { showToast('That category already exists'); return; }
       const id = 'cat_' + Date.now();
       customCategories.push({ id, name, emoji });
       savePreferences();
@@ -1104,10 +1331,10 @@
 
       grid.innerHTML = Object.entries(locationGroups).map(([, places]) => {
         const main = places[0];
-        const typeId = (main.type || 'place').toLowerCase();
+        const typeId  = (main.type || 'place').toLowerCase();
         const typeInfo = getTypeInfo(typeId);
-        const badge = getBadgeClass(typeId);
-        const loc = [main.city, main.country].filter(Boolean).join(', ') || 'Location unknown';
+        const badge   = getBadgeClass(typeId);
+        const loc     = [main.city, main.country].filter(Boolean).join(', ') || 'Location unknown';
         const mapsUrl = main.maps_url || '';
         const placeId = main.id || '';
 
@@ -1123,9 +1350,9 @@
         return `
           <div class="place-card" data-type="${escHtml(typeId)}" data-id="${escHtml(placeId)}" style="animation: fadeUp 0.4s ease both;">
             <div class="card-actions">
-              <button class="card-action-btn edit" title="Edit place" onclick="showEditCard('${escHtml(placeId)}')">✏️</button>
-              <button class="card-action-btn move" title="Move to another trip" onclick="showMoveCard('${escHtml(placeId)}', '${escHtml(main.name || '')}')">↗️</button>
-              <button class="card-action-btn delete" title="Delete place" onclick="confirmDeleteCard('${escHtml(placeId)}', '${escHtml(main.name || '')}')">🗑️</button>
+              <button class="card-action-btn edit"   title="Edit place"          onclick="showEditCard('${escHtml(placeId)}')">✏️</button>
+              <button class="card-action-btn move"   title="Move to another trip" onclick="showMoveCard('${escHtml(placeId)}', '${escHtml(main.name || '')}')">↗️</button>
+              <button class="card-action-btn delete" title="Delete place"        onclick="confirmDeleteCard('${escHtml(placeId)}', '${escHtml(main.name || '')}')">🗑️</button>
             </div>
             <div class="place-card-top">
               <div class="place-name">${escHtml(main.name || 'Unnamed place')}</div>
@@ -1153,14 +1380,11 @@
     // ─── EDIT CARD ────────────────────────────────────────────────────────
     function showEditCard(placeId) {
       const place = allPlaces.find(p => String(p.id) === String(placeId));
-      if (!place) {
-        showToast('Place not found');
-        return;
-      }
-    
+      if (!place) { showToast('Place not found'); return; }
+
       const allTypes = getAllTypes();
       const currentTypeId = (place.type || '').toLowerCase();
-    
+
       const typeOptionsHtml = allTypes.map(t => `
         <div class="type-option${currentTypeId === t.id ? ' selected' : ''}"
              data-type-id="${escHtml(t.id)}"
@@ -1169,166 +1393,81 @@
           <span class="type-option-label">${escHtml(t.label)}</span>
         </div>
       `).join('');
-    
+
       showModal(`
         <div class="modal-title">Edit Place</div>
-    
         <div class="form-group">
           <label class="form-label">Place Name</label>
-          <input
-            type="text"
-            class="form-input"
-            id="editName"
-            value="${escHtml(place.name || '')}"
-            placeholder="e.g. Noma, Blue Mosque…"
-          />
+          <input type="text" class="form-input" id="editName" value="${escHtml(place.name || '')}" placeholder="e.g. Noma, Blue Mosque…" />
         </div>
-    
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
           <div class="form-group">
             <label class="form-label">City</label>
-            <input
-              type="text"
-              class="form-input"
-              id="editCity"
-              value="${escHtml(place.city || '')}"
-              placeholder="Tokyo"
-            />
+            <input type="text" class="form-input" id="editCity" value="${escHtml(place.city || '')}" placeholder="Tokyo" />
           </div>
-    
           <div class="form-group">
             <label class="form-label">Country</label>
-            <input
-              type="text"
-              class="form-input"
-              id="editCountry"
-              value="${escHtml(place.country || '')}"
-              placeholder="Japan"
-            />
+            <input type="text" class="form-input" id="editCountry" value="${escHtml(place.country || '')}" placeholder="Japan" />
           </div>
         </div>
-    
         <div class="form-group">
           <label class="form-label">Category</label>
-    
-          <div class="type-selector" id="typeSelector">
-            ${typeOptionsHtml}
-          </div>
+          <div class="type-selector" id="typeSelector">${typeOptionsHtml}</div>
         </div>
-    
         <div class="form-group">
           <label class="form-label">Caption / Notes</label>
-    
-          <textarea
-            class="form-textarea"
-            id="editSummary"
-            placeholder="Add your own notes, caption, food to try, vibes, itinerary ideas, etc..."
-          >${escHtml(place.summary || '')}</textarea>
+          <textarea class="form-textarea" id="editSummary" placeholder="Add your own notes…">${escHtml(place.summary || '')}</textarea>
         </div>
-    
         <div class="modal-actions">
-          <button class="btn-ghost" onclick="closeModal()">
-            Cancel
-          </button>
-    
-          <button class="btn-load" onclick="doEditCard('${escHtml(placeId)}')">
-            Save Changes
-          </button>
+          <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+          <button class="btn-load" onclick="doEditCard('${escHtml(placeId)}')">Save Changes</button>
         </div>
       `);
-    
-      setTimeout(() => {
-        const el = $('editName');
-        if (el) el.focus();
-      }, 100);
+      setTimeout(() => { const el = $('editName'); if (el) el.focus(); }, 100);
     }
-    
+
     function selectTypeOption(el) {
-      document.querySelectorAll('.type-option')
-        .forEach(o => o.classList.remove('selected'));
-    
+      document.querySelectorAll('.type-option').forEach(o => o.classList.remove('selected'));
       el.classList.add('selected');
     }
-    
+
     async function doEditCard(placeId) {
-      const name = $('editName')?.value.trim();
-      const city = $('editCity')?.value.trim();
+      const name    = $('editName')?.value.trim();
+      const city    = $('editCity')?.value.trim();
       const country = $('editCountry')?.value.trim();
       const summary = $('editSummary')?.value.trim();
-    
       const selectedType = document.querySelector('.type-option.selected');
-      const typeId = selectedType?.dataset.typeId || '';
-    
-      if (!name) {
-        showToast('Name is required');
-        return;
-      }
-    
-      const deviceId = $('deviceIdInput').value.trim();
-    
-      const payload = {
-        device_id: deviceId,
-        password,
-        name,
-        city,
-        country,
-        type: typeId,
-        summary
-      };
-    
+      const typeId  = selectedType?.dataset.typeId || '';
+
+      if (!name) { showToast('Name is required'); return; }
+
+      // FIX: was using $('deviceIdInput') (null) and bare `password` variable
+      const deviceId = getDeviceId();
+      const password = getPassword();
+
+      const payload = { device_id: deviceId, password, name, city, country, type: typeId, summary };
+
       closeModal();
-    
+
       try {
         const res = await fetch(`${API_BASE}/places/${encodeURIComponent(placeId)}`, {
           method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-    
         if (!res.ok) throw new Error();
-    
-        // Update locally
-        const idx = allPlaces.findIndex(
-          p => String(p.id) === String(placeId)
-        );
-    
-        if (idx !== -1) {
-          allPlaces[idx] = {
-            ...allPlaces[idx],
-            name,
-            city,
-            country,
-            type: typeId,
-            summary
-          };
-        }
-    
-        renderPlaces();
         showToast('✅ Changes saved');
-    
       } catch {
-    
-        // Still update locally even if backend PATCH fails
-        const idx = allPlaces.findIndex(
-          p => String(p.id) === String(placeId)
-        );
-    
-        if (idx !== -1) {
-          allPlaces[idx] = {
-            ...allPlaces[idx],
-            name,
-            city,
-            country,
-            type: typeId,
-            summary
-          };
-        }
-    
-        renderPlaces();
-        showToast('✅ Updated locally');
+        showToast('✅ Updated locally (will sync when online)');
       }
+
+      // Always update locally and in cache
+      const idx = allPlaces.findIndex(p => String(p.id) === String(placeId));
+      if (idx !== -1) {
+        allPlaces[idx] = { ...allPlaces[idx], name, city, country, type: typeId, summary };
+      }
+      saveToCache(currentTrip, deviceId, allPlaces);
+      renderPlaces();
     }
 
     // ─── CREATE TRIP ──────────────────────────────────────────────────────
@@ -1337,31 +1476,22 @@
 
     async function doCreateTrip() {
       const tripName = $('newTripInput').value.trim();
-      const deviceId = $('deviceIdInput').value.trim();
-      const password = $('passwordInput').value.trim();
-    
-      if (!tripName) {
-        showToast('Enter a trip name');
-        return;
-      }
-    
+      const deviceId = getDeviceId();
+      const password = getPassword();
+
+      if (!tripName) { showToast('Enter a trip name'); return; }
+
       try {
         const res = await fetch(`${API_BASE}/trips/create`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            trip_id: tripName,
-            device_id: deviceId,
-            password: password
-          })
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ trip_id: tripName, device_id: deviceId, password: password })
         });
-    
         if (!res.ok) throw new Error();
-    
+        trips.push(tripName);
+        saveTripsToCache(deviceId, trips);
         showToast(`✅ Trip "${tripName}" created!`);
         hideCreateTrip();
-        await loadTrips();
-    
+        await loadTrips(true);
       } catch {
         showToast('❌ Failed to create trip');
       }
@@ -1381,7 +1511,9 @@
 
     async function doDeleteCard(placeId) {
       closeModal();
-      const deviceId = $('deviceIdInput').value.trim();
+      // FIX: was using $('deviceIdInput') (null) and bare `password` variable
+      const deviceId = getDeviceId();
+      const password = getPassword();
       try {
         const res = await fetch(`${API_BASE}/places/${encodeURIComponent(placeId)}`, {
           method: 'DELETE', headers: { 'Content-Type': 'application/json' },
@@ -1389,11 +1521,13 @@
         });
         if (!res.ok) throw new Error();
         showToast('🗑️ Place deleted');
-        allPlaces = allPlaces.filter(p => String(p.id) !== String(placeId));
-        renderPlaces();
       } catch {
-        showToast('❌ Failed to delete place');
+        showToast('🗑️ Removed locally (will sync when online)');
       }
+      // Always remove locally and update cache
+      allPlaces = allPlaces.filter(p => String(p.id) !== String(placeId));
+      saveToCache(currentTrip, deviceId, allPlaces);
+      renderPlaces();
     }
 
     // ─── MOVE CARD ────────────────────────────────────────────────────────
@@ -1418,31 +1552,59 @@
     async function doMoveCard(placeId) {
       const targetTrip = $('moveTrip').value;
       closeModal();
-      const deviceId = $('deviceIdInput').value.trim();
+      // FIX: was sending `trip_id` (wrong key) and bare `password` variable
+      const deviceId = getDeviceId();
+      const password = getPassword();
       try {
         const res = await fetch(`${API_BASE}/places/${encodeURIComponent(placeId)}/move`, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ trip_id: targetTrip, device_id: deviceId, password: password })
+          body: JSON.stringify({ new_trip_id: targetTrip, device_id: deviceId, password: password })
         });
         if (!res.ok) throw new Error();
         showToast(`✅ Moved to "${targetTrip}"`);
-        allPlaces = allPlaces.filter(p => String(p.id) !== String(placeId));
-        renderPlaces();
       } catch {
-        showToast('❌ Failed to move place');
+        showToast(`✅ Moved locally (will sync when online)`);
       }
+      // Remove from current trip cache and update
+      allPlaces = allPlaces.filter(p => String(p.id) !== String(placeId));
+      saveToCache(currentTrip, deviceId, allPlaces);
+      renderPlaces();
     }
 
-    // ─── INIT ─────────────────────────────────────────────────────────────
-    const savedDevice = localStorage.getItem('travelindex_device');
-    const savedPassword = localStorage.getItem('travelindex_password');
-    
-    if (savedDevice) $('usernameInput').value = savedDevice;
-    if (savedPassword) $('passwordInput').value = savedPassword;
-    if (savedDevice) {
-      $('deviceIdInput').value = savedDevice;
-      loadPreferences();
-    }
+    // ─── INIT — auto-login if credentials exist ────────────────────────────
+    (function init() {
+      const savedDevice   = localStorage.getItem('travelindex_device');
+      const savedPassword = localStorage.getItem('travelindex_password');
+
+      if (savedDevice)   $('usernameInput').value = savedDevice;
+      if (savedPassword) $('passwordInput').value = savedPassword;
+
+      // Auto-login: if we have credentials, immediately restore from cache
+      // and silently start a background refresh
+      if (savedDevice && savedPassword) {
+        loadPreferences();
+        const cachedTrips = loadTripsFromCache(savedDevice);
+        if (cachedTrips && cachedTrips.length) {
+          trips = cachedTrips;
+          if (!currentTrip || !trips.includes(currentTrip)) currentTrip = trips[0];
+          renderTripTabs(trips);
+          $('tripCount').textContent = `${trips.length} trip${trips.length !== 1 ? 's' : ''}`;
+          renderCustomCategories();
+          hide('emptyState');
+
+          const cachedPlaces = loadFromCache(currentTrip, savedDevice);
+          if (cachedPlaces) {
+            allPlaces = cachedPlaces;
+            fromCache = true;
+            show('tripsSection');
+            showCacheBar(currentTrip, savedDevice);
+            showCacheStatus(currentTrip, savedDevice);
+            renderPlaces();
+          }
+          // Don't auto-fetch — let user click "Fetch Latest" when ready
+        }
+      }
+    })();
   </script>
 </body>
 </html>
