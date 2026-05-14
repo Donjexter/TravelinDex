@@ -102,7 +102,7 @@
     #page-app { background: var(--cream); }
 
     .app-header { background: var(--warm-white); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; backdrop-filter: blur(12px); }
-    .app-header-inner { max-width: 1140px; margin: 0 auto; padding: 0 24px; height: 58px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .app-header-inner { max-width: 1140px; margin: 0 auto; padding: 0 24px; height: 58px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
     .app-logo { display: flex; align-items: baseline; gap: 5px; }
     .app-logo-text { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: var(--ink); }
     .app-logo-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-bottom: 2px; }
@@ -111,7 +111,7 @@
     .user-pill { display: inline-flex; align-items: center; gap: 8px; background: var(--cream); border: 1px solid var(--border); border-radius: 100px; padding: 4px 14px 4px 5px; font-size: 12px; font-weight: 500; color: var(--ink-soft); }
     .user-avatar { width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-light)); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: white; flex-shrink: 0; }
 
-    .app-header-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .app-header-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end;}
     .cache-badge { display: none; align-items: center; gap: 5px; font-size: 11px; font-weight: 500; color: var(--ink-muted); background: var(--sand); border-radius: 100px; padding: 4px 10px; border: 1px solid var(--border); }
     .cache-badge.visible { display: flex; }
     .cache-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
@@ -260,6 +260,8 @@
       .login-card{padding:36px 24px;}
       .app-main{padding:24px 16px 60px;}
       .app-header-mid{display:none;}
+      .app-header-inner{padding:10px 16px;}
+      .btn-signout,.btn-shortcut-sm{font-size:11px; padding:6px 10px;}
       .card-actions{opacity:1;}
       .type-selector{grid-template-columns:repeat(2,1fr);}
       .onboard-steps{grid-template-columns:1fr 1fr;}
@@ -356,6 +358,7 @@
       <div class="trips-title">Your Trips</div>
       <div style="display:flex;align-items:center;gap:8px;">
         <span style="font-size:13px;color:var(--ink-muted);" id="tripCount"></span>
+        <button class="btn-ghost" onclick="showAddManualPlace()">+ Add Place</button>
         <button class="btn-primary" onclick="showCreateTrip()">+ New Trip</button>
       </div>
     </div>
@@ -673,7 +676,8 @@ function renderPlaces() {
     const main=places[0], typeId=(main.type||'place').toLowerCase();
     const typeInfo=getTypeInfo(typeId), badge=getBadgeClass(typeId);
     const loc=[main.city,main.country].filter(Boolean).join(', ')||'Location unknown';
-    const placeId=main.id||'';
+    const groupIds = places.map(p => p.id).join(',');
+    const placeId = main.id || '';
     const savesHtml=places.map(place=>{
       const dateStr=formatDate(place.created_at);
       const viewBtn=place.source_url?`<a class="place-source-btn" href="${escHtml(place.source_url)}" target="_blank" rel="noopener">View ↗</a>`:'';
@@ -682,7 +686,7 @@ function renderPlaces() {
     }).join('');
     return `<div class="place-card" data-type="${escHtml(typeId)}" data-id="${escHtml(placeId)}" style="animation:cardIn 0.35s ease ${i*0.04}s both;">
       <div class="card-actions">
-        <button class="card-action-btn edit" title="Edit" onclick="showEditCard('${escHtml(placeId)}')">✏️</button>
+        <button class="card-action-btn edit" title="Edit" onclick="showEditCard('${escHtml(groupIds)}')">✏️</button>
         <button class="card-action-btn move" title="Move" onclick="showMoveCard('${escHtml(placeId)}','${escHtml(main.name||'')}')">↗️</button>
         <button class="card-action-btn delete" title="Delete" onclick="confirmDeleteCard('${escHtml(placeId)}','${escHtml(main.name||'')}')">🗑️</button>
       </div>
@@ -715,6 +719,103 @@ async function doCreateTrip() {
     hideCreateTrip(); $('newTripInput').value='';
     await loadPlaces(deviceId,tripName,true); showToast(`✅ "${tripName}" created`);
   } catch { showToast('❌ Failed to create trip'); }
+}
+
+function showAddManualPlace(){
+
+  const typeOptionsHtml=getAllTypes().map(t=>`
+    <div class="type-option"
+      data-type-id="${escHtml(t.id)}"
+      onclick="selectTypeOption(this)">
+      <span class="type-option-emoji">${t.emoji}</span>
+      <span class="type-option-label">${escHtml(t.label)}</span>
+    </div>
+  `).join('');
+
+  showModal(`
+    <div class="modal-title">Add Place</div>
+
+    <div class="form-group">
+      <label class="form-label">Place Name</label>
+      <input type="text" class="form-input" id="manualName"
+        placeholder="Tokyo DisneySea"/>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="form-group">
+        <label class="form-label">City</label>
+        <input type="text" class="form-input" id="manualCity"
+          placeholder="Tokyo"/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Country</label>
+        <input type="text" class="form-input" id="manualCountry"
+          placeholder="Japan"/>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Google Maps Link</label>
+      <input type="text" class="form-input" id="manualMaps"
+        placeholder="https://maps.google.com/..."/>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Notes / Caption</label>
+      <textarea class="form-textarea" id="manualSummary"
+        placeholder="Must visit at sunset"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Category</label>
+      <div class="type-selector">${typeOptionsHtml}</div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="doAddManualPlace()">Add Place</button>
+    </div>
+  `);
+}
+
+async function doAddManualPlace(){
+
+  const name = $('manualName')?.value.trim();
+  const city = $('manualCity')?.value.trim();
+  const country = $('manualCountry')?.value.trim();
+  const maps_url = $('manualMaps')?.value.trim();
+  const summary = $('manualSummary')?.value.trim();
+
+  const typeId =
+    document.querySelector('.type-option.selected')?.dataset.typeId || 'attraction';
+
+  if(!name){
+    showToast('Place name is required');
+    return;
+  }
+
+  const newPlace = {
+    id: 'manual_' + Date.now(),
+    name,
+    city,
+    country,
+    maps_url,
+    summary,
+    type: typeId,
+    created_at: new Date().toISOString(),
+    source_url: null
+  };
+
+  allPlaces.unshift(newPlace);
+
+  saveToCache(currentTrip,getDeviceId(),allPlaces);
+
+  renderPlaces();
+
+  closeModal();
+
+  showToast('✅ Place added');
 }
 
 // ── CUSTOM CATEGORIES ─────────────────────────────────────────────────────
@@ -750,24 +851,143 @@ function removeCategory(catId){
 }
 
 // ── EDIT CARD ─────────────────────────────────────────────────────────────
-function showEditCard(placeId){
-  const place=allPlaces.find(p=>String(p.id)===String(placeId)); if(!place){showToast('Place not found');return;}
+function showEditCard(placeIds){
+  const ids = placeIds.split(',');
+  const places = allPlaces.filter(p => ids.includes(String(p.id)));
+
+  if(!places.length){
+    showToast('Place not found');
+    return;
+  }
+
+  const place = places[0];
+
   const currentTypeId=(place.type||'').toLowerCase();
-  const typeOptionsHtml=getAllTypes().map(t=>`<div class="type-option${currentTypeId===t.id?' selected':''}" data-type-id="${escHtml(t.id)}" onclick="selectTypeOption(this)"><span class="type-option-emoji">${t.emoji}</span><span class="type-option-label">${escHtml(t.label)}</span></div>`).join('');
-  showModal(`<div class="modal-title">Edit Place</div><div class="form-group"><label class="form-label">Name</label><input type="text" class="form-input" id="editName" value="${escHtml(place.name||'')}"/></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;"><div class="form-group"><label class="form-label">City</label><input type="text" class="form-input" id="editCity" value="${escHtml(place.city||'')}"/></div><div class="form-group"><label class="form-label">Country</label><input type="text" class="form-input" id="editCountry" value="${escHtml(place.country||'')}"/></div></div><div class="form-group"><label class="form-label">Category</label><div class="type-selector">${typeOptionsHtml}</div></div><div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="editSummary">${escHtml(place.summary||'')}</textarea></div><div class="modal-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn-primary" onclick="doEditCard('${escHtml(placeId)}')">Save</button></div>`);
-  setTimeout(()=>$('editName')?.focus(),100);
+
+  const typeOptionsHtml=getAllTypes().map(t=>`
+    <div class="type-option${currentTypeId===t.id?' selected':''}"
+      data-type-id="${escHtml(t.id)}"
+      onclick="selectTypeOption(this)">
+      <span class="type-option-emoji">${t.emoji}</span>
+      <span class="type-option-label">${escHtml(t.label)}</span>
+    </div>
+  `).join('');
+
+  const captionsHtml = places.map((p, index) => `
+    <div class="form-group">
+      <label class="form-label">Caption ${index + 1}</label>
+      <textarea class="form-textarea multi-caption"
+        data-place-id="${p.id}">${escHtml(p.summary || '')}</textarea>
+    </div>
+  `).join('');
+
+  showModal(`
+    <div class="modal-title">Edit Place</div>
+
+    <div class="form-group">
+      <label class="form-label">Name</label>
+      <input type="text" class="form-input" id="editName"
+        value="${escHtml(place.name||'')}"/>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="form-group">
+        <label class="form-label">City</label>
+        <input type="text" class="form-input" id="editCity"
+          value="${escHtml(place.city||'')}"/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Country</label>
+        <input type="text" class="form-input" id="editCountry"
+          value="${escHtml(place.country||'')}"/>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Category</label>
+      <div class="type-selector">${typeOptionsHtml}</div>
+    </div>
+
+    ${captionsHtml}
+
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary"
+        onclick="doEditCard('${escHtml(placeIds)}')">
+        Save
+      </button>
+    </div>
+  `);
 }
 function selectTypeOption(el){document.querySelectorAll('.type-option').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');}
-async function doEditCard(placeId){
-  const name=$('editName')?.value.trim(),city=$('editCity')?.value.trim(),country=$('editCountry')?.value.trim(),summary=$('editSummary')?.value.trim();
+async function doEditCard(placeIds){
+
+  const ids = placeIds.split(',');
+
+  const name=$('editName')?.value.trim();
+  const city=$('editCity')?.value.trim();
+  const country=$('editCountry')?.value.trim();
+
   const typeId=document.querySelector('.type-option.selected')?.dataset.typeId||'';
-  if(!name){showToast('Name is required');return;}
-  const deviceId=getDeviceId(),password=getPassword(); closeModal();
-  try{const res=await fetch(`${API_BASE}/places/${encodeURIComponent(placeId)}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({device_id:deviceId,password,name,city,country,type:typeId,summary})});if(!res.ok)throw new Error();showToast('✅ Changes saved');}
-  catch{showToast('✅ Updated locally');}
-  const idx=allPlaces.findIndex(p=>String(p.id)===String(placeId));
-  if(idx!==-1)allPlaces[idx]={...allPlaces[idx],name,city,country,type:typeId,summary};
-  saveToCache(currentTrip,deviceId,allPlaces); renderPlaces();
+
+  if(!name){
+    showToast('Name is required');
+    return;
+  }
+
+  const captions = [...document.querySelectorAll('.multi-caption')];
+
+  closeModal();
+
+  for(const captionEl of captions){
+
+    const placeId = captionEl.dataset.placeId;
+    const summary = captionEl.value.trim();
+
+    try{
+      await fetch(`${API_BASE}/places/${encodeURIComponent(placeId)}`,{
+        method:'PATCH',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          device_id:getDeviceId(),
+          password:getPassword(),
+          name,
+          city,
+          country,
+          type:typeId,
+          summary
+        })
+      });
+    }catch(e){}
+  }
+
+  allPlaces = allPlaces.map(p => {
+
+    if(ids.includes(String(p.id))){
+
+      const matchingCaption = captions.find(
+        c => String(c.dataset.placeId) === String(p.id)
+      );
+
+      return {
+        ...p,
+        name,
+        city,
+        country,
+        type:typeId,
+        summary: matchingCaption?.value || ''
+      };
+    }
+
+    return p;
+  });
+
+  saveToCache(currentTrip,getDeviceId(),allPlaces);
+
+  renderPlaces();
+
+  showToast('✅ Changes saved');
 }
 
 // ── DELETE CARD ───────────────────────────────────────────────────────────
