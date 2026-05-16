@@ -5,3 +5,5 @@ supabase==2.4.6
 pydantic==2.7.1
 python-dotenv==1.0.1
 instaloader>=4.14
+easyocr
+pillow
