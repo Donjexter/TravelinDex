@@ -13,7 +13,7 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 GEMINI_URL = (
     "https://generativelanguage.googleapis.com/v1beta/models/"
-    "gemini-2.5-flash-lite:generateContent"
+    "gemini-3.1-flash-lite:generateContent"
 )
 
 PROMPT_TEMPLATE = """You are a travel assistant.
