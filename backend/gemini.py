@@ -69,7 +69,7 @@ L = instaloader.Instaloader(
     compress_json=False,
 )
 
-CAPTION_MIN_LENGTH = 150  # trigger OCR when caption shorter than this
+CAPTION_MIN_LENGTH = 600  # trigger OCR when caption shorter than this
 
 
 def extract_shortcode(url):
