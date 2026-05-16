@@ -8,13 +8,13 @@ import instaloader
 from typing import List, Dict, Optional
 from urllib.parse import quote_plus
 
-GEMINI_API_KEY = os.getenv(“GEMINI_API_KEY”)
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GEMINI_URL = (
 "https://generativelanguage.googleapis.com/v1beta/models/"
 "gemini-3.1-flash-lite:generateContent"
 )
 
-PROMPT_TEMPLATE = “”“You are a travel assistant.
+PROMPT_TEMPLATE = """You are a travel assistant.
 
 Extract ONLY real travel-related places explicitly mentioned in the content.
 
@@ -37,25 +37,25 @@ Rules:
 - summary max 20 words
 - Return ONLY raw JSON.
   Do NOT use markdown.
-  Do NOT wrap in ```json
+  Do NOT wrap in '''json
   Do NOT explain anything.
 - If no places found, return []
 
 Format:
 [
 {{
-“name”: “Place Name”,
-“city”: “City”,
-“country”: “Country”,
-“type”: “restaurant|cafe|attraction|hotel|sightseeing|retail|hiking”,
-“summary”: “Short specific reason to visit”,
-“maps_query”: “Place Name City Country”
+"name": "Place Name",
+"city": "City",
+"country": "Country",
+"type": "restaurant|cafe|attraction|hotel|sightseeing|retail|hiking",
+"summary": "Short specific reason to visit",
+"maps_query": "Place Name City Country"
 }}
 ]
 
 CONTENT:
 {input}
-“””
+"""
 
 # —————————–
 
@@ -74,38 +74,38 @@ compress_json=False,
 CAPTION_MIN_LENGTH = 150  # trigger OCR when caption shorter than this
 
 def extract_shortcode(url: str) -> str:
-match = re.search(r”/(?:p|reel|tv)/([^/?#&]+)”, url)
+match = re.search(r"/(?:p|reel|tv)/([^/?#&]+)", url)
 if not match:
-raise ValueError(“Invalid Instagram URL”)
+raise ValueError("Invalid Instagram URL")
 return match.group(1)
 
 async def download_image_bytes(url: str) -> Optional[bytes]:
-“”“Download image bytes from a URL.”””
+"""Download image bytes from a URL."""
 try:
 async with httpx.AsyncClient(timeout=15, follow_redirects=True) as client:
 headers = {
-“User-Agent”: (
-“Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) “
-“AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 “
-“Mobile/15E148 Safari/604.1”
+"User-Agent": (
+"Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) "
+"AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 "
+"Mobile/15E148 Safari/604.1"
 )
 }
 resp = await client.get(url, headers=headers)
 if resp.status_code == 200:
 return resp.content
 except Exception as e:
-print(f”Image download failed: {e}”)
+print(f"Image download failed: {e}")
 return None
 
 def ocr_image_bytes(image_bytes: bytes) -> str:
-“””
+"""
 Run OCR on raw image bytes.
 Tries easyocr first (better accuracy), falls back to pytesseract.
 Returns extracted text or empty string.
-“””
-ocr_text = “”
+"""
+ocr_text = ""
 
-```
+'''
 # --- Try easyocr ---
 try:
     import easyocr
@@ -143,16 +143,16 @@ except Exception as e:
     print(f"pytesseract failed: {e}")
 
 return ocr_text
-```
+'''
 
 async def ocr_post_images(post) -> str:
-“””
+"""
 Download and OCR all images from a post (single or carousel).
 Returns combined OCR text, or empty string if nothing useful found.
-“””
+"""
 image_urls: List[str] = []
 
-```
+'''
 try:
     if post.typename == "GraphSidecar":
         # Carousel — collect all node image URLs
@@ -185,7 +185,7 @@ for i, url in enumerate(image_urls):
         ocr_parts.append(text)
 
 return "\n".join(ocr_parts).strip()
-```
+'''
 
 async def fetch_instagram_caption(url: str) -> str:
 try:
@@ -197,7 +197,7 @@ L.context,
 shortcode
 )
 
-```
+'''
     caption = post.caption or ""
     hashtags = " ".join(post.caption_hashtags)
 
@@ -243,28 +243,28 @@ shortcode
 except Exception as e:
     print(f"Instagram scraping failed: {e}")
     return ""
-```
+'''
 
 async def fetch_url_content(url: str) -> str:
-if “instagram.com” in url:
+if "instagram.com" in url:
 return await fetch_instagram_caption(url)
 try:
 async with httpx.AsyncClient(timeout=10, follow_redirects=True) as client:
 headers = {
-“User-Agent”: “Mozilla/5.0 (compatible; TravelInDex/1.0)”
+"User-Agent": "Mozilla/5.0 (compatible; TravelInDex/1.0)"
 }
 resp = await client.get(url, headers=headers)
 if resp.status_code == 200:
 return resp.text[:3000]
 except Exception as e:
-print(f”URL fetch failed: {e}”)
-return “”
+print(f"URL fetch failed: {e}")
+return ""
 
 async def extract_places(text: str) -> List[Dict]:
 if not GEMINI_API_KEY:
-raise RuntimeError(“GEMINI_API_KEY not set”)
+raise RuntimeError("GEMINI_API_KEY not set")
 
-```
+'''
 content = text
 if text.strip().startswith("http"):
     fetched = await fetch_url_content(text.strip())
@@ -315,8 +315,8 @@ print("\n=======================================\n")
 # ---------------- CLEAN JSON ----------------
 def clean_json(r: str) -> str:
     r = r.strip()
-    if r.startswith("```"):
-        parts = r.split("```")
+    if r.startswith("'''"):
+        parts = r.split("'''")
         r = parts[1] if len(parts) > 1 else r
         if r.startswith("json"):
             r = r[4:]
@@ -363,4 +363,4 @@ for p in places:
         })
 
 return cleaned
-```
+'''
