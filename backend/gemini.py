@@ -10,8 +10,8 @@ from urllib.parse import quote_plus
 
 GEMINI_API_KEY = os.getenv(“GEMINI_API_KEY”)
 GEMINI_URL = (
-“https://generativelanguage.googleapis.com/v1beta/models/”
-“gemini-3.1-flash-lite:generateContent”
+"https://generativelanguage.googleapis.com/v1beta/models/"
+"gemini-3.1-flash-lite:generateContent"
 )
 
 PROMPT_TEMPLATE = “”“You are a travel assistant.
