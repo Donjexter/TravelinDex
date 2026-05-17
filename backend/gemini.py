@@ -19,37 +19,35 @@ PROMPT_TEMPLATE = """You are a travel assistant.
 Extract ONLY real travel-related places explicitly mentioned in the content.
 
 Prioritize:
-
 1. Tagged locations
-1. Restaurants
-1. Cafes
-1. Hotels
-1. Attractions
-1. Sightseeing
-1. Retail
-1. Hiking
+2. Restaurants
+3. Cafes
+4. Hotels
+5. Attractions
+6. Sightseeing
+7. Retail
+8. Hiking
 
 Rules:
-
 - Only include places clearly mentioned
 - Do not infer unnamed locations
 - Ignore vague references
 - summary max 20 words
 - Return ONLY raw JSON.
-  Do NOT use markdown.
-  Do NOT wrap in ```json
-  Do NOT explain anything.
+Do NOT use markdown.
+Do NOT wrap in ```json
+Do NOT explain anything.
 - If no places found, return []
 
 Format:
 [
 {{
-    "name": "Place Name",
-    "city": "City",
-    "country": "Country",
-    "type": "restaurant|cafe|attraction|hotel|sightseeing|retail|hiking",
-    "summary": "Short specific reason to visit",
-    "maps_query": "Place Name City Country"
+  "name": "Place Name",
+  "city": "City",
+  "country": "Country",
+  "type": "restaurant|cafe|attraction|hotel|sightseeing|retail|hiking",
+  "summary": "Short specific reason to visit",
+  "maps_query": "Place Name City Country"
 }}
 ]
 
@@ -57,9 +55,9 @@ CONTENT:
 {input}
 """
 
-# --------------------------------------------
+# -----------------------------
 # INSTAGRAM SCRAPER SETUP
-# --------------------------------------------
+# -----------------------------
 
 L = instaloader.Instaloader(
     download_pictures=False,
@@ -69,7 +67,7 @@ L = instaloader.Instaloader(
     compress_json=False,
 )
 
-CAPTION_MIN_LENGTH = 600  # trigger OCR when caption shorter than this
+CAPTION_MIN_LENGTH = 150  # trigger OCR when caption shorter than this
 
 
 def extract_shortcode(url):
@@ -98,42 +96,19 @@ async def download_image_bytes(url):
 
 
 def ocr_image_bytes(image_bytes):
-    ocr_text = ""
-
-    # Try easyocr first
-    try:
-        import easyocr
-        import numpy as np
-        from PIL import Image
-        import io
-
-        img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
-        img_np = np.array(img)
-        reader = easyocr.Reader(["en"], gpu=False, verbose=False)
-        results = reader.readtext(img_np, detail=0, paragraph=True)
-        ocr_text = " ".join(results).strip()
-    except ImportError:
-        pass
-    except Exception as e:
-        print("easyocr failed: " + str(e))
-
-    if ocr_text:
-        return ocr_text
-
-    # Fallback to pytesseract
     try:
         import pytesseract
         from PIL import Image
         import io
 
         img = Image.open(io.BytesIO(image_bytes))
-        ocr_text = pytesseract.image_to_string(img).strip()
+        return pytesseract.image_to_string(img).strip()
     except ImportError:
-        print("Neither easyocr nor pytesseract installed. Skipping OCR.")
+        print("pytesseract not installed. Skipping OCR.")
     except Exception as e:
-        print("pytesseract failed: " + str(e))
+        print("OCR failed: " + str(e))
 
-    return ocr_text
+    return ""
 
 
 async def ocr_post_images(post):
