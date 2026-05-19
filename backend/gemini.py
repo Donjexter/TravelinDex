@@ -96,19 +96,37 @@ async def download_image_bytes(url):
 
 
 def ocr_image_bytes(image_bytes):
+    """
+    OCR using rapidocr_onnxruntime only — no pytesseract dependency.
+    Install with: pip install rapidocr_onnxruntime onnxruntime Pillow numpy
+    """
     try:
-        import pytesseract
+        from rapidocr_onnxruntime import RapidOCR
         from PIL import Image
         import io
+        import numpy as np
 
-        img = Image.open(io.BytesIO(image_bytes))
-        return pytesseract.image_to_string(img).strip()
+        img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+        img_array = np.array(img)
+
+        # Instantiate fresh each call to avoid state issues
+        engine = RapidOCR()
+        result, _ = engine(img_array)
+
+        if not result:
+            return ""
+
+        # result rows: [bbox, text, confidence]
+        texts = [line[1] for line in result if len(line) >= 2]
+        return "\n".join(texts).strip()
+
     except ImportError:
-        print("pytesseract not installed. Skipping OCR.")
+        print("OCR skipped: rapidocr_onnxruntime is not installed. "
+              "Run: pip install rapidocr_onnxruntime onnxruntime Pillow numpy")
+        return ""
     except Exception as e:
         print("OCR failed: " + str(e))
-
-    return ""
+        return ""
 
 
 async def ocr_post_images(post):
