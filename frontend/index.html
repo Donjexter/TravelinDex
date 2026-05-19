@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
   <style>
     :root {
       --cream: #f5f0e8; --sand: #e8e0d0; --warm-white: #faf8f4;
@@ -22,57 +23,42 @@
     html { scroll-behavior: smooth; }
     body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--ink); min-height: 100vh; font-size: 15px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
 
-    /* PAGE SYSTEM */
     .page { display: none; min-height: 100vh; opacity: 0; transition: opacity 0.28s ease; flex-direction: column; }
     .page.active { display: flex; }
     .page.visible { opacity: 1; }
 
-    /* ── PAGE 1: LOGIN ── */
-    #page-login {
-      align-items: center; justify-content: center;
-      background: linear-gradient(145deg, #1a1714 0%, #2a1f16 55%, #1a1714 100%);
-      position: relative; overflow: hidden; padding: 40px 24px; min-height: 100vh;
-    }
+    /* LOGIN */
+    #page-login { align-items: center; justify-content: center; background: linear-gradient(145deg, #1a1714 0%, #2a1f16 55%, #1a1714 100%); position: relative; overflow: hidden; padding: 40px 24px; min-height: 100vh; }
     .login-bg-dots { position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(245,240,232,0.07) 1px, transparent 1px); background-size: 32px 32px; pointer-events: none; }
     .login-glow { position: absolute; border-radius: 50%; pointer-events: none; }
     .login-glow-1 { width: 560px; height: 560px; background: radial-gradient(circle, rgba(192,83,26,0.14) 0%, transparent 70%); top: -180px; right: -160px; }
     .login-glow-2 { width: 380px; height: 380px; background: radial-gradient(circle, rgba(29,78,122,0.1) 0%, transparent 70%); bottom: -80px; left: -80px; }
-
-    .login-card {
-      position: relative; z-index: 1;
-      background: rgba(250,248,244,0.05); border: 1px solid rgba(245,240,232,0.11);
-      border-radius: 24px; padding: 48px 40px; width: 100%; max-width: 420px;
-      backdrop-filter: blur(20px);
-    }
+    .login-card { position: relative; z-index: 1; background: rgba(250,248,244,0.05); border: 1px solid rgba(245,240,232,0.11); border-radius: 24px; padding: 48px 40px; width: 100%; max-width: 420px; backdrop-filter: blur(20px); }
     .login-logo { display: flex; align-items: baseline; gap: 6px; margin-bottom: 32px; }
     .login-logo-text { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; color: var(--cream); letter-spacing: -0.4px; }
     .login-logo-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); margin-bottom: 2px; flex-shrink: 0; }
     .login-headline { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; line-height: 1.2; color: var(--cream); margin-bottom: 8px; letter-spacing: -0.5px; }
     .login-headline em { font-style: italic; color: var(--accent-light); }
     .login-sub { font-size: 14px; color: rgba(245,240,232,0.45); margin-bottom: 36px; line-height: 1.65; font-weight: 300; }
-
     .login-field { margin-bottom: 14px; }
     .login-label { display: block; font-size: 11px; font-weight: 600; color: rgba(245,240,232,0.45); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.8px; }
     .login-input { width: 100%; border: 1px solid rgba(245,240,232,0.14); border-radius: var(--radius-sm); padding: 12px 16px; font-family: 'DM Sans', sans-serif; font-size: 15px; background: rgba(245,240,232,0.07); color: var(--cream); outline: none; transition: border-color 0.2s, background 0.2s; }
     .login-input:focus { border-color: var(--accent); background: rgba(245,240,232,0.11); }
     .login-input::placeholder { color: rgba(245,240,232,0.22); }
     .login-input.shake { animation: shake 0.4s ease; }
-
     .login-error { font-size: 12px; color: #f87171; margin-top: 8px; display: none; }
     .login-error.show { display: block; }
-
     .btn-login { width: 100%; margin-top: 24px; background: var(--accent); color: white; border: none; border-radius: var(--radius-sm); padding: 14px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.15s, box-shadow 0.2s; box-shadow: 0 4px 24px rgba(192,83,26,0.32); display: flex; align-items: center; justify-content: center; gap: 8px; }
-    .btn-login:hover { background: var(--accent-light); transform: translateY(-1px); box-shadow: 0 6px 28px rgba(192,83,26,0.42); }
+    .btn-login:hover { background: var(--accent-light); transform: translateY(-1px); }
     .btn-login:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
     .btn-spinner { display: none; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.35); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; }
     .btn-login.loading .btn-spinner { display: block; }
     .btn-login.loading .btn-text { display: none; }
-
     .login-footer { margin-top: 22px; text-align: center; font-size: 12px; color: rgba(245,240,232,0.28); }
     .login-footer a { color: rgba(245,240,232,0.5); text-decoration: underline; cursor: pointer; transition: color 0.15s; }
     .login-footer a:hover { color: var(--accent-light); }
 
-    /* ── PAGE 2: ONBOARDING ── */
+    /* ONBOARDING */
     #page-onboarding { background: var(--cream); }
     .simple-header { background: var(--warm-white); border-bottom: 1px solid var(--border); height: 58px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; }
     .simple-logo { display: flex; align-items: baseline; gap: 5px; }
@@ -80,38 +66,32 @@
     .simple-logo-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-bottom: 2px; }
     .btn-back { display: flex; align-items: center; gap: 5px; background: none; border: 1px solid var(--border); color: var(--ink-muted); border-radius: 100px; padding: 6px 14px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
     .btn-back:hover { border-color: var(--ink-soft); color: var(--ink); }
-
     .onboard-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 24px; text-align: center; }
     .onboard-icon { font-size: 60px; margin-bottom: 20px; display: block; }
     .onboard-title { font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 12px; line-height: 1.2; }
     .onboard-sub { font-size: 15px; color: var(--ink-muted); line-height: 1.7; max-width: 420px; margin: 0 auto 40px; font-weight: 300; }
-
     .onboard-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 14px; width: 100%; max-width: 640px; margin-bottom: 40px; }
     .onboard-step { background: var(--warm-white); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 14px; text-align: center; }
     .onboard-step-ico { font-size: 26px; margin-bottom: 10px; display: block; }
     .onboard-step-label { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
     .onboard-step-sub { font-size: 12px; color: var(--ink-muted); line-height: 1.5; }
-
     .btn-dl { display: inline-flex; align-items: center; gap: 12px; background: var(--ink); color: var(--cream); border: none; border-radius: 100px; padding: 16px 32px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; text-decoration: none; transition: all 0.2s; box-shadow: 0 4px 24px rgba(26,23,20,0.18); }
-    .btn-dl:hover { background: var(--accent); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(192,83,26,0.32); }
+    .btn-dl:hover { background: var(--accent); transform: translateY(-2px); }
     .btn-dl-icon { width: 34px; height: 34px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; }
     .onboard-hint { margin-top: 18px; font-size: 12px; color: var(--ink-faint); }
     .onboard-hint a { color: var(--accent); cursor: pointer; text-decoration: underline; }
 
-    /* ── PAGE 3: APP ── */
+    /* APP */
     #page-app { background: var(--cream); }
-
     .app-header { background: var(--warm-white); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; backdrop-filter: blur(12px); }
     .app-header-inner { max-width: 1140px; margin: 0 auto; padding: 0 24px; height: 58px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
     .app-logo { display: flex; align-items: baseline; gap: 5px; }
     .app-logo-text { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: var(--ink); }
     .app-logo-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-bottom: 2px; }
-
     .app-header-mid { flex: 1; display: flex; justify-content: center; }
     .user-pill { display: inline-flex; align-items: center; gap: 8px; background: var(--cream); border: 1px solid var(--border); border-radius: 100px; padding: 4px 14px 4px 5px; font-size: 12px; font-weight: 500; color: var(--ink-soft); }
     .user-avatar { width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-light)); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: white; flex-shrink: 0; }
-
-    .app-header-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end;}
+    .app-header-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
     .cache-badge { display: none; align-items: center; gap: 5px; font-size: 11px; font-weight: 500; color: var(--ink-muted); background: var(--sand); border-radius: 100px; padding: 4px 10px; border: 1px solid var(--border); }
     .cache-badge.visible { display: flex; }
     .cache-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
@@ -120,12 +100,9 @@
     .btn-shortcut-sm:hover { background: var(--accent); }
     .btn-signout { display: flex; align-items: center; gap: 5px; background: none; border: 1px solid var(--border); color: var(--ink-muted); border-radius: 100px; padding: 6px 14px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
     .btn-signout:hover { border-color: var(--red); color: var(--red); }
-
     .app-main { max-width: 1140px; margin: 0 auto; padding: 32px 24px 80px; }
-
     .trips-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
     .trips-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; letter-spacing: -0.4px; }
-
     .cache-bar { display: none; align-items: center; justify-content: space-between; background: var(--gold-pale); border: 1px solid rgba(184,134,11,0.22); border-radius: var(--radius-sm); padding: 10px 16px; margin-bottom: 20px; gap: 12px; flex-wrap: wrap; }
     .cache-bar.visible { display: flex; }
     .cache-bar-text { font-size: 13px; color: var(--gold); font-weight: 500; }
@@ -133,10 +110,8 @@
     .btn-refresh:hover { background: var(--ink); }
     .btn-refresh:disabled { opacity: 0.6; cursor: not-allowed; }
     .btn-refresh.spinning svg { animation: spin 0.7s linear infinite; }
-
     .create-trip-bar { display: none; align-items: center; gap: 10px; background: var(--warm-white); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 16px; margin-bottom: 16px; flex-wrap: wrap; }
     .create-trip-bar.open { display: flex; }
-
     .trip-tabs-wrap { margin-bottom: 22px; }
     .trip-tabs { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
     .trip-tab { background: var(--warm-white); border: 1px solid var(--border); border-radius: 100px; padding: 7px 18px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; color: var(--ink-soft); white-space: nowrap; display: flex; align-items: center; gap: 6px; min-height: 40px; }
@@ -149,7 +124,9 @@
     .trip-tab.active .trip-tab-btn:hover { background: rgba(255,255,255,0.15); }
     .trip-tab-rename { background: var(--warm-white); border: 1.5px solid var(--accent); border-radius: 100px; padding: 5px 13px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--ink); outline: none; min-width: 110px; }
 
-    .filter-bar { display: flex; gap: 8px; margin-bottom: 22px; flex-wrap: wrap; }
+    /* FILTER BAR + VIEW TOGGLE ROW */
+    .filter-view-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 22px; flex-wrap: wrap; }
+    .filter-bar { display: flex; gap: 8px; flex-wrap: wrap; flex: 1; }
     .filter-chip { display: flex; align-items: center; gap: 5px; background: var(--warm-white); border: 1px solid var(--border); border-radius: 100px; padding: 5px 14px; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s; color: var(--ink-soft); user-select: none; min-height: 36px; }
     .filter-chip:hover { border-color: var(--ink-soft); }
     .filter-chip.active { background: var(--accent-pale); border-color: var(--accent); color: var(--accent); }
@@ -159,12 +136,16 @@
     .add-category-btn { display: flex; align-items: center; gap: 4px; background: var(--accent-pale); border: 1px dashed var(--accent); border-radius: 100px; padding: 5px 12px; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s; color: var(--accent); min-height: 36px; }
     .add-category-btn:hover { background: var(--accent); color: white; border-style: solid; }
 
+    /* VIEW TOGGLE */
+    .view-toggle { display: flex; background: var(--warm-white); border: 1px solid var(--border); border-radius: 100px; padding: 3px; gap: 2px; flex-shrink: 0; }
+    .view-toggle-btn { display: flex; align-items: center; gap: 5px; border: none; background: none; border-radius: 100px; padding: 5px 14px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; color: var(--ink-muted); transition: all 0.2s; white-space: nowrap; }
+    .view-toggle-btn.active { background: var(--ink); color: var(--cream); }
+    .view-toggle-btn:not(.active):hover { color: var(--ink); background: var(--sand); }
+
     .section-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 18px; flex-wrap: wrap; gap: 8px; }
     .section-title { font-family: 'Playfair Display', serif; font-size: 21px; font-weight: 600; letter-spacing: -0.3px; }
     .section-count { font-size: 13px; color: var(--ink-muted); }
-
     .places-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(278px, 1fr)); gap: 15px; }
-
     .place-card { background: var(--warm-white); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; position: relative; overflow: hidden; display: flex; flex-direction: column; }
     .place-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; opacity: 0; transition: opacity 0.2s; }
     .place-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: transparent; }
@@ -177,14 +158,12 @@
     .place-card[data-type="sightseeing"]::before { background: linear-gradient(90deg,#1d4e7a,#3a7ec4); }
     .place-card[data-type="retail"]::before { background: linear-gradient(90deg,#b8860b,#d4a017); }
     .place-card[data-type="hiking"]::before { background: linear-gradient(90deg,#2d6a4f,#6abf8a); }
-
     .card-actions { position: absolute; top: 11px; right: 11px; display: flex; gap: 4px; opacity: 0; transition: opacity 0.2s; }
     .card-action-btn { width: 27px; height: 27px; border-radius: 8px; border: 1px solid var(--border); background: var(--warm-white); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; transition: all 0.15s; box-shadow: var(--shadow-sm); }
     .card-action-btn:hover { transform: scale(1.1); }
     .card-action-btn.delete:hover { background: var(--red-pale); border-color: rgba(185,28,28,0.3); }
     .card-action-btn.move:hover { background: var(--blue-pale); border-color: rgba(29,78,122,0.3); }
     .card-action-btn.edit:hover { background: var(--accent-pale); border-color: rgba(192,83,26,0.3); }
-
     .place-name { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 600; line-height: 1.3; color: var(--ink); letter-spacing: -0.2px; margin-bottom: 8px; }
     .place-location { display: flex; align-items: center; gap: 5px; color: var(--ink-muted); font-size: 13px; margin-bottom: 12px; }
     .place-location svg { flex-shrink: 0; opacity: 0.6; }
@@ -198,16 +177,52 @@
     .place-source-btn:hover { background: var(--ink); color: var(--cream); }
     .place-card-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--border); gap: 8px; margin-top: auto; }
     .place-type-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 100px; font-size: 11px; font-weight: 500; text-transform: capitalize; flex-shrink: 0; }
-    .badge-restaurant { background:var(--accent-pale);color:var(--accent); } .badge-cafe { background:var(--gold-pale);color:var(--gold); }
-    .badge-attraction { background:var(--blue-pale);color:var(--blue); } .badge-hotel { background:var(--green-pale);color:var(--green); }
-    .badge-sightseeing { background:var(--blue-pale);color:var(--blue); } .badge-retail { background:var(--gold-pale);color:var(--gold); }
-    .badge-hiking { background:var(--green-pale);color:var(--green); } .badge-default { background:var(--sand);color:var(--ink-muted); }
-    .badge-custom { background:var(--purple-pale);color:var(--purple); }
-
+    .badge-restaurant{background:var(--accent-pale);color:var(--accent);}
+    .badge-cafe{background:var(--gold-pale);color:var(--gold);}
+    .badge-attraction{background:var(--blue-pale);color:var(--blue);}
+    .badge-hotel{background:var(--green-pale);color:var(--green);}
+    .badge-sightseeing{background:var(--blue-pale);color:var(--blue);}
+    .badge-retail{background:var(--gold-pale);color:var(--gold);}
+    .badge-hiking{background:var(--green-pale);color:var(--green);}
+    .badge-default{background:var(--sand);color:var(--ink-muted);}
+    .badge-custom{background:var(--purple-pale);color:var(--purple);}
     .grid-empty { grid-column:1/-1; text-align:center; padding:60px 24px; color:var(--ink-muted); font-size:14px; }
     .grid-empty-icon { font-size:40px; display:block; margin-bottom:12px; }
 
-    /* SHARED BUTTONS */
+    /* MAP VIEW */
+    #mapView { display: none; }
+    #mapView.visible { display: flex; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); box-shadow: var(--shadow-sm); min-height: 600px; }
+    #mapContainer { flex: 1; min-height: 560px; z-index: 1; }
+    .map-sidebar { width: 300px; flex-shrink: 0; background: var(--warm-white); border-left: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+    .map-sidebar-header { padding: 16px 18px 12px; border-bottom: 1px solid var(--border); }
+    .map-sidebar-title { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 600; letter-spacing: -0.2px; margin-bottom: 3px; }
+    .map-sidebar-sub { font-size: 12px; color: var(--ink-muted); }
+    .map-geocoding-bar { padding: 10px 18px; background: var(--gold-pale); border-bottom: 1px solid rgba(184,134,11,0.2); font-size: 12px; color: var(--gold); display: none; align-items: center; gap: 8px; }
+    .map-geocoding-bar.visible { display: flex; }
+    .mini-spinner { width: 14px; height: 14px; border: 2px solid rgba(184,134,11,0.3); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
+    .map-sidebar-list { flex: 1; overflow-y: auto; padding: 8px 0; }
+    .map-sidebar-list::-webkit-scrollbar { width: 4px; }
+    .map-sidebar-list::-webkit-scrollbar-thumb { background: var(--sand); border-radius: 2px; }
+    .map-place-row { display: flex; align-items: flex-start; gap: 10px; padding: 10px 18px; cursor: pointer; transition: background 0.15s; border-left: 3px solid transparent; }
+    .map-place-row:hover { background: var(--cream); }
+    .map-place-row.highlighted { background: var(--accent-pale); border-left-color: var(--accent); }
+    .map-place-dot { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; margin-top: 1px; }
+    .map-place-info { flex: 1; min-width: 0; }
+    .map-place-name { font-size: 13px; font-weight: 600; color: var(--ink); line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .map-place-loc { font-size: 11px; color: var(--ink-muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .map-place-badge { font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 100px; margin-top: 4px; display: inline-block; text-transform: capitalize; }
+    .map-no-results { padding: 40px 18px; text-align: center; color: var(--ink-muted); font-size: 13px; }
+    .map-no-results-icon { font-size: 32px; display: block; margin-bottom: 10px; }
+    /* Leaflet popup */
+    .leaflet-popup-content-wrapper { border-radius: 12px !important; box-shadow: var(--shadow-lg) !important; border: 1px solid var(--border) !important; font-family: 'DM Sans', sans-serif !important; }
+    .leaflet-popup-content { margin: 14px 16px !important; min-width: 180px; }
+    .map-popup-name { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+    .map-popup-loc { font-size: 12px; color: var(--ink-muted); margin-bottom: 8px; }
+    .map-popup-summary { font-size: 12px; color: var(--ink-soft); font-style: italic; margin-bottom: 8px; line-height: 1.5; }
+    .map-popup-link { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; padding: 4px 10px; border-radius: 100px; background: var(--green-pale); color: var(--green); text-decoration: none; }
+    .map-popup-link:hover { background: var(--green); color: white; }
+
+    /* SHARED */
     .btn-primary { background:var(--accent);color:white;border:none;border-radius:var(--radius-sm);padding:9px 18px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:background 0.2s,transform 0.15s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap; }
     .btn-primary:hover { background:var(--accent-light);transform:translateY(-1px); }
     .btn-ghost { background:none;border:1px solid var(--border);color:var(--ink-muted);border-radius:var(--radius-sm);padding:8px 14px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap; }
@@ -216,8 +231,6 @@
     .btn-danger:hover { background:var(--red);color:white; }
     .device-input { border:1px solid var(--sand);border-radius:var(--radius-sm);padding:9px 14px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--cream);color:var(--ink);outline:none;transition:border-color 0.2s; }
     .device-input:focus { border-color:var(--accent); }
-
-    /* MODAL */
     .modal-backdrop { position:fixed;inset:0;background:rgba(26,23,20,0.55);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn 0.2s ease; }
     .modal { background:var(--warm-white);border-radius:var(--radius);padding:28px;max-width:500px;width:100%;box-shadow:var(--shadow-lg);animation:modalUp 0.25s ease;max-height:90vh;overflow-y:auto; }
     .modal-title { font-family:'Playfair Display',serif;font-size:20px;font-weight:600;margin-bottom:20px; }
@@ -238,33 +251,37 @@
     .type-option-label { font-size:11px;font-weight:500;color:var(--ink-soft);text-transform:capitalize; }
     .cat-manage-list { display:flex;flex-direction:column;gap:8px;margin-bottom:16px; }
     .cat-manage-row { display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--radius-sm);background:var(--cream);border:1px solid var(--border); }
-    .cat-manage-emoji { font-size:20px; } .cat-manage-name { flex:1;font-size:14px;font-weight:500; }
+    .cat-manage-emoji { font-size:20px; }
+    .cat-manage-name { flex:1;font-size:14px;font-weight:500; }
     .cat-manage-delete { background:none;border:none;cursor:pointer;font-size:14px;opacity:0.4;transition:opacity 0.15s;padding:4px; }
     .cat-manage-delete:hover { opacity:1; }
-
     .spinner-wrap { display:flex;flex-direction:column;align-items:center;padding:80px 24px; }
     .spinner { width:32px;height:32px;border:2px solid var(--sand);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite;margin-bottom:14px; }
     .spinner-label { font-size:13px;color:var(--ink-muted); }
-
     .toast { position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ink);color:var(--cream);padding:12px 20px;border-radius:100px;font-size:13px;font-weight:500;z-index:1000;transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 8px 32px rgba(0,0,0,0.2);white-space:nowrap;pointer-events:none; }
     .toast.show { transform:translateX(-50%) translateY(0); }
 
-    @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
     @keyframes fadeIn { from{opacity:0} to{opacity:1} }
     @keyframes modalUp { from{transform:translateY(18px);opacity:0} to{transform:translateY(0);opacity:1} }
     @keyframes spin { to{transform:rotate(360deg)} }
     @keyframes cardIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
     @keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-6px)} 40%,80%{transform:translateX(6px)} }
 
-    @media(max-width:640px){
+    @media(max-width:768px) {
+      #mapView.visible { flex-direction: column; }
+      .map-sidebar { width: 100%; border-left: none; border-top: 1px solid var(--border); max-height: 260px; }
+      #mapContainer { min-height: 320px; }
+    }
+    @media(max-width:640px) {
       .login-card{padding:36px 24px;}
       .app-main{padding:24px 16px 60px;}
       .app-header-mid{display:none;}
       .app-header-inner{padding:10px 16px;}
-      .btn-signout,.btn-shortcut-sm{font-size:11px; padding:6px 10px;}
+      .btn-signout,.btn-shortcut-sm{font-size:11px;padding:6px 10px;}
       .card-actions{opacity:1;}
       .type-selector{grid-template-columns:repeat(2,1fr);}
       .onboard-steps{grid-template-columns:1fr 1fr;}
+      .view-toggle-btn span { display:none; }
     }
   </style>
 </head>
@@ -295,36 +312,31 @@
       <span class="btn-text">Sign In</span>
       <span class="btn-spinner"></span>
     </button>
-    <div class="login-footer">
-      New here? <a onclick="showPage('page-onboarding')">Get the iOS Shortcut →</a>
-    </div>
+    <div class="login-footer">New here? <a onclick="showPage('page-onboarding')">Get the iOS Shortcut &rarr;</a></div>
   </div>
 </div>
 
 <!-- PAGE 2: ONBOARDING -->
 <div class="page" id="page-onboarding">
   <div class="simple-header">
-    <div class="simple-logo">
-      <span class="simple-logo-text">TravelInDex</span>
-      <span class="simple-logo-dot"></span>
-    </div>
-    <button class="btn-back" onclick="showPage('page-login')">← Back to login</button>
+    <div class="simple-logo"><span class="simple-logo-text">TravelInDex</span><span class="simple-logo-dot"></span></div>
+    <button class="btn-back" onclick="showPage('page-login')">&larr; Back to login</button>
   </div>
   <div class="onboard-body">
-    <span class="onboard-icon">🗺️</span>
+    <span class="onboard-icon">&#128506;&#65039;</span>
     <h2 class="onboard-title">Get started in minutes</h2>
     <p class="onboard-sub">Install the iOS Shortcut, then share any Instagram post to save the place automatically to your trip board.</p>
     <div class="onboard-steps">
-      <div class="onboard-step"><span class="onboard-step-ico">⬇️</span><div class="onboard-step-label">Install</div><div class="onboard-step-sub">Download the shortcut below</div></div>
-      <div class="onboard-step"><span class="onboard-step-ico">📱</span><div class="onboard-step-label">See a spot</div><div class="onboard-step-sub">On Instagram, TikTok, YouTube…</div></div>
-      <div class="onboard-step"><span class="onboard-step-ico">↗️</span><div class="onboard-step-label">Tap Share</div><div class="onboard-step-sub">Select TravelInDex from the sheet</div></div>
-      <div class="onboard-step"><span class="onboard-step-ico">✅</span><div class="onboard-step-label">It's saved</div><div class="onboard-step-sub">Sign in here to browse your places</div></div>
+      <div class="onboard-step"><span class="onboard-step-ico">&#11015;&#65039;</span><div class="onboard-step-label">Install</div><div class="onboard-step-sub">Download the shortcut below</div></div>
+      <div class="onboard-step"><span class="onboard-step-ico">&#128247;</span><div class="onboard-step-label">See a spot</div><div class="onboard-step-sub">On Instagram, TikTok, YouTube&hellip;</div></div>
+      <div class="onboard-step"><span class="onboard-step-ico">&#8599;&#65039;</span><div class="onboard-step-label">Tap Share</div><div class="onboard-step-sub">Select TravelInDex from the sheet</div></div>
+      <div class="onboard-step"><span class="onboard-step-ico">&#9989;</span><div class="onboard-step-label">It's saved</div><div class="onboard-step-sub">Sign in here to browse your places</div></div>
     </div>
     <a href="https://www.icloud.com/shortcuts/1976c0b68a264b4e9557b9b83ac34a1b" target="_blank" class="btn-dl">
-      <div class="btn-dl-icon">⬇️</div>
+      <div class="btn-dl-icon">&#11015;&#65039;</div>
       Add to iOS Shortcuts
     </a>
-    <p class="onboard-hint">Already installed? <a onclick="showPage('page-login')">Sign in →</a></p>
+    <p class="onboard-hint">Already installed? <a onclick="showPage('page-login')">Sign in &rarr;</a></p>
   </div>
 </div>
 
@@ -332,22 +344,16 @@
 <div class="page" id="page-app">
   <header class="app-header">
     <div class="app-header-inner">
-      <div class="app-logo">
-        <span class="app-logo-text">TravelInDex</span>
-        <span class="app-logo-dot"></span>
-      </div>
+      <div class="app-logo"><span class="app-logo-text">TravelInDex</span><span class="app-logo-dot"></span></div>
       <div class="app-header-mid">
         <div class="user-pill">
           <div class="user-avatar" id="userAvatar">?</div>
-          <span id="userLabel">—</span>
+          <span id="userLabel">&mdash;</span>
         </div>
       </div>
       <div class="app-header-right">
-        <div class="cache-badge" id="cacheBadge">
-          <span class="cache-dot" id="cacheDot"></span>
-          <span id="cacheLabel">Cached</span>
-        </div>
-        <a href="https://www.icloud.com/shortcuts/1976c0b68a264b4e9557b9b83ac34a1b" target="_blank" class="btn-shortcut-sm">📲 Shortcut</a>
+        <div class="cache-badge" id="cacheBadge"><span class="cache-dot" id="cacheDot"></span><span id="cacheLabel">Cached</span></div>
+        <a href="https://www.icloud.com/shortcuts/1976c0b68a264b4e9557b9b83ac34a1b" target="_blank" class="btn-shortcut-sm">&#128242; Shortcut</a>
         <button class="btn-signout" onclick="handleSignOut()">Sign out</button>
       </div>
     </div>
@@ -370,7 +376,7 @@
     </div>
 
     <div class="cache-bar" id="cacheBar">
-      <div class="cache-bar-text">📦 Showing your last snapshot — <span id="cacheAge"></span></div>
+      <div class="cache-bar-text">&#128230; Showing your last snapshot &mdash; <span id="cacheAge"></span></div>
       <button class="btn-refresh" id="refreshBtn" onclick="refreshFromServer()">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
         Fetch Latest
@@ -381,24 +387,55 @@
       <div class="trip-tabs" id="tripTabs"></div>
     </div>
 
-    <div class="filter-bar" id="filterBar">
-      <div class="filter-chip active" data-type="all" onclick="toggleFilter(this)">🌏 All</div>
-      <div class="filter-chip" data-type="restaurant" onclick="toggleFilter(this)">🍽️ Restaurants</div>
-      <div class="filter-chip" data-type="cafe" onclick="toggleFilter(this)">☕ Cafés</div>
-      <div class="filter-chip" data-type="attraction" onclick="toggleFilter(this)">🏛️ Attractions</div>
-      <div class="filter-chip" data-type="hotel" onclick="toggleFilter(this)">🏨 Hotels</div>
-      <div class="filter-chip" data-type="sightseeing" onclick="toggleFilter(this)">👁️ Sightseeing</div>
-      <div class="filter-chip" data-type="retail" onclick="toggleFilter(this)">🛍️ Retail</div>
-      <div class="filter-chip" data-type="hiking" onclick="toggleFilter(this)">🥾 Hiking</div>
-      <button class="add-category-btn" onclick="showManageCategories()">⚙️ Categories</button>
+    <!-- Filter bar + view toggle -->
+    <div class="filter-view-row">
+      <div class="filter-bar" id="filterBar">
+        <div class="filter-chip active" data-type="all" onclick="toggleFilter(this)">&#127759; All</div>
+        <div class="filter-chip" data-type="restaurant" onclick="toggleFilter(this)">&#127869;&#65039; Restaurants</div>
+        <div class="filter-chip" data-type="cafe" onclick="toggleFilter(this)">&#9749; Caf&eacute;s</div>
+        <div class="filter-chip" data-type="attraction" onclick="toggleFilter(this)">&#127963;&#65039; Attractions</div>
+        <div class="filter-chip" data-type="hotel" onclick="toggleFilter(this)">&#127976; Hotels</div>
+        <div class="filter-chip" data-type="sightseeing" onclick="toggleFilter(this)">&#128065;&#65039; Sightseeing</div>
+        <div class="filter-chip" data-type="retail" onclick="toggleFilter(this)">&#128717;&#65039; Retail</div>
+        <div class="filter-chip" data-type="hiking" onclick="toggleFilter(this)">&#129406; Hiking</div>
+        <button class="add-category-btn" onclick="showManageCategories()">&#9881;&#65039; Categories</button>
+      </div>
+      <div class="view-toggle">
+        <button class="view-toggle-btn active" id="btnGridView" onclick="switchView('grid')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          <span>Cards</span>
+        </button>
+        <button class="view-toggle-btn" id="btnMapView" onclick="switchView('map')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+          <span>Map</span>
+        </button>
+      </div>
     </div>
 
     <div class="section-header">
       <div class="section-title" id="placesTitle">All Places</div>
       <span class="section-count" id="placesCount"></span>
     </div>
+
+    <!-- CARD GRID -->
     <div id="placesContent">
-      <div class="spinner-wrap"><div class="spinner"></div><div class="spinner-label">Loading…</div></div>
+      <div class="spinner-wrap"><div class="spinner"></div><div class="spinner-label">Loading&hellip;</div></div>
+    </div>
+
+    <!-- MAP VIEW -->
+    <div id="mapView">
+      <div id="mapContainer"></div>
+      <div class="map-sidebar">
+        <div class="map-sidebar-header">
+          <div class="map-sidebar-title">Places on Map</div>
+          <div class="map-sidebar-sub" id="mapSidebarSub">Loading&hellip;</div>
+        </div>
+        <div class="map-geocoding-bar" id="mapGeocodingBar">
+          <div class="mini-spinner"></div>
+          <span id="mapGeocodingLabel">Locating places&hellip;</span>
+        </div>
+        <div class="map-sidebar-list" id="mapSidebarList"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -406,654 +443,455 @@
 <div class="toast" id="toast"></div>
 <div id="modalBackdrop" style="display:none;"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 const API_BASE = 'https://travelindex-2ykv.onrender.com';
 
 let allPlaces = [], currentTrip = null, currentFilter = 'all', trips = [], customCategories = [];
+let currentView = 'grid';
+let leafletMap = null, mapMarkers = [], _mapPlaces = [];
+let geocodeCache = {}, geocodingAbort = false, geocodingActive = false;
 
 const BUILTIN_TYPES = [
-  {id:'restaurant',label:'restaurant',emoji:'🍽️'},{id:'cafe',label:'café',emoji:'☕'},
-  {id:'attraction',label:'attraction',emoji:'🏛️'},{id:'hotel',label:'hotel',emoji:'🏨'},
-  {id:'sightseeing',label:'sightseeing',emoji:'👁️'},{id:'retail',label:'retail',emoji:'🛍️'},
-  {id:'hiking',label:'hiking',emoji:'🥾'},
+  {id:'restaurant',label:'restaurant',emoji:'\uD83C\uDF7D\uFE0F'},
+  {id:'cafe',label:'caf\u00e9',emoji:'\u2615'},
+  {id:'attraction',label:'attraction',emoji:'\uD83C\uDFDB\uFE0F'},
+  {id:'hotel',label:'hotel',emoji:'\uD83C\uDFF8'},
+  {id:'sightseeing',label:'sightseeing',emoji:'\uD83D\uDC41\uFE0F'},
+  {id:'retail',label:'retail',emoji:'\uD83D\uDED2\uFE0F'},
+  {id:'hiking',label:'hiking',emoji:'\uD83E\uDD5E'},
 ];
+const TYPE_COLORS = {
+  restaurant:'#c0531a',cafe:'#b8860b',attraction:'#1d4e7a',
+  hotel:'#2d6a4f',sightseeing:'#1d4e7a',retail:'#b8860b',hiking:'#2d6a4f'
+};
+function typeColor(t){ return TYPE_COLORS[t]||'#8a7e72'; }
 
-// ── CREDENTIALS (always from localStorage, set on login) ──────────────────
-function getDeviceId() { return localStorage.getItem('travelindex_device') || ''; }
-function getPassword()  { return localStorage.getItem('travelindex_password') || ''; }
+function getDeviceId(){ return localStorage.getItem('travelindex_device')||''; }
+function getPassword(){ return localStorage.getItem('travelindex_password')||''; }
 
-// ── PAGE NAVIGATION ───────────────────────────────────────────────────────
-function showPage(id) {
-  document.querySelectorAll('.page').forEach(p => { p.classList.remove('active','visible'); });
-  const pg = document.getElementById(id);
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>{p.classList.remove('active','visible');});
+  const pg=document.getElementById(id);
   pg.classList.add('active');
-  requestAnimationFrame(() => requestAnimationFrame(() => pg.classList.add('visible')));
+  requestAnimationFrame(()=>requestAnimationFrame(()=>pg.classList.add('visible')));
   window.scrollTo(0,0);
 }
 
-function handleSignOut() {
+function handleSignOut(){
   localStorage.removeItem('travelindex_device');
   localStorage.removeItem('travelindex_password');
-  allPlaces=[]; currentTrip=null; trips=[];
-  showPage('page-login');
-  showToast('Signed out');
+  allPlaces=[];currentTrip=null;trips=[];
+  if(leafletMap){leafletMap.remove();leafletMap=null;}
+  showPage('page-login');showToast('Signed out');
 }
 
-// ── CACHE ─────────────────────────────────────────────────────────────────
-const CP = 'travelindex_cache_', CM = 'travelindex_cache_meta';
-const ck = (t,d) => CP+d+'_'+t;
-function getCacheMeta() { try{return JSON.parse(localStorage.getItem(CM)||'{}')}catch{return{}} }
-function saveToCache(tripId,deviceId,places) {
-  try { const k=ck(tripId,deviceId); localStorage.setItem(k,JSON.stringify(places)); const m=getCacheMeta(); m[k]=Date.now(); localStorage.setItem(CM,JSON.stringify(m)); } catch(e){}
-}
-function loadFromCache(tripId,deviceId) { try{const r=localStorage.getItem(ck(tripId,deviceId));return r?JSON.parse(r):null}catch{return null} }
-function getCacheAge(tripId,deviceId) { const m=getCacheMeta(),ts=m[ck(tripId,deviceId)]; return ts?Date.now()-ts:null; }
-function saveTripsToCache(deviceId,list) { try{localStorage.setItem(CP+deviceId+'_trips',JSON.stringify(list));const m=getCacheMeta();m[CP+deviceId+'_trips']=Date.now();localStorage.setItem(CM,JSON.stringify(m))}catch(e){} }
-function loadTripsFromCache(deviceId) { try{const r=localStorage.getItem(CP+deviceId+'_trips');return r?JSON.parse(r):null}catch{return null} }
-function formatAge(ms) { if(!ms)return'a while ago'; if(ms<60000)return'just now'; if(ms<3600000)return Math.floor(ms/60000)+' min ago'; if(ms<86400000)return Math.floor(ms/3600000)+' hr ago'; return Math.floor(ms/86400000)+' day(s) ago'; }
+// CACHE
+const CP='travelindex_cache_',CM='travelindex_cache_meta';
+const ck=(t,d)=>CP+d+'_'+t;
+function getCacheMeta(){try{return JSON.parse(localStorage.getItem(CM)||'{}')}catch{return{}}}
+function saveToCache(tripId,deviceId,places){try{const k=ck(tripId,deviceId);localStorage.setItem(k,JSON.stringify(places));const m=getCacheMeta();m[k]=Date.now();localStorage.setItem(CM,JSON.stringify(m))}catch(e){}}
+function loadFromCache(tripId,deviceId){try{const r=localStorage.getItem(ck(tripId,deviceId));return r?JSON.parse(r):null}catch{return null}}
+function getCacheAge(tripId,deviceId){const m=getCacheMeta(),ts=m[ck(tripId,deviceId)];return ts?Date.now()-ts:null;}
+function saveTripsToCache(deviceId,list){try{localStorage.setItem(CP+deviceId+'_trips',JSON.stringify(list));const m=getCacheMeta();m[CP+deviceId+'_trips']=Date.now();localStorage.setItem(CM,JSON.stringify(m))}catch(e){}}
+function loadTripsFromCache(deviceId){try{const r=localStorage.getItem(CP+deviceId+'_trips');return r?JSON.parse(r):null}catch{return null}}
+function formatAge(ms){if(!ms)return'a while ago';if(ms<60000)return'just now';if(ms<3600000)return Math.floor(ms/60000)+' min ago';if(ms<86400000)return Math.floor(ms/3600000)+' hr ago';return Math.floor(ms/86400000)+' day(s) ago';}
+function showCacheStatus(tripId,deviceId){const age=getCacheAge(tripId,deviceId);if(!age)return;const badge=$('cacheBadge'),dot=$('cacheDot'),lbl=$('cacheLabel');badge.classList.add('visible');if(age<600000){dot.classList.add('fresh');lbl.textContent='Fresh \u00b7 '+formatAge(age);}else{dot.classList.remove('fresh');lbl.textContent='Snapshot \u00b7 '+formatAge(age);}}
+function hideCacheStatus(){$('cacheBadge').classList.remove('visible');}
+function showCacheBar(tripId,deviceId){$('cacheAge').textContent=formatAge(getCacheAge(tripId,deviceId));$('cacheBar').classList.add('visible');}
+function hideCacheBar(){$('cacheBar').classList.remove('visible');}
 
-function showCacheStatus(tripId,deviceId) {
-  const age=getCacheAge(tripId,deviceId); if(!age)return;
-  const badge=$('cacheBadge'),dot=$('cacheDot'),lbl=$('cacheLabel');
-  badge.classList.add('visible');
-  if(age<600000){dot.classList.add('fresh');lbl.textContent='Fresh · '+formatAge(age);}
-  else{dot.classList.remove('fresh');lbl.textContent='Snapshot · '+formatAge(age);}
-}
-function hideCacheStatus() { $('cacheBadge').classList.remove('visible'); }
-function showCacheBar(tripId,deviceId) { $('cacheAge').textContent=formatAge(getCacheAge(tripId,deviceId)); $('cacheBar').classList.add('visible'); }
-function hideCacheBar() { $('cacheBar').classList.remove('visible'); }
+const $=id=>document.getElementById(id);
+function showToast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+function formatDate(ts){try{return new Date(ts).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}catch{return''}}
+function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
-// ── UTILS ─────────────────────────────────────────────────────────────────
-const $ = id => document.getElementById(id);
-function showToast(msg) { const t=$('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2800); }
-function formatDate(ts) { try{return new Date(ts).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}catch{return''} }
-function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function getAllTypes(){return[...BUILTIN_TYPES,...customCategories.map(c=>({id:c.id,label:c.name,emoji:c.emoji,isCustom:true}))];}
+function getTypeInfo(typeId){return getAllTypes().find(t=>t.id===(typeId||'').toLowerCase())||{id:typeId,label:typeId||'place',emoji:'\uD83D\uDCCD'};}
+function getBadgeClass(typeId){const m={restaurant:'badge-restaurant',cafe:'badge-cafe',attraction:'badge-attraction',hotel:'badge-hotel',sightseeing:'badge-sightseeing',retail:'badge-retail',hiking:'badge-hiking'};if(m[typeId])return m[typeId];if(customCategories.find(c=>c.id===typeId))return'badge-custom';return'badge-default';}
 
-// ── TYPE HELPERS ──────────────────────────────────────────────────────────
-function getAllTypes() { return [...BUILTIN_TYPES,...customCategories.map(c=>({id:c.id,label:c.name,emoji:c.emoji,isCustom:true}))]; }
-function getTypeInfo(typeId) { return getAllTypes().find(t=>t.id===(typeId||'').toLowerCase())||{id:typeId,label:typeId||'place',emoji:'📍'}; }
-function getBadgeClass(typeId) {
-  const m={restaurant:'badge-restaurant',cafe:'badge-cafe',attraction:'badge-attraction',hotel:'badge-hotel',sightseeing:'badge-sightseeing',retail:'badge-retail',hiking:'badge-hiking'};
-  if(m[typeId])return m[typeId]; if(customCategories.find(c=>c.id===typeId))return'badge-custom'; return'badge-default';
-}
+function savePreferences(){localStorage.setItem('travelindex_current_trip',currentTrip||'');localStorage.setItem('travelindex_current_filter',currentFilter||'all');localStorage.setItem('travelindex_custom_categories',JSON.stringify(customCategories));}
+function loadPreferences(){const t=localStorage.getItem('travelindex_current_trip'),f=localStorage.getItem('travelindex_current_filter'),c=localStorage.getItem('travelindex_custom_categories');if(t)currentTrip=t;if(f)currentFilter=f;if(c){try{customCategories=JSON.parse(c)}catch{customCategories=[]}}}
 
-// ── PREFERENCES ───────────────────────────────────────────────────────────
-function savePreferences() { localStorage.setItem('travelindex_current_trip',currentTrip||''); localStorage.setItem('travelindex_current_filter',currentFilter||'all'); localStorage.setItem('travelindex_custom_categories',JSON.stringify(customCategories)); }
-function loadPreferences() {
-  const t=localStorage.getItem('travelindex_current_trip'),f=localStorage.getItem('travelindex_current_filter'),c=localStorage.getItem('travelindex_custom_categories');
-  if(t)currentTrip=t; if(f)currentFilter=f; if(c){try{customCategories=JSON.parse(c)}catch{customCategories=[]}}
-}
+function showModal(html){const bd=$('modalBackdrop');bd.className='modal-backdrop';bd.innerHTML='<div class="modal">'+html+'</div>';bd.style.display='flex';bd.onclick=e=>{if(e.target===bd)closeModal()};}
+function closeModal(){$('modalBackdrop').style.display='none';$('modalBackdrop').innerHTML='';}
 
-// ── MODAL ─────────────────────────────────────────────────────────────────
-function showModal(html) { const bd=$('modalBackdrop'); bd.className='modal-backdrop'; bd.innerHTML=`<div class="modal">${html}</div>`; bd.style.display='flex'; bd.onclick=e=>{if(e.target===bd)closeModal()}; }
-function closeModal() { $('modalBackdrop').style.display='none'; $('modalBackdrop').innerHTML=''; }
-
-// ── LOGIN ─────────────────────────────────────────────────────────────────
-async function handleLogin() {
-  const username=$('loginUsername').value.trim();
-  const password=$('loginPassword').value.trim();
-  const errEl=$('loginError'), btn=$('loginBtn');
-  errEl.classList.remove('show');
-  $('loginUsername').classList.remove('shake'); $('loginPassword').classList.remove('shake');
-
-  if(!username||!password) {
-    errEl.textContent='Please enter both username and password.'; errEl.classList.add('show');
-    $('loginUsername').classList.add('shake'); return;
+// VIEW SWITCH
+function switchView(mode){
+  currentView=mode;
+  $('btnGridView').classList.toggle('active',mode==='grid');
+  $('btnMapView').classList.toggle('active',mode==='map');
+  $('placesContent').style.display=mode==='grid'?'':'none';
+  const mv=$('mapView');
+  if(mode==='map'){
+    mv.classList.add('visible');
+    initOrRefreshMap();
+  } else {
+    mv.classList.remove('visible');
+    geocodingAbort=true;
   }
+}
 
-  btn.classList.add('loading'); btn.disabled=true;
+// GEOCODING
+async function geocodePlace(place){
+  const key=place.name+'|'+(place.city||'')+'|'+(place.country||'');
+  if(geocodeCache[key])return geocodeCache[key];
+  const query=[place.name,place.city,place.country].filter(Boolean).join(', ');
+  try{
+    const res=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent(query),{headers:{'Accept-Language':'en'}});
+    const data=await res.json();
+    if(data&&data[0]){const c={lat:parseFloat(data[0].lat),lng:parseFloat(data[0].lon)};geocodeCache[key]=c;return c;}
+  }catch(e){}
+  // fallback: city+country only
+  if(place.city||place.country){
+    const fb=[place.city,place.country].filter(Boolean).join(', ');
+    try{
+      const res=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent(fb),{headers:{'Accept-Language':'en'}});
+      const data=await res.json();
+      if(data&&data[0]){const c={lat:parseFloat(data[0].lat),lng:parseFloat(data[0].lon)};geocodeCache[key]=c;return c;}
+    }catch(e){}
+  }
+  return null;
+}
 
-  try {
-    const res=await fetch(`${API_BASE}/trips/${encodeURIComponent(username)}?password=${encodeURIComponent(password)}`);
-    if(res.status===401||res.status===403) throw new Error('auth');
-    if(!res.ok) throw new Error('network');
-    let fetched=await res.json();
-    fetched=fetched.filter(t=>t!=='➕ New Trip');
+function makeMarkerIcon(typeId){
+  const color=typeColor(typeId);
+  const svg='<svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36">'
+    +'<path d="M14 0C6.268 0 0 6.268 0 14c0 9.333 14 22 14 22S28 23.333 28 14C28 6.268 21.732 0 14 0z" fill="'+color+'"/>'
+    +'<circle cx="14" cy="14" r="6" fill="white" opacity="0.9"/>'
+    +'</svg>';
+  return L.divIcon({html:svg,iconSize:[28,36],iconAnchor:[14,36],popupAnchor:[0,-34],className:''});
+}
 
-    localStorage.setItem('travelindex_device',username);
-    localStorage.setItem('travelindex_password',password);
+function initOrRefreshMap(){
+  const filtered=currentFilter==='all'?allPlaces:allPlaces.filter(p=>(p.type||'').toLowerCase()===currentFilter);
+  const displayPlaces=filtered.filter(p=>p.name!=='__trip_created__');
+  // deduplicate
+  const seen=new Set(),unique=[];
+  displayPlaces.forEach(p=>{const k=p.name+'|'+(p.country||'');if(!seen.has(k)){seen.add(k);unique.push(p);}});
 
-    if(!fetched.length) {
-      // Logged in but no trips — show onboarding
-      showPage('page-onboarding'); return;
+  if(!leafletMap){
+    leafletMap=L.map('mapContainer',{zoomControl:true});
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+      attribution:'&copy; <a href="https://openstreetmap.org">OpenStreetMap</a>',maxZoom:19
+    }).addTo(leafletMap);
+    leafletMap.setView([20,0],2);
+  }
+  // clear markers
+  mapMarkers.forEach(m=>m.remove());mapMarkers=[];
+
+  renderMapSidebar(unique);
+  geocodingAbort=false;
+  geocodePlacesProgressively(unique);
+}
+
+function renderMapSidebar(places){
+  const list=$('mapSidebarList');
+  $('mapSidebarSub').textContent=places.length+' place'+(places.length!==1?'s':'');
+  if(!places.length){list.innerHTML='<div class="map-no-results"><span class="map-no-results-icon">\uD83D\uDCED</span>No places to show.</div>';return;}
+  list.innerHTML=places.map((p,i)=>{
+    const typeId=(p.type||'place').toLowerCase(),typeInfo=getTypeInfo(typeId),badge=getBadgeClass(typeId);
+    const loc=[p.city,p.country].filter(Boolean).join(', ')||'Location unknown';
+    return '<div class="map-place-row" id="map-row-'+i+'" data-idx="'+i+'" onclick="focusMapMarker('+i+')">'
+      +'<div class="map-place-dot" style="background:'+typeColor(typeId)+'22;">'+typeInfo.emoji+'</div>'
+      +'<div class="map-place-info">'
+      +'<div class="map-place-name">'+escHtml(p.name)+'</div>'
+      +'<div class="map-place-loc">'+escHtml(loc)+'</div>'
+      +'<span class="map-place-badge '+badge+'">'+typeInfo.label+'</span>'
+      +'</div></div>';
+  }).join('');
+}
+
+async function geocodePlacesProgressively(places){
+  if(geocodingActive)return;
+  geocodingActive=true;
+  _mapPlaces=places;
+  const bar=$('mapGeocodingBar'),lbl=$('mapGeocodingLabel');
+  bar.classList.add('visible');
+  const bounds=[];let located=0;
+  for(let i=0;i<places.length;i++){
+    if(geocodingAbort)break;
+    const p=places[i];
+    lbl.textContent='Locating '+(i+1)+' of '+places.length+'\u2026';
+    const coords=await geocodePlace(p);
+    if(coords&&!geocodingAbort){
+      located++;
+      const typeId=(p.type||'attraction').toLowerCase();
+      const marker=L.marker([coords.lat,coords.lng],{icon:makeMarkerIcon(typeId)});
+      const typeInfo=getTypeInfo(typeId);
+      const loc=[p.city,p.country].filter(Boolean).join(', ');
+      const mapsLink=p.maps_url?'<a class="map-popup-link" href="'+escHtml(p.maps_url)+'" target="_blank" rel="noopener">\uD83D\uDCCD Open in Maps</a>':'';
+      const summary=p.summary?'<div class="map-popup-summary">'+escHtml(p.summary)+'</div>':'';
+      marker.bindPopup(
+        '<div class="map-popup-name">'+escHtml(p.name)+'</div>'
+        +'<div class="map-popup-loc">'+escHtml(loc)+'</div>'
+        +summary+mapsLink,
+        {maxWidth:220}
+      );
+      marker._placeIdx=i;
+      marker.on('click',()=>highlightSidebarRow(i));
+      marker.addTo(leafletMap);
+      mapMarkers.push(marker);
+      bounds.push([coords.lat,coords.lng]);
+      if(bounds.length===1)leafletMap.setView([coords.lat,coords.lng],12);
+      else leafletMap.fitBounds(bounds,{padding:[40,40],maxZoom:14});
     }
+    // Nominatim rate limit: 1 req/sec
+    await new Promise(r=>setTimeout(r,1100));
+  }
+  bar.classList.remove('visible');
+  $('mapSidebarSub').textContent=located+' of '+places.length+' located';
+  geocodingActive=false;
+}
 
-    trips=fetched;
-    saveTripsToCache(username,trips);
-    loadPreferences();
+function focusMapMarker(idx){
+  highlightSidebarRow(idx);
+  const marker=mapMarkers.find(m=>m._placeIdx===idx);
+  if(marker){
+    leafletMap.setView(marker.getLatLng(),Math.max(leafletMap.getZoom(),14),{animate:true});
+    setTimeout(()=>marker.openPopup(),300);
+  }
+}
+function highlightSidebarRow(idx){
+  document.querySelectorAll('.map-place-row').forEach(r=>r.classList.remove('highlighted'));
+  const row=$('map-row-'+idx);
+  if(row){row.classList.add('highlighted');row.scrollIntoView({behavior:'smooth',block:'nearest'});}
+}
+
+// LOGIN
+async function handleLogin(){
+  const username=$('loginUsername').value.trim(),password=$('loginPassword').value.trim();
+  const errEl=$('loginError'),btn=$('loginBtn');
+  errEl.classList.remove('show');$('loginUsername').classList.remove('shake');$('loginPassword').classList.remove('shake');
+  if(!username||!password){errEl.textContent='Please enter both username and password.';errEl.classList.add('show');$('loginUsername').classList.add('shake');return;}
+  btn.classList.add('loading');btn.disabled=true;
+  try{
+    const res=await fetch(API_BASE+'/trips/'+encodeURIComponent(username)+'?password='+encodeURIComponent(password));
+    if(res.status===401||res.status===403)throw new Error('auth');
+    if(!res.ok)throw new Error('network');
+    let fetched=await res.json();fetched=fetched.filter(t=>t!=='\u2795 New Trip');
+    localStorage.setItem('travelindex_device',username);localStorage.setItem('travelindex_password',password);
+    if(!fetched.length){showPage('page-onboarding');return;}
+    trips=fetched;saveTripsToCache(username,trips);loadPreferences();
     if(!currentTrip||!trips.includes(currentTrip))currentTrip=trips[0];
-    enterApp(username);
-    await loadPlaces(username,currentTrip,true);
-
-  } catch(err) {
-    if(err.message==='auth') {
-      errEl.textContent='Incorrect username or password.';
-    } else {
-      // Network error — try cache
+    enterApp(username);await loadPlaces(username,currentTrip,true);
+  }catch(err){
+    if(err.message==='auth'){errEl.textContent='Incorrect username or password.';}
+    else{
       const cached=loadTripsFromCache(username);
-      if(cached&&cached.length) {
-        localStorage.setItem('travelindex_device',username);
-        localStorage.setItem('travelindex_password',password);
-        trips=cached; loadPreferences();
-        if(!currentTrip||!trips.includes(currentTrip))currentTrip=trips[0];
-        enterApp(username);
-        await loadPlaces(username,currentTrip,false);
-        showToast('⚠️ Offline — showing cached data');
-        return;
+      if(cached&&cached.length){
+        localStorage.setItem('travelindex_device',username);localStorage.setItem('travelindex_password',password);
+        trips=cached;loadPreferences();if(!currentTrip||!trips.includes(currentTrip))currentTrip=trips[0];
+        enterApp(username);await loadPlaces(username,currentTrip,false);showToast('\u26a0\ufe0f Offline \u2014 showing cached data');return;
       }
       errEl.textContent='Could not connect. Check your internet and try again.';
     }
-    errEl.classList.add('show');
-    $('loginUsername').classList.add('shake');
-    $('loginPassword').classList.add('shake');
-    setTimeout(()=>{ $('loginUsername').classList.remove('shake'); $('loginPassword').classList.remove('shake'); },400);
-  } finally {
-    btn.classList.remove('loading'); btn.disabled=false;
-  }
+    errEl.classList.add('show');$('loginUsername').classList.add('shake');$('loginPassword').classList.add('shake');
+    setTimeout(()=>{$('loginUsername').classList.remove('shake');$('loginPassword').classList.remove('shake');},400);
+  }finally{btn.classList.remove('loading');btn.disabled=false;}
 }
 
-function enterApp(username) {
+function enterApp(username){
   $('userAvatar').textContent=(username||'?')[0].toUpperCase();
   $('userLabel').textContent=username;
-  renderTripTabs(trips);
-  $('tripCount').textContent=`${trips.length} trip${trips.length!==1?'s':''}`;
-  renderCustomCategories();
-  showPage('page-app');
+  renderTripTabs(trips);$('tripCount').textContent=trips.length+' trip'+(trips.length!==1?'s':'');
+  renderCustomCategories();showPage('page-app');
 }
 
-// ── REFRESH ───────────────────────────────────────────────────────────────
-async function refreshFromServer() {
-  const btn=$('refreshBtn'); btn.classList.add('spinning'); btn.disabled=true;
-  const deviceId=getDeviceId();
-  try {
-    const res=await fetch(`${API_BASE}/trips/${encodeURIComponent(deviceId)}?password=${encodeURIComponent(getPassword())}`);
+async function refreshFromServer(){
+  const btn=$('refreshBtn');btn.classList.add('spinning');btn.disabled=true;const deviceId=getDeviceId();
+  try{
+    const res=await fetch(API_BASE+'/trips/'+encodeURIComponent(deviceId)+'?password='+encodeURIComponent(getPassword()));
     if(!res.ok)throw new Error();
-    let fetched=await res.json(); fetched=fetched.filter(t=>t!=='➕ New Trip');
-    trips=fetched; saveTripsToCache(deviceId,trips);
+    let fetched=await res.json();fetched=fetched.filter(t=>t!=='\u2795 New Trip');
+    trips=fetched;saveTripsToCache(deviceId,trips);
     if(!currentTrip||!trips.includes(currentTrip))currentTrip=trips[0];
-    renderTripTabs(trips);
-    $('tripCount').textContent=`${trips.length} trip${trips.length!==1?'s':''}`;
-    await loadPlaces(deviceId,currentTrip,true);
-    showToast('✅ All up to date');
-  } catch { showToast('❌ Refresh failed — are you online?'); }
-  finally { btn.classList.remove('spinning'); btn.disabled=false; }
+    renderTripTabs(trips);$('tripCount').textContent=trips.length+' trip'+(trips.length!==1?'s':'');
+    await loadPlaces(deviceId,currentTrip,true);showToast('\u2705 All up to date');
+  }catch{showToast('\u274c Refresh failed \u2014 are you online?');}
+  finally{btn.classList.remove('spinning');btn.disabled=false;}
 }
 
-// ── TRIP TABS ─────────────────────────────────────────────────────────────
-function renderTripTabs(tripList) {
-  const container=$('tripTabs'); container.innerHTML='';
+function renderTripTabs(tripList){
+  const container=$('tripTabs');container.innerHTML='';
   tripList.forEach(trip=>{
-    const btn=document.createElement('button');
-    btn.className='trip-tab'+(trip===currentTrip?' active':'');
-    btn.dataset.trip=trip;
-    const label=document.createElement('span'); label.textContent=trip; btn.appendChild(label);
-    const actions=document.createElement('span'); actions.className='trip-tab-actions';
-    actions.innerHTML=`<button class="trip-tab-btn" title="Rename" onclick="startRenameTrip(event,'${escHtml(trip)}',this)">✏️</button><button class="trip-tab-btn" title="Delete" onclick="confirmDeleteTrip(event,'${escHtml(trip)}')">🗑️</button>`;
+    const btn=document.createElement('button');btn.className='trip-tab'+(trip===currentTrip?' active':'');btn.dataset.trip=trip;
+    const label=document.createElement('span');label.textContent=trip;btn.appendChild(label);
+    const actions=document.createElement('span');actions.className='trip-tab-actions';
+    actions.innerHTML='<button class="trip-tab-btn" title="Rename" onclick="startRenameTrip(event,\''+escHtml(trip)+'\',this)">\u270f\ufe0f</button><button class="trip-tab-btn" title="Delete" onclick="confirmDeleteTrip(event,\''+escHtml(trip)+'\')">\uD83D\uDDD1\uFE0F</button>';
     btn.appendChild(actions);
     btn.onclick=async(e)=>{
       if(e.target.closest('.trip-tab-actions'))return;
-      document.querySelectorAll('.trip-tab').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
-      currentTrip=trip; currentFilter='all'; savePreferences();
+      document.querySelectorAll('.trip-tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+      currentTrip=trip;currentFilter='all';savePreferences();
       document.querySelectorAll('.filter-chip').forEach(c=>c.classList.toggle('active',c.dataset.type==='all'));
+      geocodingAbort=true;mapMarkers.forEach(m=>m.remove());mapMarkers=[];
       await loadPlaces(getDeviceId(),trip,false);
+      if(currentView==='map'){geocodingAbort=false;initOrRefreshMap();}
     };
     container.appendChild(btn);
   });
 }
 
-// ── RENAME TRIP ───────────────────────────────────────────────────────────
-function startRenameTrip(e,tripName,btnEl) {
+function startRenameTrip(e,tripName,btnEl){
   e.stopPropagation();
-  const tab=btnEl.closest('.trip-tab'), label=tab.querySelector('span:first-child');
-  const input=document.createElement('input'); input.className='trip-tab-rename'; input.value=tripName;
-  tab.replaceChild(input,label); input.focus(); input.select();
+  const tab=btnEl.closest('.trip-tab'),label=tab.querySelector('span:first-child');
+  const input=document.createElement('input');input.className='trip-tab-rename';input.value=tripName;
+  tab.replaceChild(input,label);input.focus();input.select();
   async function commit(){const n=input.value.trim();if(!n||n===tripName){input.replaceWith(label);return;}await doRenameTrip(tripName,n);}
   input.addEventListener('blur',commit);
   input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();input.blur();}if(e.key==='Escape'){input.value=tripName;input.blur();}});
 }
-async function doRenameTrip(oldName,newName) {
+async function doRenameTrip(oldName,newName){
   const deviceId=getDeviceId(),password=getPassword();
-  try {
-    const res=await fetch(`${API_BASE}/trips/rename`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({old_trip_id:oldName,new_trip_id:newName,device_id:deviceId,password})});
-    if(!res.ok)throw new Error();
-    if(currentTrip===oldName)currentTrip=newName;
-    trips=trips.map(t=>t===oldName?newName:t); saveTripsToCache(deviceId,trips); savePreferences();
-    showToast(`✅ Renamed to "${newName}"`); renderTripTabs(trips);
-  } catch { showToast('❌ Failed to rename trip'); renderTripTabs(trips); }
+  try{const res=await fetch(API_BASE+'/trips/rename',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({old_trip_id:oldName,new_trip_id:newName,device_id:deviceId,password})});if(!res.ok)throw new Error();if(currentTrip===oldName)currentTrip=newName;trips=trips.map(t=>t===oldName?newName:t);saveTripsToCache(deviceId,trips);savePreferences();showToast('\u2705 Renamed to "'+newName+'"');renderTripTabs(trips);}
+  catch{showToast('\u274c Failed to rename trip');renderTripTabs(trips);}
+}
+function confirmDeleteTrip(e,tripName){e.stopPropagation();showModal('<div class="modal-title">Delete "'+escHtml(tripName)+'"?</div><div class="modal-body">This will permanently delete the trip and all its saved places.</div><div class="modal-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn-danger" onclick="doDeleteTrip(\''+escHtml(tripName)+'\')">Delete Trip</button></div>');}
+async function doDeleteTrip(tripName){
+  closeModal();const deviceId=getDeviceId(),password=getPassword();
+  try{const res=await fetch(API_BASE+'/trips/delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({trip_id:tripName,device_id:deviceId,password})});if(!res.ok)throw new Error();localStorage.removeItem(ck(tripName,deviceId));trips=trips.filter(t=>t!==tripName);saveTripsToCache(deviceId,trips);if(currentTrip===tripName)currentTrip=trips[0]||null;showToast('\uD83D\uDDD1\uFE0F "'+tripName+'" deleted');if(!trips.length){showPage('page-onboarding');return;}renderTripTabs(trips);$('tripCount').textContent=trips.length+' trip'+(trips.length!==1?'s':'');if(currentTrip)await loadPlaces(deviceId,currentTrip,false);}
+  catch{showToast('\u274c Failed to delete trip');}
 }
 
-// ── DELETE TRIP ───────────────────────────────────────────────────────────
-function confirmDeleteTrip(e,tripName) {
-  e.stopPropagation();
-  showModal(`<div class="modal-title">Delete "${escHtml(tripName)}"?</div><div class="modal-body">This will permanently delete the trip and all its saved places.</div><div class="modal-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn-danger" onclick="doDeleteTrip('${escHtml(tripName)}')">Delete Trip</button></div>`);
-}
-async function doDeleteTrip(tripName) {
-  closeModal();
-  const deviceId=getDeviceId(),password=getPassword();
-  try {
-    const res=await fetch(`${API_BASE}/trips/delete`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({trip_id:tripName,device_id:deviceId,password})});
-    if(!res.ok)throw new Error();
-    localStorage.removeItem(ck(tripName,deviceId));
-    trips=trips.filter(t=>t!==tripName); saveTripsToCache(deviceId,trips);
-    if(currentTrip===tripName)currentTrip=trips[0]||null;
-    showToast(`🗑️ "${tripName}" deleted`);
-    if(!trips.length){showPage('page-onboarding');return;}
-    renderTripTabs(trips); $('tripCount').textContent=`${trips.length} trip${trips.length!==1?'s':''}`;
-    if(currentTrip)await loadPlaces(deviceId,currentTrip,false);
-  } catch { showToast('❌ Failed to delete trip'); }
-}
-
-// ── LOAD PLACES ───────────────────────────────────────────────────────────
-async function loadPlaces(deviceId,tripId,forceServer) {
+async function loadPlaces(deviceId,tripId,forceServer){
   const cached=loadFromCache(tripId,deviceId);
-  if(!forceServer&&cached) {
-    allPlaces=cached; hideCacheBar(); showCacheBar(tripId,deviceId); showCacheStatus(tripId,deviceId); renderPlaces(); return;
-  }
-  $('placesContent').innerHTML='<div class="spinner-wrap"><div class="spinner"></div><div class="spinner-label">Loading places…</div></div>';
-  hideCacheBar(); hideCacheStatus();
-  try {
-    const res=await fetch(`${API_BASE}/trip/${encodeURIComponent(tripId)}?device_id=${encodeURIComponent(deviceId)}&password=${encodeURIComponent(getPassword())}`);
-    if(!res.ok)throw new Error();
-    const places=await res.json(); saveToCache(tripId,deviceId,places); allPlaces=places; hideCacheBar(); renderPlaces();
-  } catch {
-    if(cached){allPlaces=cached;showCacheBar(tripId,deviceId);showCacheStatus(tripId,deviceId);renderPlaces();showToast('⚠️ Offline — showing cached snapshot');}
-    else{$('placesContent').innerHTML='<div class="grid-empty"><span class="grid-empty-icon">❌</span>Couldn\'t load places.</div>';}
-  }
+  if(!forceServer&&cached){allPlaces=cached;hideCacheBar();showCacheBar(tripId,deviceId);showCacheStatus(tripId,deviceId);renderPlaces();return;}
+  $('placesContent').innerHTML='<div class="spinner-wrap"><div class="spinner"></div><div class="spinner-label">Loading places\u2026</div></div>';
+  hideCacheBar();hideCacheStatus();
+  try{const res=await fetch(API_BASE+'/trip/'+encodeURIComponent(tripId)+'?device_id='+encodeURIComponent(deviceId)+'&password='+encodeURIComponent(getPassword()));if(!res.ok)throw new Error();const places=await res.json();saveToCache(tripId,deviceId,places);allPlaces=places;hideCacheBar();renderPlaces();}
+  catch{if(cached){allPlaces=cached;showCacheBar(tripId,deviceId);showCacheStatus(tripId,deviceId);renderPlaces();showToast('\u26a0\ufe0f Offline \u2014 showing cached snapshot');}else{$('placesContent').innerHTML='<div class="grid-empty"><span class="grid-empty-icon">\u274c</span>Couldn\'t load places.</div>';}}
 }
 
-// ── RENDER PLACES ─────────────────────────────────────────────────────────
-function renderPlaces() {
+function renderPlaces(){
   const filtered=currentFilter==='all'?allPlaces:allPlaces.filter(p=>(p.type||'').toLowerCase()===currentFilter);
   $('placesTitle').textContent=currentTrip||'All Places';
   const displayPlaces=filtered.filter(p=>p.name!=='__trip_created__');
-  $('placesCount').textContent=`${displayPlaces.length} place${displayPlaces.length!==1?'s':''}`;
-  if(!displayPlaces.length){$('placesContent').innerHTML=`<div class="grid-empty"><span class="grid-empty-icon">📭</span>No ${currentFilter!=='all'?currentFilter+'s':'places'} saved yet.</div>`;return;}
-
+  $('placesCount').textContent=displayPlaces.length+' place'+(displayPlaces.length!==1?'s':'');
+  if(!displayPlaces.length){$('placesContent').innerHTML='<div class="grid-empty"><span class="grid-empty-icon">\uD83D\uDCED</span>No '+(currentFilter!=='all'?currentFilter+'s':'places')+' saved yet.</div>';return;}
   const groups={};
-  displayPlaces.forEach(p=>{const k=`${p.name}|${p.country}`;if(!groups[k])groups[k]=[];groups[k].push(p);});
-
+  displayPlaces.forEach(p=>{const k=p.name+'|'+(p.country||'');if(!groups[k])groups[k]=[];groups[k].push(p);});
   const html=Object.entries(groups).map(([,places],i)=>{
-    const main=places[0], typeId=(main.type||'place').toLowerCase();
-    const typeInfo=getTypeInfo(typeId), badge=getBadgeClass(typeId);
+    const main=places[0],typeId=(main.type||'place').toLowerCase();
+    const typeInfo=getTypeInfo(typeId),badge=getBadgeClass(typeId);
     const loc=[main.city,main.country].filter(Boolean).join(', ')||'Location unknown';
-    const groupIds = places.map(p => p.id).join(',');
-    const placeId = main.id || '';
+    const groupIds=places.map(p=>p.id).join(',');const placeId=main.id||'';
     const savesHtml=places.map(place=>{
       const dateStr=formatDate(place.created_at);
-      const viewBtn=place.source_url?`<a class="place-source-btn" href="${escHtml(place.source_url)}" target="_blank" rel="noopener">View ↗</a>`:'';
-      const caption=place.summary?`<div class="save-summary">${escHtml(place.summary)}</div>`:'';
-      return `<div class="save-entry">${caption}<div class="save-footer"><span class="save-date">${dateStr}</span>${viewBtn}</div></div>`;
+      const viewBtn=place.source_url?'<a class="place-source-btn" href="'+escHtml(place.source_url)+'" target="_blank" rel="noopener">View \u2197</a>':'';
+      const caption=place.summary?'<div class="save-summary">'+escHtml(place.summary)+'</div>':'';
+      return'<div class="save-entry">'+caption+'<div class="save-footer"><span class="save-date">'+dateStr+'</span>'+viewBtn+'</div></div>';
     }).join('');
-    return `<div class="place-card" data-type="${escHtml(typeId)}" data-id="${escHtml(placeId)}" style="animation:cardIn 0.35s ease ${i*0.04}s both;">
-      <div class="card-actions">
-        <button class="card-action-btn edit" title="Edit" onclick="showEditCard('${escHtml(groupIds)}')">✏️</button>
-        <button class="card-action-btn move" title="Move" onclick="showMoveCard('${escHtml(placeId)}','${escHtml(main.name||'')}')">↗️</button>
-        <button class="card-action-btn delete" title="Delete" onclick="confirmDeleteCard('${escHtml(placeId)}','${escHtml(main.name||'')}')">🗑️</button>
-      </div>
-      <div class="place-name">${escHtml(main.name||'Unnamed place')}</div>
-      <div class="place-location"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>${escHtml(loc)}</div>
-      <div class="place-saves">${savesHtml}</div>
-      <div class="place-card-footer">
-        ${main.maps_url?`<a class="place-source-btn" href="${escHtml(main.maps_url)}" target="_blank" rel="noopener" style="background:var(--green-pale);color:var(--green);">📍 Maps</a>`:'<div></div>'}
-        <span class="place-type-badge ${badge}">${typeInfo.emoji} ${typeInfo.label}</span>
-      </div>
-    </div>`;
+    return'<div class="place-card" data-type="'+escHtml(typeId)+'" data-id="'+escHtml(placeId)+'" style="animation:cardIn 0.35s ease '+(i*0.04)+'s both;">'
+      +'<div class="card-actions"><button class="card-action-btn edit" title="Edit" onclick="showEditCard(\''+escHtml(groupIds)+'\')">\u270f\uFE0F</button><button class="card-action-btn move" title="Move" onclick="showMoveCard(\''+escHtml(placeId)+'\',\''+escHtml(main.name||'')+'\')">\u2197\uFE0F</button><button class="card-action-btn delete" title="Delete" onclick="confirmDeleteCard(\''+escHtml(placeId)+'\',\''+escHtml(main.name||'')+'\')">\uD83D\uDDD1\uFE0F</button></div>'
+      +'<div class="place-name">'+escHtml(main.name||'Unnamed place')+'</div>'
+      +'<div class="place-location"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>'+escHtml(loc)+'</div>'
+      +'<div class="place-saves">'+savesHtml+'</div>'
+      +'<div class="place-card-footer">'+(main.maps_url?'<a class="place-source-btn" href="'+escHtml(main.maps_url)+'" target="_blank" rel="noopener" style="background:var(--green-pale);color:var(--green);">\uD83D\uDCCD Maps</a>':'<div></div>')+'<span class="place-type-badge '+badge+'">'+typeInfo.emoji+' '+typeInfo.label+'</span></div>'
+      +'</div>';
   }).join('');
-  $('placesContent').innerHTML=`<div class="places-grid">${html}</div>`;
+  $('placesContent').innerHTML='<div class="places-grid">'+html+'</div>';
+  // refresh map if open
+  if(currentView==='map'){geocodingAbort=true;mapMarkers.forEach(m=>m.remove());mapMarkers=[];setTimeout(()=>{geocodingAbort=false;initOrRefreshMap();},100);}
 }
 
-// ── FILTER ────────────────────────────────────────────────────────────────
-function toggleFilter(el) { document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active')); el.classList.add('active'); currentFilter=el.dataset.type; savePreferences(); renderPlaces(); }
+function toggleFilter(el){
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');currentFilter=el.dataset.type;savePreferences();renderPlaces();
+}
 
-// ── CREATE TRIP ───────────────────────────────────────────────────────────
-function showCreateTrip() { $('createTripBar').classList.add('open'); $('newTripInput').focus(); }
-function hideCreateTrip() { $('createTripBar').classList.remove('open'); }
-async function doCreateTrip() {
-  const tripName=$('newTripInput').value.trim(), deviceId=getDeviceId(), password=getPassword();
+function showCreateTrip(){$('createTripBar').classList.add('open');$('newTripInput').focus();}
+function hideCreateTrip(){$('createTripBar').classList.remove('open');}
+async function doCreateTrip(){
+  const tripName=$('newTripInput').value.trim(),deviceId=getDeviceId(),password=getPassword();
   if(!tripName){showToast('Enter a trip name');return;}
-  try {
-    const res=await fetch(`${API_BASE}/trips/create`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({trip_id:tripName,device_id:deviceId,password})});
-    if(!res.ok)throw new Error();
-    trips.push(tripName); saveTripsToCache(deviceId,trips); currentTrip=tripName;
-    renderTripTabs(trips); $('tripCount').textContent=`${trips.length} trip${trips.length!==1?'s':''}`;
-    hideCreateTrip(); $('newTripInput').value='';
-    await loadPlaces(deviceId,tripName,true); showToast(`✅ "${tripName}" created`);
-  } catch { showToast('❌ Failed to create trip'); }
+  try{const res=await fetch(API_BASE+'/trips/create',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({trip_id:tripName,device_id:deviceId,password})});if(!res.ok)throw new Error();trips.push(tripName);saveTripsToCache(deviceId,trips);currentTrip=tripName;renderTripTabs(trips);$('tripCount').textContent=trips.length+' trip'+(trips.length!==1?'s':'');hideCreateTrip();$('newTripInput').value='';await loadPlaces(deviceId,tripName,true);showToast('\u2705 "'+tripName+'" created');}
+  catch{showToast('\u274c Failed to create trip');}
 }
 
 function showAddManualPlace(){
-
-  const typeOptionsHtml=getAllTypes().map(t=>`
-    <div class="type-option"
-      data-type-id="${escHtml(t.id)}"
-      onclick="selectTypeOption(this)">
-      <span class="type-option-emoji">${t.emoji}</span>
-      <span class="type-option-label">${escHtml(t.label)}</span>
-    </div>
-  `).join('');
-
-  showModal(`
-    <div class="modal-title">Add Place</div>
-
-    <div class="form-group">
-      <label class="form-label">Place Name</label>
-      <input type="text" class="form-input" id="manualName"
-        placeholder="Tokyo DisneySea"/>
-    </div>
-
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-      <div class="form-group">
-        <label class="form-label">City</label>
-        <input type="text" class="form-input" id="manualCity"
-          placeholder="Tokyo"/>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Country</label>
-        <input type="text" class="form-input" id="manualCountry"
-          placeholder="Japan"/>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">Google Maps Link</label>
-      <input type="text" class="form-input" id="manualMaps"
-        placeholder="https://maps.google.com/..."/>
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">Notes / Caption</label>
-      <textarea class="form-textarea" id="manualSummary"
-        placeholder="Must visit at sunset"></textarea>
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">Category</label>
-      <div class="type-selector">${typeOptionsHtml}</div>
-    </div>
-
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
-      <button class="btn-primary" onclick="doAddManualPlace()">Add Place</button>
-    </div>
-  `);
+  const typeOptionsHtml=getAllTypes().map(t=>'<div class="type-option" data-type-id="'+escHtml(t.id)+'" onclick="selectTypeOption(this)"><span class="type-option-emoji">'+t.emoji+'</span><span class="type-option-label">'+escHtml(t.label)+'</span></div>').join('');
+  showModal('<div class="modal-title">Add Place</div><div class="form-group"><label class="form-label">Place Name</label><input type="text" class="form-input" id="manualName" placeholder="Tokyo DisneySea"/></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;"><div class="form-group"><label class="form-label">City</label><input type="text" class="form-input" id="manualCity" placeholder="Tokyo"/></div><div class="form-group"><label class="form-label">Country</label><input type="text" class="form-input" id="manualCountry" placeholder="Japan"/></div></div><div class="form-group"><label class="form-label">Google Maps Link</label><input type="text" class="form-input" id="manualMaps" placeholder="https://maps.google.com/..."/></div><div class="form-group"><label class="form-label">Notes / Caption</label><textarea class="form-textarea" id="manualSummary" placeholder="Must visit at sunset"></textarea></div><div class="form-group"><label class="form-label">Category</label><div class="type-selector">'+typeOptionsHtml+'</div></div><div class="modal-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn-primary" onclick="doAddManualPlace()">Add Place</button></div>');
 }
-
 async function doAddManualPlace(){
-
-  const name = $('manualName')?.value.trim();
-  const city = $('manualCity')?.value.trim();
-  const country = $('manualCountry')?.value.trim();
-  const maps_url = $('manualMaps')?.value.trim();
-  const summary = $('manualSummary')?.value.trim();
-
-  const typeId =
-    document.querySelector('.type-option.selected')?.dataset.typeId || 'attraction';
-
-  if(!name){
-    showToast('Place name is required');
-    return;
-  }
-
-  const newPlace = {
-    id: 'manual_' + Date.now(),
-    name,
-    city,
-    country,
-    maps_url,
-    summary,
-    type: typeId,
-    created_at: new Date().toISOString(),
-    source_url: null
-  };
-
-  allPlaces.unshift(newPlace);
-
-  saveToCache(currentTrip,getDeviceId(),allPlaces);
-
-  renderPlaces();
-
-  closeModal();
-
-  showToast('✅ Place added');
+  const name=$('manualName')?.value.trim(),city=$('manualCity')?.value.trim(),country=$('manualCountry')?.value.trim(),maps_url=$('manualMaps')?.value.trim(),summary=$('manualSummary')?.value.trim();
+  const typeId=document.querySelector('.type-option.selected')?.dataset.typeId||'attraction';
+  if(!name){showToast('Place name is required');return;}
+  const newPlace={id:'manual_'+Date.now(),name,city,country,maps_url,summary,type:typeId,created_at:new Date().toISOString(),source_url:null};
+  allPlaces.unshift(newPlace);saveToCache(currentTrip,getDeviceId(),allPlaces);renderPlaces();closeModal();showToast('\u2705 Place added');
 }
 
-// ── CUSTOM CATEGORIES ─────────────────────────────────────────────────────
-function renderCustomCategories() {
-  const fb=$('filterBar'); fb.querySelectorAll('.custom-category-chip').forEach(el=>el.remove());
+function renderCustomCategories(){
+  const fb=$('filterBar');fb.querySelectorAll('.custom-category-chip').forEach(el=>el.remove());
   customCategories.forEach(cat=>{
-    const chip=document.createElement('div'); chip.className='filter-chip custom-category-chip'; chip.dataset.type=cat.id;
-    // Use createTextNode so the rb reference stays valid for the onclick check
-    chip.appendChild(document.createTextNode(cat.emoji + ' ' + cat.name));
-    const rb=document.createElement('button'); rb.className='chip-remove'; rb.textContent='×';
-    rb.onclick=e=>{e.stopPropagation();removeCategory(cat.id);}; chip.appendChild(rb);
+    const chip=document.createElement('div');chip.className='filter-chip custom-category-chip';chip.dataset.type=cat.id;
+    chip.appendChild(document.createTextNode(cat.emoji+' '+cat.name));
+    const rb=document.createElement('button');rb.className='chip-remove';rb.textContent='\u00d7';rb.onclick=e=>{e.stopPropagation();removeCategory(cat.id);};chip.appendChild(rb);
     chip.onclick=function(e){if(e.target!==rb)toggleFilter(this);};
     fb.insertBefore(chip,fb.querySelector('.add-category-btn'));
   });
 }
 function showManageCategories(){renderManageCategoriesModal();}
 function renderManageCategoriesModal(){
-  const list=customCategories.length?`<div class="cat-manage-list">${customCategories.map(c=>`<div class="cat-manage-row"><span class="cat-manage-emoji">${escHtml(c.emoji)}</span><span class="cat-manage-name">${escHtml(c.name)}</span><button class="cat-manage-delete" onclick="removeCategory('${escHtml(c.id)}');renderManageCategoriesModal()">🗑️</button></div>`).join('')}</div>`:`<p style="font-size:13px;color:var(--ink-faint);margin-bottom:16px;font-style:italic;">No custom categories yet.</p>`;
-  showModal(`<div class="modal-title">Manage Categories</div>${list}<hr class="modal-divider"><div style="font-size:11px;font-weight:600;color:var(--ink-soft);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.6px;">Add New</div><div style="display:flex;gap:10px;"><div class="form-group" style="margin:0;flex:0 0 70px;"><label class="form-label">Emoji</label><input type="text" class="form-input" id="catEmoji" placeholder="🏖️" maxlength="2"/></div><div class="form-group" style="margin:0;flex:1;"><label class="form-label">Name</label><input type="text" class="form-input" id="catName" placeholder="Beach, Viewpoints…"/></div></div><div class="modal-actions"><button class="btn-ghost" onclick="closeModal()">Done</button><button class="btn-primary" onclick="doAddCategory()">Add</button></div>`);
+  const list=customCategories.length?'<div class="cat-manage-list">'+customCategories.map(c=>'<div class="cat-manage-row"><span class="cat-manage-emoji">'+escHtml(c.emoji)+'</span><span class="cat-manage-name">'+escHtml(c.name)+'</span><button class="cat-manage-delete" onclick="removeCategory(\''+escHtml(c.id)+'\');renderManageCategoriesModal()">\uD83D\uDDD1\uFE0F</button></div>').join('')+'</div>':'<p style="font-size:13px;color:var(--ink-faint);margin-bottom:16px;font-style:italic;">No custom categories yet.</p>';
+  showModal('<div class="modal-title">Manage Categories</div>'+list+'<hr class="modal-divider"><div style="font-size:11px;font-weight:600;color:var(--ink-soft);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.6px;">Add New</div><div style="display:flex;gap:10px;"><div class="form-group" style="margin:0;flex:0 0 70px;"><label class="form-label">Emoji</label><input type="text" class="form-input" id="catEmoji" placeholder="\uD83C\uDFD6\uFE0F" maxlength="2"/></div><div class="form-group" style="margin:0;flex:1;"><label class="form-label">Name</label><input type="text" class="form-input" id="catName" placeholder="Beach, Viewpoints\u2026"/></div></div><div class="modal-actions"><button class="btn-ghost" onclick="closeModal()">Done</button><button class="btn-primary" onclick="doAddCategory()">Add</button></div>');
   setTimeout(()=>{const el=$('catEmoji');if(el)el.focus();},100);
 }
-function doAddCategory(){
-  const name=$('catName')?.value.trim(),emoji=$('catEmoji')?.value.trim();
-  if(!name||!emoji){showToast('Enter both emoji and name');return;}
-  if(customCategories.find(c=>c.name.toLowerCase()===name.toLowerCase())){showToast('Category already exists');return;}
-  customCategories.push({id:'cat_'+Date.now(),name,emoji}); savePreferences(); renderCustomCategories();
-  showToast(`✅ "${name}" added`); renderManageCategoriesModal();
-}
-function removeCategory(catId){
-  const cat=customCategories.find(c=>c.id===catId); customCategories=customCategories.filter(c=>c.id!==catId); savePreferences();
-  if(currentFilter===catId){currentFilter='all';document.querySelectorAll('.filter-chip').forEach(c=>c.classList.toggle('active',c.dataset.type==='all'));}
-  renderCustomCategories(); renderPlaces(); if(cat)showToast(`Removed "${cat.name}"`);
-}
+function doAddCategory(){const name=$('catName')?.value.trim(),emoji=$('catEmoji')?.value.trim();if(!name||!emoji){showToast('Enter both emoji and name');return;}if(customCategories.find(c=>c.name.toLowerCase()===name.toLowerCase())){showToast('Category already exists');return;}customCategories.push({id:'cat_'+Date.now(),name,emoji});savePreferences();renderCustomCategories();showToast('\u2705 "'+name+'" added');renderManageCategoriesModal();}
+function removeCategory(catId){const cat=customCategories.find(c=>c.id===catId);customCategories=customCategories.filter(c=>c.id!==catId);savePreferences();if(currentFilter===catId){currentFilter='all';document.querySelectorAll('.filter-chip').forEach(c=>c.classList.toggle('active',c.dataset.type==='all'));}renderCustomCategories();renderPlaces();if(cat)showToast('Removed "'+cat.name+'"');}
 
-// ── EDIT CARD ─────────────────────────────────────────────────────────────
 function showEditCard(placeIds){
-  const ids = placeIds.split(',');
-  const places = allPlaces.filter(p => ids.includes(String(p.id)));
-
-  if(!places.length){
-    showToast('Place not found');
-    return;
-  }
-
-  const place = places[0];
-
-  const currentTypeId=(place.type||'').toLowerCase();
-
-  const typeOptionsHtml=getAllTypes().map(t=>`
-    <div class="type-option${currentTypeId===t.id?' selected':''}"
-      data-type-id="${escHtml(t.id)}"
-      onclick="selectTypeOption(this)">
-      <span class="type-option-emoji">${t.emoji}</span>
-      <span class="type-option-label">${escHtml(t.label)}</span>
-    </div>
-  `).join('');
-
-  const captionsHtml = places.map((p, index) => `
-    <div class="form-group">
-      <label class="form-label">Caption ${index + 1}</label>
-      <textarea class="form-textarea multi-caption"
-        data-place-id="${p.id}">${escHtml(p.summary || '')}</textarea>
-    </div>
-  `).join('');
-
-  showModal(`
-    <div class="modal-title">Edit Place</div>
-
-    <div class="form-group">
-      <label class="form-label">Name</label>
-      <input type="text" class="form-input" id="editName"
-        value="${escHtml(place.name||'')}"/>
-    </div>
-
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-      <div class="form-group">
-        <label class="form-label">City</label>
-        <input type="text" class="form-input" id="editCity"
-          value="${escHtml(place.city||'')}"/>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Country</label>
-        <input type="text" class="form-input" id="editCountry"
-          value="${escHtml(place.country||'')}"/>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">Category</label>
-      <div class="type-selector">${typeOptionsHtml}</div>
-    </div>
-
-    ${captionsHtml}
-
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
-      <button class="btn-primary"
-        onclick="doEditCard('${escHtml(placeIds)}')">
-        Save
-      </button>
-    </div>
-  `);
+  const ids=placeIds.split(','),places=allPlaces.filter(p=>ids.includes(String(p.id)));
+  if(!places.length){showToast('Place not found');return;}
+  const place=places[0],currentTypeId=(place.type||'').toLowerCase();
+  const typeOptionsHtml=getAllTypes().map(t=>'<div class="type-option'+(currentTypeId===t.id?' selected':'')+'" data-type-id="'+escHtml(t.id)+'" onclick="selectTypeOption(this)"><span class="type-option-emoji">'+t.emoji+'</span><span class="type-option-label">'+escHtml(t.label)+'</span></div>').join('');
+  const captionsHtml=places.map((p,index)=>'<div class="form-group"><label class="form-label">Caption '+(index+1)+'</label><textarea class="form-textarea multi-caption" data-place-id="'+p.id+'">'+escHtml(p.summary||'')+'</textarea></div>').join('');
+  showModal('<div class="modal-title">Edit Place</div><div class="form-group"><label class="form-label">Name</label><input type="text" class="form-input" id="editName" value="'+escHtml(place.name||'')+'"/></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;"><div class="form-group"><label class="form-label">City</label><input type="text" class="form-input" id="editCity" value="'+escHtml(place.city||'')+'"/></div><div class="form-group"><label class="form-label">Country</label><input type="text" class="form-input" id="editCountry" value="'+escHtml(place.country||'')+'"/></div></div><div class="form-group"><label class="form-label">Category</label><div class="type-selector">'+typeOptionsHtml+'</div></div>'+captionsHtml+'<div class="modal-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn-primary" onclick="doEditCard(\''+escHtml(placeIds)+'\')">Save</button></div>');
 }
 function selectTypeOption(el){document.querySelectorAll('.type-option').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');}
 async function doEditCard(placeIds){
-
-  const ids = placeIds.split(',');
-
-  const name=$('editName')?.value.trim();
-  const city=$('editCity')?.value.trim();
-  const country=$('editCountry')?.value.trim();
-
+  const ids=placeIds.split(','),name=$('editName')?.value.trim(),city=$('editCity')?.value.trim(),country=$('editCountry')?.value.trim();
   const typeId=document.querySelector('.type-option.selected')?.dataset.typeId||'';
-
-  if(!name){
-    showToast('Name is required');
-    return;
-  }
-
-  const captions = [...document.querySelectorAll('.multi-caption')];
-
+  if(!name){showToast('Name is required');return;}
+  const captions=[...document.querySelectorAll('.multi-caption')];
   closeModal();
-
-  for(const captionEl of captions){
-
-    const placeId = captionEl.dataset.placeId;
-    const summary = captionEl.value.trim();
-
-    try{
-      await fetch(`${API_BASE}/places/${encodeURIComponent(placeId)}`,{
-        method:'PATCH',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({
-          device_id:getDeviceId(),
-          password:getPassword(),
-          name,
-          city,
-          country,
-          type:typeId,
-          summary
-        })
-      });
-    }catch(e){}
-  }
-
-  allPlaces = allPlaces.map(p => {
-
-    if(ids.includes(String(p.id))){
-
-      const matchingCaption = captions.find(
-        c => String(c.dataset.placeId) === String(p.id)
-      );
-
-      return {
-        ...p,
-        name,
-        city,
-        country,
-        type:typeId,
-        summary: matchingCaption?.value || ''
-      };
-    }
-
-    return p;
-  });
-
-  saveToCache(currentTrip,getDeviceId(),allPlaces);
-
-  renderPlaces();
-
-  showToast('✅ Changes saved');
+  for(const captionEl of captions){const placeId=captionEl.dataset.placeId,summary=captionEl.value.trim();try{await fetch(API_BASE+'/places/'+encodeURIComponent(placeId),{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({device_id:getDeviceId(),password:getPassword(),name,city,country,type:typeId,summary})});}catch(e){}}
+  allPlaces=allPlaces.map(p=>{if(ids.includes(String(p.id))){const mc=captions.find(c=>String(c.dataset.placeId)===String(p.id));return{...p,name,city,country,type:typeId,summary:mc?.value||''};}return p;});
+  saveToCache(currentTrip,getDeviceId(),allPlaces);renderPlaces();showToast('\u2705 Changes saved');
 }
 
-// ── DELETE CARD ───────────────────────────────────────────────────────────
-function confirmDeleteCard(placeId,placeName){
-  showModal(`<div class="modal-title">Delete "${escHtml(placeName)}"?</div><div class="modal-body">This place will be permanently removed. This cannot be undone.</div><div class="modal-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn-danger" onclick="doDeleteCard('${escHtml(placeId)}')">Delete Place</button></div>`);
-}
+function confirmDeleteCard(placeId,placeName){showModal('<div class="modal-title">Delete "'+escHtml(placeName)+'"?</div><div class="modal-body">This place will be permanently removed. This cannot be undone.</div><div class="modal-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn-danger" onclick="doDeleteCard(\''+escHtml(placeId)+'\')">Delete Place</button></div>');}
 async function doDeleteCard(placeId){
-  closeModal(); const deviceId=getDeviceId(),password=getPassword();
-  try{const res=await fetch(`${API_BASE}/places/${encodeURIComponent(placeId)}`,{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({device_id:deviceId,password})});if(!res.ok)throw new Error();showToast('🗑️ Place deleted');}
-  catch{showToast('🗑️ Removed locally');}
-  allPlaces=allPlaces.filter(p=>String(p.id)!==String(placeId));
-  saveToCache(currentTrip,deviceId,allPlaces); renderPlaces();
+  closeModal();const deviceId=getDeviceId(),password=getPassword();
+  try{const res=await fetch(API_BASE+'/places/'+encodeURIComponent(placeId),{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({device_id:deviceId,password})});if(!res.ok)throw new Error();showToast('\uD83D\uDDD1\uFE0F Place deleted');}
+  catch{showToast('\uD83D\uDDD1\uFE0F Removed locally');}
+  allPlaces=allPlaces.filter(p=>String(p.id)!==String(placeId));saveToCache(currentTrip,deviceId,allPlaces);renderPlaces();
 }
+function showMoveCard(placeId,placeName){const others=trips.filter(t=>t!==currentTrip);if(!others.length){showToast('Create another trip first');return;}const opts=others.map(t=>'<option value="'+escHtml(t)+'">'+escHtml(t)+'</option>').join('');showModal('<div class="modal-title">Move "'+escHtml(placeName)+'"</div><div class="form-group"><label class="form-label">To Trip</label><select class="move-select" id="moveTrip">'+opts+'</select></div><div class="modal-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn-primary" onclick="doMoveCard(\''+escHtml(placeId)+'\')">Move</button></div>');}
+async function doMoveCard(placeId){const targetTrip=$('moveTrip').value;closeModal();const deviceId=getDeviceId(),password=getPassword();try{const res=await fetch(API_BASE+'/places/'+encodeURIComponent(placeId)+'/move',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({new_trip_id:targetTrip,device_id:deviceId,password})});if(!res.ok)throw new Error();showToast('\u2705 Moved to "'+targetTrip+'"');}catch{showToast('\u2705 Moved locally');}allPlaces=allPlaces.filter(p=>String(p.id)!==String(placeId));saveToCache(currentTrip,deviceId,allPlaces);renderPlaces();}
 
-// ── MOVE CARD ─────────────────────────────────────────────────────────────
-function showMoveCard(placeId,placeName){
-  const others=trips.filter(t=>t!==currentTrip); if(!others.length){showToast('Create another trip first');return;}
-  const opts=others.map(t=>`<option value="${escHtml(t)}">${escHtml(t)}</option>`).join('');
-  showModal(`<div class="modal-title">Move "${escHtml(placeName)}"</div><div class="form-group"><label class="form-label">To Trip</label><select class="move-select" id="moveTrip">${opts}</select></div><div class="modal-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn-primary" onclick="doMoveCard('${escHtml(placeId)}')">Move</button></div>`);
-}
-async function doMoveCard(placeId){
-  const targetTrip=$('moveTrip').value; closeModal();
-  const deviceId=getDeviceId(),password=getPassword();
-  try{const res=await fetch(`${API_BASE}/places/${encodeURIComponent(placeId)}/move`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({new_trip_id:targetTrip,device_id:deviceId,password})});if(!res.ok)throw new Error();showToast(`✅ Moved to "${targetTrip}"`);}
-  catch{showToast('✅ Moved locally');}
-  allPlaces=allPlaces.filter(p=>String(p.id)!==String(placeId));
-  saveToCache(currentTrip,deviceId,allPlaces); renderPlaces();
-}
-
-// ── KEYBOARD ──────────────────────────────────────────────────────────────
 document.addEventListener('keydown',e=>{
   if(e.key==='Enter'&&document.getElementById('page-login').classList.contains('active'))handleLogin();
   if(e.key==='Escape')closeModal();
 });
 
-// ── INIT ──────────────────────────────────────────────────────────────────
 (function init(){
   const savedDevice=localStorage.getItem('travelindex_device');
   const savedPassword=localStorage.getItem('travelindex_password');
-
   if(savedDevice&&savedPassword){
-    // Pre-fill login in case they end up back there
-    $('loginUsername').value=savedDevice;
-    $('loginPassword').value=savedPassword;
+    $('loginUsername').value=savedDevice;$('loginPassword').value=savedPassword;
     loadPreferences();
     const cachedTrips=loadTripsFromCache(savedDevice);
     if(cachedTrips&&cachedTrips.length){
-      trips=cachedTrips;
-      if(!currentTrip||!trips.includes(currentTrip))currentTrip=trips[0];
+      trips=cachedTrips;if(!currentTrip||!trips.includes(currentTrip))currentTrip=trips[0];
       enterApp(savedDevice);
       const cachedPlaces=loadFromCache(currentTrip,savedDevice);
-      if(cachedPlaces){
-        allPlaces=cachedPlaces;
-        showCacheBar(currentTrip,savedDevice);
-        showCacheStatus(currentTrip,savedDevice);
-        renderPlaces();
-      } else {
-        loadPlaces(savedDevice,currentTrip,true);
-      }
+      if(cachedPlaces){allPlaces=cachedPlaces;showCacheBar(currentTrip,savedDevice);showCacheStatus(currentTrip,savedDevice);renderPlaces();}
+      else{loadPlaces(savedDevice,currentTrip,true);}
       return;
     }
-    // Have credentials but no cache — show login pre-filled
     showPage('page-login');
-  } else {
-    showPage('page-login');
-  }
+  }else{showPage('page-login');}
 })();
 </script>
 </body>
