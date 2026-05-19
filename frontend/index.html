@@ -452,6 +452,24 @@ let currentView = 'grid';
 let leafletMap = null, mapMarkers = [], _mapPlaces = [];
 let geocodeCache = {}, geocodingAbort = false, geocodingActive = false;
 
+// Location snapshot cache key
+const GEO_CACHE_KEY = 'travelindex_geo_snapshot';
+
+function saveGeoSnapshot(snapshot) {
+  try {
+    localStorage.setItem(GEO_CACHE_KEY, JSON.stringify(snapshot));
+  } catch(e) {}
+}
+
+function loadGeoSnapshot() {
+  try {
+    const raw = localStorage.getItem(GEO_CACHE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
 const BUILTIN_TYPES = [
   {id:'restaurant',label:'restaurant',emoji:'\uD83C\uDF7D\uFE0F'},
   {id:'cafe',label:'caf\u00e9',emoji:'\u2615'},
@@ -481,6 +499,7 @@ function showPage(id){
 function handleSignOut(){
   localStorage.removeItem('travelindex_device');
   localStorage.removeItem('travelindex_password');
+  localStorage.removeItem(GEO_CACHE_KEY);
   allPlaces=[];currentTrip=null;trips=[];
   if(leafletMap){leafletMap.remove();leafletMap=null;}
   showPage('page-login');showToast('Signed out');
@@ -532,15 +551,35 @@ function switchView(mode){
   }
 }
 
-// GEOCODING
+// GEOCODING WITH SNAPSHOT
+function makeGeoKey(place) {
+  return (place.name||'').toLowerCase() + '|' + (place.city||'').toLowerCase() + '|' + (place.country||'').toLowerCase();
+}
+
 async function geocodePlace(place){
-  const key=place.name+'|'+(place.city||'')+'|'+(place.country||'');
-  if(geocodeCache[key])return geocodeCache[key];
+  const key = makeGeoKey(place);
+  // Check in-memory cache first
+  if(geocodeCache[key]) return geocodeCache[key];
+  
+  // Check snapshot
+  const snapshot = loadGeoSnapshot();
+  if(snapshot && snapshot[key]) {
+    geocodeCache[key] = snapshot[key];
+    return snapshot[key];
+  }
+  
+  // Fallback: Nominatim
   const query=[place.name,place.city,place.country].filter(Boolean).join(', ');
   try{
     const res=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent(query),{headers:{'Accept-Language':'en'}});
     const data=await res.json();
-    if(data&&data[0]){const c={lat:parseFloat(data[0].lat),lng:parseFloat(data[0].lon)};geocodeCache[key]=c;return c;}
+    if(data&&data[0]){
+      const c={lat:parseFloat(data[0].lat),lng:parseFloat(data[0].lon)};
+      geocodeCache[key]=c;
+      // Save to persistent snapshot
+      saveToGeoSnapshot(key, c);
+      return c;
+    }
   }catch(e){}
   // fallback: city+country only
   if(place.city||place.country){
@@ -548,10 +587,21 @@ async function geocodePlace(place){
     try{
       const res=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent(fb),{headers:{'Accept-Language':'en'}});
       const data=await res.json();
-      if(data&&data[0]){const c={lat:parseFloat(data[0].lat),lng:parseFloat(data[0].lon)};geocodeCache[key]=c;return c;}
+      if(data&&data[0]){
+        const c={lat:parseFloat(data[0].lat),lng:parseFloat(data[0].lon)};
+        geocodeCache[key]=c;
+        saveToGeoSnapshot(key, c);
+        return c;
+      }
     }catch(e){}
   }
   return null;
+}
+
+function saveToGeoSnapshot(key, coords) {
+  const snapshot = loadGeoSnapshot() || {};
+  snapshot[key] = coords;
+  saveGeoSnapshot(snapshot);
 }
 
 function makeMarkerIcon(typeId){
@@ -607,41 +657,94 @@ async function geocodePlacesProgressively(places){
   geocodingActive=true;
   _mapPlaces=places;
   const bar=$('mapGeocodingBar'),lbl=$('mapGeocodingLabel');
+  const snapshot = loadGeoSnapshot();
+  let cachedCount = 0;
+  
+  // Pre-check how many are already in snapshot
+  if(snapshot) {
+    places.forEach(p => {
+      const key = makeGeoKey(p);
+      if(snapshot[key]) cachedCount++;
+    });
+  }
+  
+  // If all are cached, load instantly
+  if(cachedCount === places.length && places.length > 0) {
+    await loadCachedMarkers(places, snapshot);
+    bar.classList.remove('visible');
+    geocodingActive=false;
+    return;
+  }
+  
   bar.classList.add('visible');
   const bounds=[];let located=0;
+  const remainingToGeocode = places.length - cachedCount;
+  
+  lbl.textContent = cachedCount > 0 
+    ? 'Loading ' + cachedCount + ' from snapshot, locating ' + remainingToGeocode + ' more\u2026'
+    : 'Locating ' + places.length + ' places\u2026';
+  
   for(let i=0;i<places.length;i++){
     if(geocodingAbort)break;
     const p=places[i];
-    lbl.textContent='Locating '+(i+1)+' of '+places.length+'\u2026';
-    const coords=await geocodePlace(p);
+    
+    // Check snapshot first
+    const key = makeGeoKey(p);
+    let coords = null;
+    if(snapshot && snapshot[key]) {
+      coords = snapshot[key];
+      geocodeCache[key] = coords;
+    } else {
+      lbl.textContent='Locating '+(located+1)+' of '+remainingToGeocode+'\u2026';
+      coords = await geocodePlace(p);
+      // Rate limit only for actual API calls
+      await new Promise(r=>setTimeout(r,1100));
+    }
+    
     if(coords&&!geocodingAbort){
       located++;
-      const typeId=(p.type||'attraction').toLowerCase();
-      const marker=L.marker([coords.lat,coords.lng],{icon:makeMarkerIcon(typeId)});
-      const typeInfo=getTypeInfo(typeId);
-      const loc=[p.city,p.country].filter(Boolean).join(', ');
-      const mapsLink=p.maps_url?'<a class="map-popup-link" href="'+escHtml(p.maps_url)+'" target="_blank" rel="noopener">\uD83D\uDCCD Open in Maps</a>':'';
-      const summary=p.summary?'<div class="map-popup-summary">'+escHtml(p.summary)+'</div>':'';
-      marker.bindPopup(
-        '<div class="map-popup-name">'+escHtml(p.name)+'</div>'
-        +'<div class="map-popup-loc">'+escHtml(loc)+'</div>'
-        +summary+mapsLink,
-        {maxWidth:220}
-      );
-      marker._placeIdx=i;
-      marker.on('click',()=>highlightSidebarRow(i));
-      marker.addTo(leafletMap);
-      mapMarkers.push(marker);
-      bounds.push([coords.lat,coords.lng]);
-      if(bounds.length===1)leafletMap.setView([coords.lat,coords.lng],12);
-      else leafletMap.fitBounds(bounds,{padding:[40,40],maxZoom:14});
+      addMapMarker(p, coords, bounds, i);
     }
-    // Nominatim rate limit: 1 req/sec
-    await new Promise(r=>setTimeout(r,1100));
   }
   bar.classList.remove('visible');
   $('mapSidebarSub').textContent=located+' of '+places.length+' located';
   geocodingActive=false;
+}
+
+async function loadCachedMarkers(places, snapshot) {
+  const bounds = [];
+  let idx = 0;
+  for(const p of places) {
+    const key = makeGeoKey(p);
+    if(snapshot && snapshot[key]) {
+      geocodeCache[key] = snapshot[key];
+      addMapMarker(p, snapshot[key], bounds, idx);
+    }
+    idx++;
+  }
+  $('mapSidebarSub').textContent=places.length+' of '+places.length+' located (from snapshot)';
+}
+
+function addMapMarker(p, coords, bounds, idx) {
+  const typeId=(p.type||'attraction').toLowerCase();
+  const marker=L.marker([coords.lat,coords.lng],{icon:makeMarkerIcon(typeId)});
+  const typeInfo=getTypeInfo(typeId);
+  const loc=[p.city,p.country].filter(Boolean).join(', ');
+  const mapsLink=p.maps_url?'<a class="map-popup-link" href="'+escHtml(p.maps_url)+'" target="_blank" rel="noopener">\uD83D\uDCCD Open in Maps</a>':'';
+  const summary=p.summary?'<div class="map-popup-summary">'+escHtml(p.summary)+'</div>':'';
+  marker.bindPopup(
+    '<div class="map-popup-name">'+escHtml(p.name)+'</div>'
+    +'<div class="map-popup-loc">'+escHtml(loc)+'</div>'
+    +summary+mapsLink,
+    {maxWidth:220}
+  );
+  marker._placeIdx=idx;
+  marker.on('click',()=>highlightSidebarRow(idx));
+  marker.addTo(leafletMap);
+  mapMarkers.push(marker);
+  bounds.push([coords.lat,coords.lng]);
+  if(bounds.length===1)leafletMap.setView([coords.lat,coords.lng],12);
+  else leafletMap.fitBounds(bounds,{padding:[40,40],maxZoom:14});
 }
 
 function focusMapMarker(idx){
